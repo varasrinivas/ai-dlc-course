@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI-DLC Course Module",
+  "description": "Shape of one object in the MODS array in course/index.html. body is a JS template-literal HTML string.",
+  "type": "object",
+  "required": ["id", "track", "title", "minutes", "audience", "body"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^M[0-9]{2}$",
+      "description": "Module ID, e.g. M05. Must exist in curriculum-map.md."
+    },
+    "track": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7,
+      "description": "Track number per curriculum-map.md."
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 70
+    },
+    "minutes": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 60,
+      "description": "Estimated completion time including the lab."
+    },
+    "audience": {
+      "type": "string",
+      "enum": ["leader", "practitioner", "both"]
+    },
+    "body": {
+      "type": "string",
+      "description": "HTML string. Section order: p.hook, 2-4 h2 concept sections with >=1 inline SVG (viewBox set, CSS-variable colors) and exactly one aside.analogy (Lakeview build beat, 60-120 words, with the maps-to line) after the first or second section, optional table.bridge, section.lab (dual-path with .engine-tabs), section.recap."
+    }
+  }
+}
