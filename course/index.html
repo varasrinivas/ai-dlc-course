@@ -5670,6 +5670,7 @@ function render() {
     "<h1>" + m.title + "</h1>" +
     '<div class="mod-meta">~' + m.minutes + " min · audience: " + m.audience + "</div>" +
     "</header>" + m.body;
+  if (location.hash !== "#" + m.id) history.replaceState(null, "", "#" + m.id);
   $done.textContent = completed.has(m.id) ? "Completed ✓" : "Mark complete";
   $done.classList.toggle("is-done", completed.has(m.id));
   wireEngineTabs();
@@ -5717,6 +5718,13 @@ document.querySelectorAll(".aud-filter button").forEach(btn => {
   });
 });
 
+function goToHash() {
+  const id = location.hash.replace("#", "").toUpperCase();
+  const idx = MODS.findIndex(m => m.id === id);
+  if (idx >= 0) currentIdx = idx;
+}
+window.addEventListener("hashchange", () => { goToHash(); render(); });
+goToHash();
 render();
 </script>
 </body>
