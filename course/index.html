@@ -248,6 +248,19 @@ const MODS = [
 <figcaption>fig 0.1 — the AI-DLC loop: three phases per bolt, humans at every checkpoint</figcaption>
 </figure>
 
+<p>AI-DLC renames the rituals on purpose — the new names mark that the tempo and the division of labor have changed. You will use these terms in every module:</p>
+<table class="bridge">
+  <thead><tr><th>You know it as (Scrum/SDLC)</th><th>AI-DLC calls it</th><th>What changed</th></tr></thead>
+  <tbody>
+    <tr><td>Sprint (2 weeks)</td><td><b>Bolt</b> (hours–days)</td><td>AI compresses execution; the cycle shrinks to decision speed</td></tr>
+    <tr><td>Backlog refinement</td><td><b>Mob Elaboration</b></td><td>AI drafts requirements and asks questions; the whole team validates live</td></tr>
+    <tr><td>Story / task</td><td><b>Unit of work</b></td><td>Sized for one AI construction loop with one human checkpoint</td></tr>
+    <tr><td>Pairing on a ticket</td><td><b>Mob Construction</b></td><td>Team reviews AI-built increments together at the checkpoint</td></tr>
+    <tr><td>Definition of done</td><td><b>Human checkpoint</b></td><td>A person signs off on every consequential decision — and understands every line</td></tr>
+    <tr><td>Project wiki</td><td><b>Context memory</b></td><td>Plans and decisions are artifacts the AI reads in the next bolt</td></tr>
+  </tbody>
+</table>
+
 <h2>The story we'll carry: the Lakeview build</h2>
 <p>New methodologies are easiest to hold onto through something you already understand. So alongside the Prior Auth Portal, every module of this course advances one continuous real-world story — <strong>the Lakeview build</strong>. Meera and Ravi are building a custom home with an unusual architect-builder firm, and the way that firm runs its site is, beat for beat, how AI-DLC runs a software team.</p>
 
@@ -270,7 +283,7 @@ const MODS = [
   </tbody>
 </table>
 
-<h2>Two paths through the course</h2>
+<h2>Two paths, one domain</h2>
 <p>The course serves two audiences on purpose, because AI-DLC itself insists that leaders and builders change together. Every module in the sidebar carries a tag, and the filter above the module list shows only your path.</p>
 <div class="paths-grid">
   <div class="path-card leader">
@@ -283,7 +296,6 @@ const MODS = [
   </div>
 </div>
 
-<h2>The domain: one portal, all the way through</h2>
 <p>Every example in this course lives in one system — a healthcare <strong>Prior Authorization Portal</strong>. A provider submits an <code>AuthRequest</code> for a <code>Member</code>. The system scores it against <code>ClinicalCriteria</code>; a match score at or above <code>AUTO_APPROVE_THRESHOLD (0.85)</code> auto-approves, anything below routes to the nurse review queue. Every request ends in a <code>Determination</code>. It is a real-shaped domain: regulated, workflow-heavy, and unforgiving of sloppy requirements — exactly where AI-DLC's human checkpoints earn their keep.</p>
 
 <figure>
@@ -322,20 +334,6 @@ const MODS = [
 </svg>
 <figcaption>fig 0.2 — the Prior Auth Portal domain: every module builds some part of this flow</figcaption>
 </figure>
-
-<h2>Vocabulary bridge</h2>
-<p>AI-DLC renames the rituals on purpose — the new names mark that the tempo and the division of labor have changed. You will use these terms in every module:</p>
-<table class="bridge">
-  <thead><tr><th>You know it as (Scrum/SDLC)</th><th>AI-DLC calls it</th><th>What changed</th></tr></thead>
-  <tbody>
-    <tr><td>Sprint (2 weeks)</td><td><b>Bolt</b> (hours–days)</td><td>AI compresses execution; the cycle shrinks to decision speed</td></tr>
-    <tr><td>Backlog refinement</td><td><b>Mob Elaboration</b></td><td>AI drafts requirements and asks questions; the whole team validates live</td></tr>
-    <tr><td>Story / task</td><td><b>Unit of work</b></td><td>Sized for one AI construction loop with one human checkpoint</td></tr>
-    <tr><td>Pairing on a ticket</td><td><b>Mob Construction</b></td><td>Team reviews AI-built increments together at the checkpoint</td></tr>
-    <tr><td>Definition of done</td><td><b>Human checkpoint</b></td><td>A person signs off on every consequential decision — and understands every line</td></tr>
-    <tr><td>Project wiki</td><td><b>Context memory</b></td><td>Plans and decisions are artifacts the AI reads in the next bolt</td></tr>
-  </tbody>
-</table>
 
 <div class="callout"><b>One protocol, two engines.</b> The steering file is the same idea everywhere: <code>CLAUDE.md</code> in Claude Code, <code>AGENTS.md</code> in Codex, Project Rules in Amazon Q Developer, Steering in Kiro. Learn the pattern once; rename the file per engine.</div>
 
@@ -398,8 +396,7 @@ codex
     <li>Three phases per bolt — Inception, Construction, Operations — with humans deciding at every checkpoint.</li>
     <li>Bolts replace sprints; Mob Elaboration and Mob Construction replace refinement and pairing.</li>
     <li>The methodology is engine-agnostic: this course runs it on Claude Code and Codex CLI in parallel.</li>
-    <li>One domain everywhere: the Prior Auth Portal, from AuthRequest to Determination.</li>
-    <li>One story everywhere: the Lakeview build — Meera, Ravi, the design desk, the crews, and the build book return in every module.</li>
+    <li>One domain and one story everywhere: the Prior Auth Portal from AuthRequest to Determination, and the Lakeview build — Meera, Ravi, the design desk, the crews, and the build book return in every module.</li>
   </ul>
   <span class="next">Next → M01 · The Two Anti-Patterns</span>
 </section>
@@ -2184,7 +2181,7 @@ codex
 
 <h2>Anatomy of a stage</h2>
 <p>A stage definition is six fields: <strong>purpose · trigger heuristic · inputs · activities · outputs · exit criteria.</strong> The trigger heuristic is what M10's dial actually reads — "include when brownfield detected," "include for behavior-change class or above." The exit criterion names what must exist, and who signs, before the stage closes.</p>
-<p>Read two from the standard library. <em>Semantic survey</em> — trigger: brownfield detected; output: a semantic map of the affected estate; exit: map validated by an engineer who knows the system (the whole of M12). <em>Mob elaboration</em> — trigger: behavior-change class or above; output: approved units of work plus recorded constraints; exit: every artifact dispositioned (M06's rule). The load-bearing field is always the exit: <strong>a stage without a checkable exit is a meeting, not a stage.</strong></p>
+<p>Read two from the standard library. <em>Semantic survey</em> — trigger: brownfield detected; output: a semantic map of the affected estate; exit: map validated by an engineer who knows the system (the whole of M12). <em>Mob Elaboration</em> — trigger: behavior-change class or above; output: approved units of work plus recorded constraints; exit: every artifact dispositioned (M06's rule). The load-bearing field is always the exit: <strong>a stage without a checkable exit is a meeting, not a stage.</strong></p>
 
 <aside class="analogy">
 <p>In the site office, Ravi finally noticed the laminated sheet every crew consulted: the firm's playbook — every stage it knew how to run, from "anchoring survey" to "wet-stamp inspection," each with one line for when it applies and one for what counts as done. The gazebo's checklist had used four stages; the boathouse, eleven. After the boathouse, the desk added a new card — "ice-load check: any structure on the waterline, signed by the marine engineer" — and pinned the date to it. The playbook wasn't a binder nobody read. It was short, posted, and it grew one earned card at a time.</p>
