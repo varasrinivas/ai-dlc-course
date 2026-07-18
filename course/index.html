@@ -363,30 +363,30 @@ summary{cursor:pointer;font-weight:600;font-size:.9rem}
 .dlcs .sub{font-size:11px;fill:var(--ink-soft)}
 .dlcs .chip{font-size:9px;font-weight:600;letter-spacing:.12em;fill:#fff}
 /* scene crossfade — 24s master timeline */
-.dlc-a{opacity:1;animation:dlcA 24s linear infinite}
-.dlc-b{opacity:0;animation:dlcB 24s linear infinite}
-.dlc-c{opacity:0;animation:dlcC 24s linear infinite}
-.dlc-d{opacity:0;animation:dlcD 24s linear infinite}
-@keyframes dlcA{0%,24%{opacity:1}28%,100%{opacity:0}}
-@keyframes dlcB{0%,24%{opacity:0}28%,74%{opacity:1}78%,100%{opacity:0}}
-@keyframes dlcC{0%,74%{opacity:0}78%,91%{opacity:1}94%,100%{opacity:0}}
-@keyframes dlcD{0%,91%{opacity:0}94%,100%{opacity:1}}
+.dlc-a{opacity:1;animation:dlcA 36s linear infinite}
+.dlc-b{opacity:0;animation:dlcB 36s linear infinite}
+.dlc-c{opacity:0;animation:dlcC 36s linear infinite}
+.dlc-d{opacity:0;animation:dlcD 36s linear infinite}
+@keyframes dlcA{0%,22%{opacity:1}26%,100%{opacity:0}}
+@keyframes dlcB{0%,22%{opacity:0}26%,68%{opacity:1}72%,100%{opacity:0}}
+@keyframes dlcC{0%,68%{opacity:0}72%,88%{opacity:1}91%,100%{opacity:0}}
+@keyframes dlcD{0%,88%{opacity:0}91%,100%{opacity:1}}
 /* playhead across the bolt bar */
-.dlc-head{animation:dlcHead 24s linear infinite}
-@keyframes dlcHead{0%{transform:translateX(40px)}26%{transform:translateX(132px)}
-  76%{transform:translateX(572px)}93%{transform:translateX(662px)}100%{transform:translateX(718px)}}
+.dlc-head{animation:dlcHead 36s linear infinite}
+@keyframes dlcHead{0%{transform:translateX(40px)}24%{transform:translateX(132px)}
+  70%{transform:translateX(572px)}90%{transform:translateX(662px)}100%{transform:translateX(718px)}}
 /* scene-A beats: AI question, PO answer, log write */
-.dlc-q1{opacity:0;animation:dlcQ1 24s linear infinite}
-@keyframes dlcQ1{0%,4%{opacity:0}7%,12%{opacity:1}15%,100%{opacity:0}}
-.dlc-an1{opacity:0;animation:dlcAn1 24s linear infinite}
-@keyframes dlcAn1{0%,12%{opacity:0}15%,21%{opacity:1}24%,100%{opacity:0}}
-.dlc-log1{opacity:0;animation:dlcLog1 24s linear infinite}
-@keyframes dlcLog1{0%,18%{opacity:0}21%,26%{opacity:1}28%,100%{opacity:0}}
+.dlc-q1{opacity:0;animation:dlcQ1 36s linear infinite}
+@keyframes dlcQ1{0%,4%{opacity:0}6%,11%{opacity:1}14%,100%{opacity:0}}
+.dlc-an1{opacity:0;animation:dlcAn1 36s linear infinite}
+@keyframes dlcAn1{0%,11%{opacity:0}13%,19%{opacity:1}22%,100%{opacity:0}}
+.dlc-log1{opacity:0;animation:dlcLog1 36s linear infinite}
+@keyframes dlcLog1{0%,16%{opacity:0}18%,24%{opacity:1}26%,100%{opacity:0}}
 /* scene-B beats: mid-bolt question answered FROM the log, no call */
-.dlc-q2{opacity:0;animation:dlcQ2 24s linear infinite}
-@keyframes dlcQ2{0%,42%{opacity:0}45%,54%{opacity:1}57%,100%{opacity:0}}
-.dlc-an2{opacity:0;animation:dlcAn2 24s linear infinite}
-@keyframes dlcAn2{0%,54%{opacity:0}57%,70%{opacity:1}74%,100%{opacity:0}}
+.dlc-q2{opacity:0;animation:dlcQ2 36s linear infinite}
+@keyframes dlcQ2{0%,36%{opacity:0}39%,48%{opacity:1}51%,100%{opacity:0}}
+.dlc-an2{opacity:0;animation:dlcAn2 36s linear infinite}
+@keyframes dlcAn2{0%,48%{opacity:0}51%,64%{opacity:1}68%,100%{opacity:0}}
 /* code bars grow while scene B is live.
    transform-box:fill-box is load-bearing: SVG default is view-box, which would
    scale the bars from the diagram's left edge instead of their own. */
@@ -396,8 +396,8 @@ summary{cursor:pointer;font-weight:600;font-size:.9rem}
 .dlc-code rect:nth-child(4){animation-delay:.9s}
 @keyframes dlcCode{from{transform:scaleX(.35)}to{transform:scaleX(1)}}
 /* scene-C sign-off */
-.dlc-ok3{opacity:0;animation:dlcOk3 24s linear infinite}
-@keyframes dlcOk3{0%,84%{opacity:0}87%,91%{opacity:1}94%,100%{opacity:0}}
+.dlc-ok3{opacity:0;animation:dlcOk3 36s linear infinite}
+@keyframes dlcOk3{0%,80%{opacity:0}83%,88%{opacity:1}91%,100%{opacity:0}}
 </style>
 </head>
 <body>
@@ -670,7 +670,15 @@ src/determination/…           AI wrote it · you read every line</pre>
     <h2>Do people sit on a call all day?</h2>
     <p>Fair worry — "Mob Elaboration" and "Mob Construction" sound like a standing meeting. The reality
     is the opposite of a sprint's ceremony load: AI-DLC <strong>concentrates</strong> synchronous time
-    into two short moments per bolt, and the files buy everything between back as offline work. Watch PA-1423 — the story you just traced — run again, this time as a team rhythm:</p>
+    into two short moments per bolt, and the files buy everything between back as offline work.</p>
+    <p>The loop below plays one bolt in four scenes — the three AI-DLC phases every bolt has, plus the close:</p>
+    <ol>
+      <li><strong>Inception — sync, ~30 min.</strong> Mob Elaboration: the team and the AI turn the ticket into a unit of work. The AI's open question becomes a recorded decision before any code exists.</li>
+      <li><strong>Construction — async, hours.</strong> The engine builds from the files while everyone works at their own desk. Mid-build questions are answered by the decision log, not a meeting.</li>
+      <li><strong>Construction, the checkpoint — sync, ~15 min.</strong> The decider reads the diff and signs off, or sends it back.</li>
+      <li><strong>Operations — the close.</strong> Ship, record what was decided, clear. The next bolt starts already knowing it.</li>
+    </ol>
+    <p>Watch PA-1423 — the story you just traced — run as that rhythm; each scene holds for a few seconds:</p>
 
     <figure>
 <svg class="dlcs" viewBox="0 0 760 408" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -697,6 +705,7 @@ src/determination/…           AI wrote it · you read every line</pre>
     <text class="cap" x="380" y="28" text-anchor="middle">Mob Elaboration — the whole team, once per bolt</text>
     <rect x="345" y="38" width="70" height="16" rx="8" fill="var(--accent)"/>
     <text class="chip" x="380" y="49" text-anchor="middle">SYNC</text>
+    <text class="sub" x="380" y="68" text-anchor="middle">scene 1 of 4 · INCEPTION — the ticket becomes a unit of work; questions become decisions</text>
 
     <!-- jira ticket -->
     <rect x="48" y="70" width="126" height="70" rx="8" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>
@@ -736,6 +745,7 @@ src/determination/…           AI wrote it · you read every line</pre>
     <text class="cap" x="380" y="28" text-anchor="middle">Construction — nobody is on a call</text>
     <rect x="338" y="38" width="84" height="16" rx="8" fill="var(--t2)"/>
     <text class="chip" x="380" y="49" text-anchor="middle">ASYNC</text>
+    <text class="sub" x="380" y="68" text-anchor="middle">scene 2 of 4 · CONSTRUCTION — the engine builds from the files; humans stay offline</text>
 
     <!-- PO at own desk -->
     <use href="#dlcp" x="110" y="235"/>
@@ -780,6 +790,7 @@ src/determination/…           AI wrote it · you read every line</pre>
     <text class="cap" x="380" y="28" text-anchor="middle">Checkpoint — the decider reads the diff</text>
     <rect x="345" y="38" width="70" height="16" rx="8" fill="var(--accent)"/>
     <text class="chip" x="380" y="49" text-anchor="middle">SYNC</text>
+    <text class="sub" x="380" y="68" text-anchor="middle">scene 3 of 4 · CONSTRUCTION, THE CHECKPOINT — the decider reads the exact diff</text>
 
     <rect x="290" y="90" width="180" height="120" rx="8" fill="var(--ink)"/>
     <rect x="304" y="106" width="110" height="7" rx="3" fill="#5fb3a1"/>
@@ -798,6 +809,7 @@ src/determination/…           AI wrote it · you read every line</pre>
   <!-- ============ SCENE D · Close ============ -->
   <g class="dlc-d">
     <text class="cap" x="380" y="28" text-anchor="middle">Bolt closed — the ticket moves, the log grows</text>
+    <text class="sub" x="380" y="68" text-anchor="middle">scene 4 of 4 · OPERATIONS — ship it; write down what was decided</text>
     <rect x="200" y="90" width="126" height="70" rx="8" fill="var(--panel)" stroke="var(--ok)" stroke-width="2"/>
     <text x="212" y="112" font-size="12" font-weight="600" fill="var(--ok)">PA-1423 ✓</text>
     <rect x="212" y="122" width="100" height="6" rx="3" fill="var(--line)"/>
