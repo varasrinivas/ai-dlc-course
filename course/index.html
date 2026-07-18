@@ -415,7 +415,7 @@ const MODS = [
   id: "P00",
   track: 0,
   title: "Prelude: You're the Tech Lead Now",
-  minutes: 35,
+  minutes: 15,
   audience: "both",
   body: `
 <p class="hook">AI-DLC is AWS's methodology for building software with AI. Strip the vocabulary away and it is one sentence: <strong>you stop being the person who types the code, and become the person the code has to get past.</strong> This prelude explains that the way you'd explain it to a teammate, hands you one cycle to run, and shows you the whole machine — so the 33 modules ahead are naming things you've already touched. Already run a bolt? Skip to M00; everything here is re-taught properly, track by track.</p>
@@ -453,40 +453,23 @@ waiting on me.</pre>
       <span class="w"><span class="tag you">you</span>install the engine, write the rules file, commit it</span>
       <span class="w"><span class="tag ai">ai</span>nothing yet</span>
     </div>
-    <p>On day one of the project — not day one of this story — someone on the team commits the rules
-    file. Here is a realistic starter, in full. Notice it doesn't just state rules; it names the
-    conventions everything later hangs off, including where decisions will live:</p>
+    <p>On day one of the project — not day one of this story — someone commits the rules file. Notice
+    it names where decisions will live; everything later hangs off that:</p>
     <div class="artifact doc">
       <div class="artifact-name"><b>CLAUDE.md</b><span class="eng">initial config — committed on day 1</span></div>
       <pre># Prior Auth Portal — API
 
-## Rules that outrank any prompt
 - AUTO_APPROVE_THRESHOLD = 0.85 is clinical policy. The rule
-  is >=. Never change it from a prompt — a real change needs
-  a decision in docs/decisions.md with sign-off.
-- Notifications carry status + reference id only. Never
-  clinical content.
-
-## Conventions
-- TypeScript strict. Jest. Tests colocated as *.spec.ts.
-- Test names state the rule: auto_approves_exactly_at_threshold.
-
-## How we work
-- Plan first: numbered steps, files you'll touch and files
-  you won't. STOP for my approval before editing anything.
+  is >=. Never change it from a prompt.
+- Plan first: numbered steps, files you will touch. STOP for
+  my approval before editing anything.
 - Tests first. Run npm test yourself; show the real output.
-- If a decision isn't derivable from this repo — ask. Never guess.
+- If a decision is not derivable from this repo — ask. Never guess.
 - Record every human decision in docs/decisions.md (create it
-  if it doesn't exist), with the reasoning and who decided.
-  Cite it from code as (D-00X).
+  if it does not exist), with reasoning and who decided. (D-00X)
 - One unit of work per session. Write each one to docs/units/.</pre>
     </div>
-    <p>The repo at this point: <strong>there is no <code>docs/</code> folder.</strong> Nobody creates it
-    by hand — the rules file just declares where things will live ("create it if it doesn't exist"), and
-    the AI creates it the first time it has something to record. You'll see that happen at step 4. That
-    is the only setup; beyond the engine itself, there is nothing to install.
-    <em>(This is a day-one starter — the shipped <code>prior-auth-api</code> repo shows the evolved
-    version with <code>@</code>-imports, covered under "memory" below.)</em></p>
+    <p>The repo at this point: <strong>there is no <code>docs/</code> folder.</strong> The rules file declares where things will live, and the AI creates them the first time it has something to record — you'll see it at step 4. Beyond the engine itself, there is nothing to install. <em>(The shipped <code>prior-auth-api</code> repo shows the evolved file, with <code>@</code>-imports — M13 and M14 cover how these files physically become the engine's memory.)</em></p>
 
     <h3>Step 1 — you enter plan mode, then paste the story</h3>
     <div class="who-row">
@@ -560,11 +543,7 @@ the repo answers this.</pre>
       <span class="w"><span class="tag you">you</span>watch (or get coffee)</span>
       <span class="w"><span class="tag ai">ai</span>edits files, runs tests, fixes, re-runs</span>
     </div>
-    <p>Here is how "generation" actually works: <strong>the AI tool is a program that can edit files and
-    run shell commands in your repo.</strong> When you said "go", it opened
-    <code>auth-status.enum.ts</code> and edited it — the file in your working tree changed, exactly as if
-    you had typed it. No code appears in a chat window for you to copy-paste. Run <code>git status</code>
-    in another terminal mid-bolt and this is what you'd see:</p>
+    <p><strong>The AI tool is a program that can edit files and run shell commands in your repo.</strong> When you said "go", your working tree started changing — no copy-paste, no chat window. Run <code>git status</code> mid-bolt:</p>
     <div class="artifact">
       <div class="artifact-name"><b>git status</b><span class="eng">mid-bolt — every write the AI made</span></div>
       <pre>modified:   src/determination/auth-status.enum.ts
@@ -573,23 +552,7 @@ modified:   src/determination/determination.service.spec.ts  (+2 tests)
 new file:   docs/units/UW-pa-1423.md
 new file:   docs/decisions.md</pre>
     </div>
-    <p>Two things worth noticing. First — <strong>this is the moment <code>docs/</code> is born.</strong>
-    Nobody ran <code>mkdir</code>. The rules file said "record decisions in <code>docs/decisions.md</code>,
-    create it if it doesn't exist", so when the AI had its first decision to record, it created the folder
-    and the file with its ordinary write tools. The convention came from a human, once; the files come
-    from the AI, every bolt. Second, the code change itself is small and cites the decision:</p>
-    <div class="artifact">
-      <div class="artifact-name"><b>git diff</b><span class="eng">src/determination/auth-status.enum.ts</span></div>
-      <pre> export enum AuthStatus {
-   DRAFT = 'DRAFT',
-   PENDING = 'PENDING',
-+  PENDING_NURSE_REVIEW = 'PENDING_NURSE_REVIEW',  // (D-004)
-   APPROVED = 'APPROVED',
-   DENIED = 'DENIED',
- }</pre>
-    </div>
-    <p>Meanwhile it runs <code>npm test</code> itself, reads the failures, fixes, re-runs — you see the
-    real runner output in the session, not a claim about it.</p>
+    <p><strong>This is the moment <code>docs/</code> is born.</strong> Nobody ran <code>mkdir</code> — the rules file said "create it if it doesn't exist," so the AI did, with its ordinary write tools. The convention came from a human, once; the files come from the AI, every bolt. Meanwhile it runs <code>npm test</code> itself, reads the failures, fixes, re-runs — you see the real runner output, not a claim about it.</p>
 
     <h3>Step 5 — you review a diff, like any PR</h3>
     <div class="who-row">
@@ -625,19 +588,7 @@ withdrawing a promise.
 
 Decided by: you, during PA-1423. Not inferred.</pre>
     </div>
-    <p>And the unit of work itself was kept, so the bolt is auditable end to end:</p>
-    <div class="artifact doc">
-      <div class="artifact-name"><b>docs/units/UW-pa-1423.md</b><span class="eng">written by the AI at plan approval</span></div>
-      <pre># UW — nurse-review status (PA-1423)
-
-Acceptance criteria
- 1. AuthStatus gains PENDING_NURSE_REVIEW
- 2. Below-threshold matches route to it, not generic PENDING
- 3. Exactly 0.85 still auto-approves (boundary test)
- 4. Re-scores never reopen approvals (D-004)
-
-Out of scope: the nurse queue UI — separate unit of work.</pre>
-    </div>
+    
     <p>Why all this writing? Because the AI has no memory between sessions. Next month, when someone asks
     it to build the re-scoring feature, it reads <code>docs/decisions.md</code> and already knows D-004 —
     instead of asking again, or guessing differently. That is all "context memory" means.</p>
@@ -789,46 +740,8 @@ src/determination/…           AI wrote it · you read every line</pre>
         <p>Anything the code can't derive: what the business meant, what risk is acceptable, what to do when
         the rule doesn't cover the case — and anything with a member's care attached.</p></div>
     </div>
-  </section>
-<section class="block">
-    <h2>Where did the sprint roles go?</h2>
-    <p>A sprint has a cast: product owner, developers, QA, an architect, a scrum master. AI-DLC doesn't
-    delete the cast — it re-casts everyone from <em>producer</em> to <em>decider and validator</em>,
-    because the AI now carries the volume in every role. You already watched this happen in PA-1423
-    without the labels: the step-3 answer was the <strong>product owner's</strong> call, the step-5 diff
-    read was the <strong>developer's</strong> job, and acceptance criterion 3 — the 0.85 boundary test —
-    is <strong>QA's</strong> fingerprint.</p>
-
-    <div class="table-scroll">
-      <table class="bridge">
-        <thead><tr><th>Sprint role</th><th>In AI-DLC</th><th>What changes</th></tr></thead>
-        <tbody>
-          <tr><td>Product owner</td><td><b>Intent author and decider</b></td>
-            <td>Writes the one-sentence intent, answers the AI's clarifying questions in Mob Elaboration.
-            Every answer is recorded with its reasoning. Busier than before — and much earlier.</td></tr>
-          <tr><td>Developer</td><td><b>Tech lead for the bolt</b></td>
-            <td>Approves plans, reads every line at checkpoints, owns the merge. Stops producing volume;
-            keeps judgment.</td></tr>
-          <tr><td>QA engineer</td><td><b>Acceptance-criteria author, adversarial validator</b></td>
-            <td>The AI writes the tests; QA decides what must be <em>proven</em> — boundaries, negative
-            tests, the edge cases nobody asked about — and attacks the increment at Mob Construction.</td></tr>
-          <tr><td>Architect</td><td><b>Cross-unit checkpoint reviewer</b></td>
-            <td>Validates AI-proposed structure; keeps parallel units of work coherent with each other.</td></tr>
-          <tr><td>Scrum master</td><td><b>Largely dissolves</b></td>
-            <td>Standups, handoffs, and status tracking lose their object when a cycle is hours long and
-            the AI tracks its own state. What remains becomes coaching during adoption.</td></tr>
-          <tr><td><em>(new)</em> The AI</td><td><b>The volume, never the verdict</b></td>
-            <td>Drafts stories, plans, code, tests, and docs across every role above — and holds decision
-            authority in none of them.</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p>The mob rituals are where the cast assembles: <strong>Mob Elaboration</strong> is the whole team —
-    PO, developers, QA, architect — validating the AI's decomposition before code exists;
-    <strong>Mob Construction</strong> is the same room at each checkpoint, with the named decider present.
-    One role is genuinely at risk, and the course says so honestly: the coordination role. When handoffs
-    disappear, so does the job of managing them.</p>
+  
+    <p>Every sprint role gets this same re-casting — product owner, developer, QA, architect, scrum master. M03 maps them one by one.</p>
   </section>
 <section class="block">
     <h2>What you didn't just do</h2>
@@ -1032,131 +945,6 @@ Tests:       4 passed, 4 total</pre>
         stakes are clinical — Track 4 and Track 5 spend real time here.</p></div>
     </div>
   </section>
-<section class="block">
-    <h2>The stage map: AI-DLC stages ↔ what you actually see in Claude Code</h2>
-    <p>AI-DLC's phase names are methodology language. When you're sitting at the terminal, what you
-    actually experience is Claude Code's native loop — <strong>plan mode → a task list → execution</strong> —
-    plus the files each stage leaves behind. Here is the honest mapping, stage by stage. AI-DLC doesn't
-    replace the engine's loop; it wraps team rituals and durable artifacts around it.</p>
-
-    <div class="table-scroll">
-      <table class="bridge">
-        <thead><tr><th>AI-DLC stage</th><th>What you literally see in Claude Code</th><th>What lands on disk</th></tr></thead>
-        <tbody>
-          <tr><td><b>Inception</b> — intent → requirements → stories → units of work, validated in Mob Elaboration</td>
-            <td>Plan mode on (<code>shift+tab</code>): a "plan mode" banner, write tools disabled. It reads the repo, asks its clarifying questions, proposes the decomposition. Approving the plan is the exit gate.</td>
-            <td><code>docs/units/UW-*.md</code> — one file per unit of work; open questions land in the decision log's "not yet decided"</td></tr>
-          <tr><td><b>Construction: plan</b> — per unit of work</td>
-            <td>A numbered plan and an approval prompt. Nothing on disk has changed yet.</td>
-            <td>the plan text (kept in the unit-of-work file if you ask)</td></tr>
-          <tr><td><b>Construction: tasks</b></td>
-            <td>Its task list — the checklist it derives from the approved plan and ticks off item by item as it works. This is how you watch progress mid-bolt.</td>
-            <td>— (session state, not an artifact)</td></tr>
-          <tr><td><b>Construction: execute</b></td>
-            <td>Streaming tool calls: <code>Edit</code> on your files, <code>Bash</code> running <code>npm test</code>, real output scrolling by. Hooks can hard-block a step that fails a gate.</td>
-            <td>changed <code>src/</code>, new <code>*.spec.ts</code>, green test output</td></tr>
-          <tr><td><b>Construction: checkpoint</b> — Mob Construction</td>
-            <td>The diff, presented for review. You read it, ask for changes, or accept.</td>
-            <td>—</td></tr>
-          <tr><td><b>Operations</b> — ship, observe, preserve context</td>
-            <td>It records the decisions, updates steering if a rule changed, you commit, then <code>/clear</code>.</td>
-            <td>a new <code>docs/decisions.md</code> entry, sometimes a <code>CLAUDE.md</code> diff, the commit</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p>Codex CLI runs the same loop with the same artifacts — but contractually: it has no plan mode, so
-    "don't write until approved" is an instruction it follows rather than a switch you flip. Track 5 runs
-    the two side by side.</p>
-  </section>
-<section class="block">
-    <h2>Isn't this just Conductor / OpenSpec / Spec Kit?</h2>
-    <p>Fair question — Google's <strong>Conductor</strong> (a Gemini CLI extension that also plugs into
-    Claude Code) and <strong>OpenSpec</strong> do formalize the same instinct: agree on a spec and a plan
-    in Markdown before the agent writes code. If you've used either, the bolt above felt familiar. The
-    honest answer is that they are the same <em>family</em> but a different <em>layer</em>:</p>
-
-    <div class="table-scroll">
-      <table class="bridge">
-        <thead><tr><th></th><th>Conductor</th><th>OpenSpec</th><th>AWS AI-DLC</th></tr></thead>
-        <tbody>
-          <tr><td>What it is</td><td>a CLI extension you install</td><td>a CLI + slash commands you install</td><td><b>a methodology — nothing to install</b></td></tr>
-          <tr><td>The unit</td><td>a "track": spec + <code>plan.md</code> with phases and tasks</td><td>a "change": proposal / specs / design / tasks folder</td><td>a unit of work inside a bolt</td></tr>
-          <tr><td>Covers</td><td>context → spec &amp; plan → implement</td><td>propose → specs → design → tasks → implement</td><td><b>intent → construction → operations</b>, plus the team layer</td></tr>
-          <tr><td>The team layer</td><td>you + the agent</td><td>you + the agent</td><td><b>Mob Elaboration, Mob Construction, leader track, governance, rollout metrics</b></td></tr>
-          <tr><td>Memory model</td><td>product / tech-stack / workflow context files; plan state in <code>plan.md</code></td><td>the specs folder as living source of truth</td><td>steering + <b>decisions with their reasons</b>, carried across bolts and teams</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p><strong>They standardize the artifacts for one feature. AI-DLC standardizes the operating model
-    around them</strong> — who approves what, which rituals involve the whole team, what Operations
-    preserves, how one good pilot scales to twelve teams. They're complementary, not competing: you could
-    run AI-DLC's Construction phase <em>using</em> Conductor tracks or OpenSpec changes as your
-    unit-of-work format, and nothing in the method would object. This course teaches the raw engine plus
-    plain files instead, so you can see every moving part before you adopt anyone's packaging of it.</p>
-  </section>
-<section class="block">
-    <h2>Who writes the memory, and how it becomes memory</h2>
-    <p><strong>The engine writes it. You supply what goes in.</strong> You never hand-type a
-    decision record — at the end of a bolt you say "record that decision with my reasoning",
-    the model calls its edit tool, and <code>docs/decisions.md</code> gains an entry. Same for
-    units of work: the engine drafts them during Inception and the team validates them. The AI
-    does the volume; you do the part that can't be derived — the decision itself. It's
-    transcribing your judgement, not forming it. Both are plain Markdown in git, because a
-    decision record that isn't in a diff never gets reviewed.</p>
-
-    <p>Then the part that trips up nearly everyone:</p>
-    <div class="callout-strong">Writing a file does not make it memory. A file on disk is not
-    in the model's context.</div>
-
-    <p>"Context memory" isn't a feature you switch on. It's a file <em>plus a mechanism that
-    loads it</em>. For Claude Code there are exactly three tiers, and it matters which one
-    you're relying on:</p>
-
-    <div class="table-scroll">
-      <table class="bridge">
-        <thead><tr><th>Tier</th><th>What</th><th>When it loads</th></tr></thead>
-        <tbody>
-          <tr><td><b>Automatic</b></td><td><code>CLAUDE.md</code> in the project root, in any ancestor directory, and <code>~/.claude/CLAUDE.md</code></td>
-            <td>Eagerly, in full, at launch — <b>before your first prompt</b></td></tr>
-          <tr><td><b>Imported</b></td><td>Any file named with <code>@path</code> inside <code>CLAUDE.md</code> — recursive to 4 hops, ignored inside code fences</td>
-            <td>Eagerly at launch, alongside the file importing it</td></tr>
-          <tr><td><b>Everything else</b></td><td><code>docs/decisions.md</code>, <code>docs/units/</code>, all your source</td>
-            <td><b>Not in context at all</b> — until the model calls the Read tool (usually because an instruction told it to), a grep finds it, you <code>@</code>-mention it, or a hook or skill reads it</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p>So which tier should the decision log be in? The repo puts it in tier 2, deliberately —
-    those two lines are the entire <code>CLAUDE.md</code> body:</p>
-
-    <div class="artifact doc">
-      <div class="artifact-name"><b>prior-auth-api/CLAUDE.md</b></div>
-      <pre>@AGENTS.md
-@docs/decisions.md</pre>
-    </div>
-
-    <p>The steering file <em>asks</em> the engine to read the decision log before touching a
-    rule — that's tier 3, and an instruction is a request. Requests get skipped when context
-    grows long or a prompt gets insistent. The <code>@</code> import makes it
-    <strong>mechanical</strong>: the log is in context before the session starts, and nothing
-    has to remember to fetch it. Same lesson as plan mode — mechanical beats contractual.</p>
-
-    <p>It also explains why the two steering files are <em>split</em> rather than duplicated:
-    <strong>Claude Code doesn't read <code>AGENTS.md</code> at all.</strong> The import is what
-    lets one file steer both engines without drift. Codex has no import mechanism, so for that
-    engine the decision log stays contractual — same intent, weaker guarantee.</p>
-
-    <p>The cost is real: an import spends those tokens <em>every session</em>, relevant or not.
-    Worth it here because the log is short and load-bearing; when it outgrows its tokens, you
-    import an index and read entries on demand. Making that call is what
-    <strong>semantics per token</strong> means in practice — and it's Track 3's whole subject.</p>
-
-    <p>Don't take it on faith, either: <code>/context</code> shows what's actually loaded right
-    now, and <code>/memory</code> shows which memory files are configured. If you're unsure
-    whether the decision log made it in — look, don't assume.</p>
-  </section>
 <section class="recap">
   <h2>Recap</h2>
   <ul>
@@ -1164,6 +952,7 @@ Tests:       4 passed, 4 total</pre>
     <li>One cycle — intent → plan → your answers → generation → your review → decisions written down — is a bolt, and it is the entire methodology. Everything else is names for its pieces.</li>
     <li>There is nothing to install for AI-DLC itself. One magic filename (CLAUDE.md / AGENTS.md) bootstraps every other file the method uses — including the docs/ folder the AI creates itself.</li>
     <li>Gates are real only where they are mechanical: plan mode locks the write tools, imports load the memory. Everything else is an instruction the model follows — usually.</li>
+    <li>The deep dives live in the tracks: sprint roles → M03, the Claude Code stage map → M16, Conductor/OpenSpec positioning → M02, how files become memory → M13.</li>
   </ul>
   <span class="next">Next → M00 · Course Orientation: set up both engines and pick your path</span>
 </section>
@@ -1621,6 +1410,32 @@ codex
 <h2>Dimension two: dynamic team collaboration</h2>
 <p>The second dimension is what the humans do between checkpoints. In the handoff model, work flows ticket to analyst to developer to QA, and each hop waits in a queue; coordination cost is tolerable because construction is the slow part. AI-DLC breaks that assumption: once the AI compresses execution from weeks to hours, <em>coordination</em> becomes the tempo-setter — a decision that waits three days now stalls the whole bolt.</p>
 <p>So the team reorganizes around decision moments instead of handoffs. When the AI surfaces the ineligible-Member question, whoever that decision needs — the PO, the architect, the nurse SME — convenes, decides, and disperses. Nobody owns a stage; everybody owns the decisions their expertise touches. The whole team validating AI proposals together has two structured forms — <strong>Mob Elaboration</strong> during Inception and <strong>Mob Construction</strong> during Construction — and M03 defines both, along with the rest of the new vocabulary.</p>
+
+<h3>Isn't this just Conductor / OpenSpec / Spec Kit?</h3>
+    <p>Fair question — Google's <strong>Conductor</strong> (a Gemini CLI extension that also plugs into
+    Claude Code) and <strong>OpenSpec</strong> do formalize the same instinct: agree on a spec and a plan
+    in Markdown before the agent writes code. If you've used either, this module has felt familiar. The
+    honest answer is that they are the same <em>family</em> but a different <em>layer</em>:</p>
+
+    <div class="table-scroll">
+      <table class="bridge">
+        <thead><tr><th></th><th>Conductor</th><th>OpenSpec</th><th>AWS AI-DLC</th></tr></thead>
+        <tbody>
+          <tr><td>What it is</td><td>a CLI extension you install</td><td>a CLI + slash commands you install</td><td><b>a methodology — nothing to install</b></td></tr>
+          <tr><td>The unit</td><td>a "track": spec + <code>plan.md</code> with phases and tasks</td><td>a "change": proposal / specs / design / tasks folder</td><td>a unit of work inside a bolt</td></tr>
+          <tr><td>Covers</td><td>context → spec &amp; plan → implement</td><td>propose → specs → design → tasks → implement</td><td><b>intent → construction → operations</b>, plus the team layer</td></tr>
+          <tr><td>The team layer</td><td>you + the agent</td><td>you + the agent</td><td><b>Mob Elaboration, Mob Construction, leader track, governance, rollout metrics</b></td></tr>
+          <tr><td>Memory model</td><td>product / tech-stack / workflow context files; plan state in <code>plan.md</code></td><td>the specs folder as living source of truth</td><td>steering + <b>decisions with their reasons</b>, carried across bolts and teams</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>They standardize the artifacts for one feature. AI-DLC standardizes the operating model
+    around them</strong> — who approves what, which rituals involve the whole team, what Operations
+    preserves, how one good pilot scales to twelve teams. They're complementary, not competing: you could
+    run AI-DLC's Construction phase <em>using</em> Conductor tracks or OpenSpec changes as your
+    unit-of-work format, and nothing in the method would object. This course teaches the raw engine plus
+    plain files instead, so you can see every moving part before you adopt anyone's packaging of it.</p>
 
 <section class="lab">
   <div class="lab-head">Lab M02 · 20 min</div>
@@ -3552,6 +3367,57 @@ codex
   </tbody>
 </table>
 
+<h3>How a file physically becomes memory</h3>
+    <div class="callout-strong">Writing a file does not make it memory. A file on disk is not
+    in the model's context.</div>
+
+    <p>"Context memory" isn't a feature you switch on. It's a file <em>plus a mechanism that
+    loads it</em>. For Claude Code there are exactly three tiers, and it matters which one
+    you're relying on:</p>
+
+    <div class="table-scroll">
+      <table class="bridge">
+        <thead><tr><th>Tier</th><th>What</th><th>When it loads</th></tr></thead>
+        <tbody>
+          <tr><td><b>Automatic</b></td><td><code>CLAUDE.md</code> in the project root, in any ancestor directory, and <code>~/.claude/CLAUDE.md</code></td>
+            <td>Eagerly, in full, at launch — <b>before your first prompt</b></td></tr>
+          <tr><td><b>Imported</b></td><td>Any file named with <code>@path</code> inside <code>CLAUDE.md</code> — recursive to 4 hops, ignored inside code fences</td>
+            <td>Eagerly at launch, alongside the file importing it</td></tr>
+          <tr><td><b>Everything else</b></td><td><code>docs/decisions.md</code>, <code>docs/units/</code>, all your source</td>
+            <td><b>Not in context at all</b> — until the model calls the Read tool (usually because an instruction told it to), a grep finds it, you <code>@</code>-mention it, or a hook or skill reads it</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>So which tier should the decision log be in? The repo puts it in tier 2, deliberately —
+    those two lines are the entire <code>CLAUDE.md</code> body:</p>
+
+    <div class="artifact doc">
+      <div class="artifact-name"><b>prior-auth-api/CLAUDE.md</b></div>
+      <pre>@AGENTS.md
+@docs/decisions.md</pre>
+    </div>
+
+    <p>The steering file <em>asks</em> the engine to read the decision log before touching a
+    rule — that's tier 3, and an instruction is a request. Requests get skipped when context
+    grows long or a prompt gets insistent. The <code>@</code> import makes it
+    <strong>mechanical</strong>: the log is in context before the session starts, and nothing
+    has to remember to fetch it. Same lesson as plan mode — mechanical beats contractual.</p>
+
+    <p>It also explains why the two steering files are <em>split</em> rather than duplicated:
+    <strong>Claude Code doesn't read <code>AGENTS.md</code> at all.</strong> The import is what
+    lets one file steer both engines without drift. Codex has no import mechanism, so for that
+    engine the decision log stays contractual — same intent, weaker guarantee.</p>
+
+    <p>The cost is real: an import spends those tokens <em>every session</em>, relevant or not.
+    Worth it here because the log is short and load-bearing; when it outgrows its tokens, you
+    import an index and read entries on demand. Making that call is what
+    <strong>semantics per token</strong> means in practice.</p>
+
+    <p>Don't take it on faith, either: <code>/context</code> shows what's actually loaded right
+    now, and <code>/memory</code> shows which memory files are configured. If you're unsure
+    whether the decision log made it in — look, don't assume.</p>
+
 <section class="lab">
   <div class="lab-head">Lab M13 · 25 min</div>
   <h2>Sort the memory, then twin the steering</h2>
@@ -4027,6 +3893,42 @@ codex
     <tr><td>Increment arrives with no summary</td><td>Loop exited early</td><td>No summary, no review — send it back for the write-up</td></tr>
   </tbody>
 </table>
+
+<h3>The stage map: AI-DLC stages ↔ what you actually see in Claude Code</h3>
+    <p>AI-DLC's phase names are methodology language. When you're sitting at the terminal, what you
+    actually experience is Claude Code's native loop — <strong>plan mode → a task list → execution</strong> —
+    plus the files each stage leaves behind. Here is the honest mapping, stage by stage. AI-DLC doesn't
+    replace the engine's loop; it wraps team rituals and durable artifacts around it.</p>
+
+    <div class="table-scroll">
+      <table class="bridge">
+        <thead><tr><th>AI-DLC stage</th><th>What you literally see in Claude Code</th><th>What lands on disk</th></tr></thead>
+        <tbody>
+          <tr><td><b>Inception</b> — intent → requirements → stories → units of work, validated in Mob Elaboration</td>
+            <td>Plan mode on (<code>shift+tab</code>): a "plan mode" banner, write tools disabled. It reads the repo, asks its clarifying questions, proposes the decomposition. Approving the plan is the exit gate.</td>
+            <td><code>docs/units/UW-*.md</code> — one file per unit of work; open questions land in the decision log's "not yet decided"</td></tr>
+          <tr><td><b>Construction: plan</b> — per unit of work</td>
+            <td>A numbered plan and an approval prompt. Nothing on disk has changed yet.</td>
+            <td>the plan text (kept in the unit-of-work file if you ask)</td></tr>
+          <tr><td><b>Construction: tasks</b></td>
+            <td>Its task list — the checklist it derives from the approved plan and ticks off item by item as it works. This is how you watch progress mid-bolt.</td>
+            <td>— (session state, not an artifact)</td></tr>
+          <tr><td><b>Construction: execute</b></td>
+            <td>Streaming tool calls: <code>Edit</code> on your files, <code>Bash</code> running <code>npm test</code>, real output scrolling by. Hooks can hard-block a step that fails a gate.</td>
+            <td>changed <code>src/</code>, new <code>*.spec.ts</code>, green test output</td></tr>
+          <tr><td><b>Construction: checkpoint</b> — Mob Construction</td>
+            <td>The diff, presented for review. You read it, ask for changes, or accept.</td>
+            <td>—</td></tr>
+          <tr><td><b>Operations</b> — ship, observe, preserve context</td>
+            <td>It records the decisions, updates steering if a rule changed, you commit, then <code>/clear</code>.</td>
+            <td>a new <code>docs/decisions.md</code> entry, sometimes a <code>CLAUDE.md</code> diff, the commit</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Codex CLI runs the same loop with the same artifacts — but contractually: it has no plan mode, so
+    "don't write until approved" is an instruction it follows rather than a switch you flip. Track 5 runs
+    the two side by side.</p>
 
 <section class="lab">
   <div class="lab-head">Lab M16 · 25 min</div>
