@@ -681,6 +681,7 @@ src/determination/…           AI wrote it · you read every line</pre>
     <p>Watch PA-1423 — the story you just traced — run as that rhythm; each scene holds for a few seconds:</p>
 
     <figure>
+<div class="fig-scroll">
 <svg class="dlcs" viewBox="0 0 760 408" xmlns="http://www.w3.org/2000/svg" role="img"
   aria-label="One bolt: a short synchronous Mob Elaboration, long offline construction, a short synchronous checkpoint, then close. People convene only when a decision is being made.">
   <defs>
@@ -716,10 +717,10 @@ src/determination/…           AI wrote it · you read every line</pre>
 
     <!-- table + people -->
     <ellipse cx="410" cy="215" rx="150" ry="52" fill="none" stroke="var(--line)" stroke-width="2.5"/>
-    <use href="#dlcp" x="300" y="150"/><text class="lbl" x="300" y="180" text-anchor="middle">PO</text>
-    <use href="#dlcp" x="520" y="150"/><text class="lbl" x="520" y="180" text-anchor="middle">DEV</text>
-    <use href="#dlcp" x="278" y="290"/><text class="lbl" x="278" y="320" text-anchor="middle">QA</text>
-    <use href="#dlcp" x="545" y="290"/><text class="lbl" x="545" y="320" text-anchor="middle">ARCH</text>
+    <use href="#dlcp" x="300" y="150"/><text class="lbl" x="300" y="180" text-anchor="middle">PO · DECIDES</text>
+    <use href="#dlcp" x="520" y="150"/><text class="lbl" x="520" y="180" text-anchor="middle">DEV · OWNS THE UNIT</text>
+    <use href="#dlcp" x="278" y="290"/><text class="lbl" x="278" y="320" text-anchor="middle">QA · CRITERIA</text>
+    <use href="#dlcp" x="545" y="290"/><text class="lbl" x="545" y="320" text-anchor="middle">ARCH · SCOPE</text>
     <use href="#dlcai" x="410" y="120"/>
 
     <!-- AI asks -->
@@ -798,9 +799,9 @@ src/determination/…           AI wrote it · you read every line</pre>
     <rect x="304" y="138" width="86" height="7" rx="3" fill="#d67c8e"/>
     <rect x="304" y="154" width="120" height="7" rx="3" fill="#5fb3a1"/>
     <rect x="304" y="170" width="64" height="7" rx="3" fill="#e6edf7"/>
-    <use href="#dlcp" x="220" y="250"/><text class="lbl" x="220" y="280" text-anchor="middle">PO</text>
-    <use href="#dlcp" x="380" y="262"/><text class="lbl" x="380" y="292" text-anchor="middle">DEV</text>
-    <use href="#dlcp" x="540" y="250"/><text class="lbl" x="540" y="280" text-anchor="middle">QA</text>
+    <use href="#dlcp" x="220" y="250"/><text class="lbl" x="220" y="280" text-anchor="middle">PO · SIGNS OFF</text>
+    <use href="#dlcp" x="380" y="262"/><text class="lbl" x="380" y="292" text-anchor="middle">DEV · WALKS THE DIFF</text>
+    <use href="#dlcp" x="540" y="250"/><text class="lbl" x="540" y="280" text-anchor="middle">QA · ATTACKS</text>
     <g class="dlc-ok3">
       <text x="500" y="86" font-size="13" fill="var(--ok)" font-weight="600">sign-off ✓</text>
     </g>
@@ -833,6 +834,7 @@ src/determination/…           AI wrote it · you read every line</pre>
     <g class="dlc-head"><circle cx="0" cy="358" r="7" fill="var(--ink)"/></g>
   </g>
 </svg>
+</div>
       <figcaption>one bolt: convene to decide · disperse to build · convene to sign off — the bar is not to scale; async is most of it</figcaption>
     </figure>
 
@@ -854,6 +856,128 @@ src/determination/…           AI wrote it · you read every line</pre>
         </tr></tbody>
       </table>
     </div>
+
+
+    <h3>Scale it up: five developers, two QA</h3>
+    <p>The loop above showed one developer, which dodges the question a real team asks. Here are the
+    same seven people — five developers, two QA, a PO — under both operating systems. In a sprint they
+    share one cadence and one board. In AI-DLC, <strong>each developer is the tech lead of their own
+    bolt lane</strong>, and one half-hour Mob Elaboration feeds all five lanes:</p>
+
+    <figure>
+      <div class="fig-scroll">
+<svg class="dlcs" viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg" role="img"
+  aria-label="The same seven people under Sprint and under AI-DLC. Sprint: one shared two-week cadence, everyone in the same ceremonies, value ships once at the end. AI-DLC: one short Mob Elaboration, then five parallel bolt lanes, one per developer; QA and the product owner plug into checkpoints across lanes; value ships at the end of every bolt.">
+
+  <!-- ================= SPRINT ================= -->
+  <text class="cap" x="40" y="26">Sprint — the same seven people share one cadence</text>
+
+  <rect x="40" y="42" width="650" height="86" rx="8" fill="var(--line)" opacity=".3"/>
+  <!-- planning / review blocks -->
+  <rect x="40" y="42" width="34" height="86" rx="6" fill="var(--accent)" opacity=".9"/>
+  <rect x="622" y="42" width="34" height="86" rx="6" fill="var(--accent)" opacity=".9"/>
+  <!-- daily standups: 9 columns x 3 dots -->
+  <g fill="var(--accent)" opacity=".75">
+    <g><circle cx="106" cy="60" r="3"/><circle cx="106" cy="74" r="3"/><circle cx="106" cy="88" r="3"/></g>
+    <g><circle cx="163" cy="60" r="3"/><circle cx="163" cy="74" r="3"/><circle cx="163" cy="88" r="3"/></g>
+    <g><circle cx="220" cy="60" r="3"/><circle cx="220" cy="74" r="3"/><circle cx="220" cy="88" r="3"/></g>
+    <g><circle cx="277" cy="60" r="3"/><circle cx="277" cy="74" r="3"/><circle cx="277" cy="88" r="3"/></g>
+    <g><circle cx="334" cy="60" r="3"/><circle cx="334" cy="74" r="3"/><circle cx="334" cy="88" r="3"/></g>
+    <g><circle cx="391" cy="60" r="3"/><circle cx="391" cy="74" r="3"/><circle cx="391" cy="88" r="3"/></g>
+    <g><circle cx="448" cy="60" r="3"/><circle cx="448" cy="74" r="3"/><circle cx="448" cy="88" r="3"/></g>
+    <g><circle cx="505" cy="60" r="3"/><circle cx="505" cy="74" r="3"/><circle cx="505" cy="88" r="3"/></g>
+    <g><circle cx="562" cy="60" r="3"/><circle cx="562" cy="74" r="3"/><circle cx="562" cy="88" r="3"/></g>
+  </g>
+  <text class="sub" x="348" y="115" text-anchor="middle">one shared two-week cycle · everyone moves together</text>
+  <path d="M706,85 l11,-11 l11,11 l-11,11 z" fill="var(--ok)"/>
+  <text class="lbl" x="57" y="146" text-anchor="middle">PLANNING</text>
+  <text class="lbl" x="334" y="146" text-anchor="middle">DAILY STAND-UPS ×10 · EVERYONE</text>
+  <text class="lbl" x="639" y="146" text-anchor="middle">REVIEW+RETRO</text>
+  <text class="lbl" x="717" y="146" text-anchor="middle">SHIPS</text>
+  <text class="lbl" x="717" y="158" text-anchor="middle">ONCE</text>
+
+  <!-- ================= AI-DLC ================= -->
+  <text class="cap" x="40" y="204">AI-DLC — the same seven people, five parallel bolts</text>
+
+  <!-- mob elaboration feeds all lanes -->
+  <rect x="40" y="222" width="26" height="150" rx="6" fill="var(--accent)" opacity=".9"/>
+
+  <!-- five dev lanes; a bolt = checkpoint tick · async bar · checkpoint tick · ship -->
+  <!-- D1 -->
+  <text class="lbl" x="34" y="235" text-anchor="end">D1</text>
+  <g>
+    <rect x="78" y="224" width="5" height="16" fill="var(--accent)"/><rect x="88" y="227" width="120" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="212" y="224" width="5" height="16" fill="var(--accent)"/><circle cx="228" cy="232" r="4.5" fill="var(--ok)"/>
+    <rect x="242" y="224" width="5" height="16" fill="var(--accent)"/><rect x="252" y="227" width="150" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="406" y="224" width="5" height="16" fill="var(--accent)"/><circle cx="422" cy="232" r="4.5" fill="var(--ok)"/>
+    <rect x="436" y="224" width="5" height="16" fill="var(--accent)"/><rect x="446" y="227" width="130" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="580" y="224" width="5" height="16" fill="var(--accent)"/><circle cx="596" cy="232" r="4.5" fill="var(--ok)"/>
+  </g>
+  <!-- D2 (staggered) -->
+  <text class="lbl" x="34" y="265" text-anchor="end">D2</text>
+  <g>
+    <rect x="78" y="254" width="5" height="16" fill="var(--accent)"/><rect x="88" y="257" width="150" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="242" y="254" width="5" height="16" fill="var(--accent)"/><circle cx="258" cy="262" r="4.5" fill="var(--ok)"/>
+    <rect x="272" y="254" width="5" height="16" fill="var(--accent)"/><rect x="282" y="257" width="120" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="406" y="254" width="5" height="16" fill="var(--accent)"/><circle cx="422" cy="262" r="4.5" fill="var(--ok)"/>
+    <rect x="436" y="254" width="5" height="16" fill="var(--accent)"/><rect x="446" y="257" width="160" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="610" y="254" width="5" height="16" fill="var(--accent)"/><circle cx="626" cy="262" r="4.5" fill="var(--ok)"/>
+  </g>
+  <!-- D3 -->
+  <text class="lbl" x="34" y="295" text-anchor="end">D3</text>
+  <g>
+    <rect x="78" y="284" width="5" height="16" fill="var(--accent)"/><rect x="88" y="287" width="100" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="192" y="284" width="5" height="16" fill="var(--accent)"/><circle cx="208" cy="292" r="4.5" fill="var(--ok)"/>
+    <rect x="222" y="284" width="5" height="16" fill="var(--accent)"/><rect x="232" y="287" width="170" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="406" y="284" width="5" height="16" fill="var(--accent)"/><circle cx="422" cy="292" r="4.5" fill="var(--ok)"/>
+    <rect x="436" y="284" width="5" height="16" fill="var(--accent)"/><rect x="446" y="287" width="110" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="560" y="284" width="5" height="16" fill="var(--accent)"/><circle cx="576" cy="292" r="4.5" fill="var(--ok)"/>
+  </g>
+  <!-- D4 -->
+  <text class="lbl" x="34" y="325" text-anchor="end">D4</text>
+  <g>
+    <rect x="78" y="314" width="5" height="16" fill="var(--accent)"/><rect x="88" y="317" width="135" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="227" y="314" width="5" height="16" fill="var(--accent)"/><circle cx="243" cy="322" r="4.5" fill="var(--ok)"/>
+    <rect x="257" y="314" width="5" height="16" fill="var(--accent)"/><rect x="267" y="317" width="145" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="416" y="314" width="5" height="16" fill="var(--accent)"/><circle cx="432" cy="322" r="4.5" fill="var(--ok)"/>
+    <rect x="446" y="314" width="5" height="16" fill="var(--accent)"/><rect x="456" y="317" width="125" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="585" y="314" width="5" height="16" fill="var(--accent)"/><circle cx="601" cy="322" r="4.5" fill="var(--ok)"/>
+  </g>
+  <!-- D5 -->
+  <text class="lbl" x="34" y="355" text-anchor="end">D5</text>
+  <g>
+    <rect x="78" y="344" width="5" height="16" fill="var(--accent)"/><rect x="88" y="347" width="110" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="202" y="344" width="5" height="16" fill="var(--accent)"/><circle cx="218" cy="352" r="4.5" fill="var(--ok)"/>
+    <rect x="232" y="344" width="5" height="16" fill="var(--accent)"/><rect x="242" y="347" width="140" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="386" y="344" width="5" height="16" fill="var(--accent)"/><circle cx="402" cy="352" r="4.5" fill="var(--ok)"/>
+    <rect x="416" y="344" width="5" height="16" fill="var(--accent)"/><rect x="426" y="347" width="155" height="10" rx="5" fill="var(--t2)" opacity=".45"/><rect x="585" y="344" width="5" height="16" fill="var(--accent)"/><circle cx="601" cy="352" r="4.5" fill="var(--ok)"/>
+  </g>
+
+  <text class="lbl" x="53" y="390" text-anchor="middle">MOB ELAB</text>
+  <text class="lbl" x="53" y="402" text-anchor="middle">30 MIN · ALL</text>
+
+  <!-- QA and PO plug into checkpoints across lanes -->
+  <circle cx="676" cy="252" r="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="2"/>
+  <circle cx="700" cy="252" r="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="2"/>
+  <text class="lbl" x="688" y="274" text-anchor="middle">QA ×2</text>
+  <line x1="668" y1="256" x2="445" y2="262" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="672" y1="260" x2="590" y2="320" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text class="sub" x="688" y="292" text-anchor="middle">criteria in ·</text>
+  <text class="sub" x="688" y="306" text-anchor="middle">attack at any</text>
+  <text class="sub" x="688" y="320" text-anchor="middle">checkpoint</text>
+
+  <circle cx="688" cy="344" r="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="2"/>
+  <text class="lbl" x="688" y="366" text-anchor="middle">PO</text>
+  <text class="sub" x="688" y="382" text-anchor="middle">answers land</text>
+  <text class="sub" x="688" y="396" text-anchor="middle">in the log</text>
+
+  <!-- legend -->
+  <rect x="120" y="424" width="5" height="16" fill="var(--accent)"/>
+  <text class="lbl" x="134" y="436">CHECKPOINT · MINUTES · DEV + THE NAMED DECIDER</text>
+  <rect x="420" y="427" width="42" height="10" rx="5" fill="var(--t2)" opacity=".45"/>
+  <text class="lbl" x="472" y="436">ASYNC BUILD</text>
+  <circle cx="576" cy="432" r="4.5" fill="var(--ok)"/>
+  <text class="lbl" x="588" y="436">VALUE SHIPS</text>
+  <text class="sub" x="380" y="470" text-anchor="middle">same fortnight, same people — one all-hands half-hour instead of twelve ceremonies, fifteen ships instead of one</text>
+</svg>
+      </div>
+      <figcaption>5 developers + 2 QA + a PO: one cadence shared by everyone vs. five bolt lanes that sync only at their own diamonds</figcaption>
+    </figure>
+
+    <p>What each of the seven does all day: the five developers run their lanes — approve plans, read
+    diffs, ship. The two QA engineers put acceptance criteria <em>into</em> units of work before
+    construction starts, then attack increments at any lane's checkpoint — they are not a testing column
+    at the end of a board. The PO answers questions from any lane, and every answer lands in the log —
+    so lane four never re-asks what lane two already settled. The honest cost of the fan-out:
+    decisions now arrive five lanes at once, so <strong>the scarce resource stops being typing and
+    becomes decision bandwidth</strong> — which is exactly why the decision log carries the method
+    (M18 covers parallel bolts; Track 7 the governance).</p>
 
     <p>Distributed teams push this further: Mob Elaboration itself can run asynchronously — the AI posts
     its decomposition and its questions, the team reviews against a deadline, the named decider answers
