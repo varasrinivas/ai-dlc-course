@@ -23,7 +23,7 @@ All examples, labs, and narratives use the Prior Authorization domain:
 - API resources: `auth-requests`, `members`, `determinations`
 - Key rule: clinical criteria match score ≥ `AUTO_APPROVE_THRESHOLD (0.85)` → auto-approve;
   below threshold → route to the **nurse review queue**
-- Practice repos: `prior-auth-api` (NestJS) and `prior-auth-web` (Angular)
+- Practice repos: `prior-auth-api` (TypeScript + Jest) and `prior-auth-web` (React + Vitest) — both in this repo
 
 Never invent a second domain. Never use foo/bar examples.
 

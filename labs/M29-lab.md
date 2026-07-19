@@ -55,7 +55,7 @@ LEADER METRICS (this bolt)
 (prior-auth-web).
 
 ```text
-ROSTER  Chen (sr FE eng, Angular) · Dee (jr FE eng) ·
+ROSTER  Chen (sr FE eng, React) · Dee (jr FE eng) ·
         Marta (PO, provider relations background) ·
         Sam (QA lead, fears "being automated away") ·
         Priya (architect, 20% available) ·
