@@ -133,6 +133,11 @@ pre code{background:none;padding:0;overflow-wrap:normal}
 details{margin:10px 0}
 summary{cursor:pointer;font-weight:600;font-size:.9rem}
 
+.lab-gh{display:inline-block;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.05em;
+  color:var(--t5);text-decoration:none;border:1px solid var(--line);border-radius:6px;
+  padding:4px 10px;margin:2px 0 12px;background:#fafbfd}
+.lab-gh:hover{border-color:var(--t5)}
+
 /* engine tabs */
 .engine-tabs{margin:14px 0}
 .engine-tab-btns{display:flex;gap:6px;margin-bottom:-1px;position:relative;z-index:1}
@@ -1243,7 +1248,12 @@ Tests:       4 passed, 4 total</pre>
     </div>
 
     <p>Run the bolt yourself against it and the transcript above stops being a story. The repo's
-    <code>README.md</code> has the prompt for both engines.</p>
+    <code>README.md</code> has the prompt for both engines. Both practice repos ship inside the course
+    repo on GitHub: <a href="https://github.com/varasrinivas/ai-dlc-course/tree/main/prior-auth-api"
+    target="_blank" rel="noopener">prior-auth-api</a> (the API you just watched) and
+    <a href="https://github.com/varasrinivas/ai-dlc-course/tree/main/prior-auth-web" target="_blank"
+    rel="noopener">prior-auth-web</a> (the React queue, seeded one bolt behind it). Every module's lab
+    also has a standalone Markdown copy, linked from the lab itself.</p>
   </section>
 <section class="block">
     <h2>What you actually install</h2>
@@ -6949,10 +6959,29 @@ function render() {
   $done.classList.toggle("is-done", completed.has(m.id));
   wireEngineTabs();
   wireIntroSim();
+  wireLabLink();
   wrapWideTables();
   buildNav();
   updateProgress();
   window.scrollTo({ top: 0 });
+}
+
+/* every module's lab has a standalone copy in the repo; link it without
+   touching 33 module bodies. Only fires for M-numbered modules with a lab. */
+function wireLabLink() {
+  const m = MODS[currentIdx];
+  if (!/^M\d\d$/.test(m.id)) return;
+  const lab = $root.querySelector("section.lab");
+  if (!lab || lab.querySelector(".lab-gh")) return;
+  const head = lab.querySelector(".lab-head");
+  if (!head) return;
+  const a = document.createElement("a");
+  a.className = "lab-gh";
+  a.href = "https://github.com/varasrinivas/ai-dlc-course/blob/main/labs/" + m.id + "-lab.md";
+  a.target = "_blank";
+  a.rel = "noopener";
+  a.textContent = "standalone copy: labs/" + m.id + "-lab.md ↗";
+  head.insertAdjacentElement("afterend", a);
 }
 
 /* bridge tables are authored bare; give each its own horizontal scroll rail
