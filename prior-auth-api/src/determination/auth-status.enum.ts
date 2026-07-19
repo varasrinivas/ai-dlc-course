@@ -1,11 +1,9 @@
 export enum AuthStatus {
   DRAFT = 'DRAFT',
-  /**
-   * Waiting on something. Note this is the ONLY waiting state today, so a request
-   * parked for a nurse and a request parked for anything else look identical in the
-   * queue. Nurses have complained they cannot tell what is actually theirs.
-   */
+  /** Waiting on something other than clinical review (eligibility checks, intake). */
   PENDING = 'PENDING',
+  /** Below-threshold criteria match: parked for a nurse. What the queue filters on. */
+  PENDING_NURSE_REVIEW = 'PENDING_NURSE_REVIEW',
   APPROVED = 'APPROVED',
   DENIED = 'DENIED',
 }

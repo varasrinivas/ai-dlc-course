@@ -29,7 +29,28 @@ export class DeterminationService {
       return { ...base, status: AuthStatus.APPROVED };
     }
 
-    // Below threshold: a human has to look at it.
-    return { ...base, status: AuthStatus.PENDING };
+    // Below threshold: a nurse has to look at it.
+    return { ...base, status: AuthStatus.PENDING_NURSE_REVIEW };
   }
+
+  /**
+   * Re-evaluates an existing determination against a new criteria match.
+   *
+   * A determination that exists is FINAL: a below-threshold re-score never withdraws
+   * an approval — it signals the caller to open a NEW AuthRequest so the new evidence
+   * gets fresh review without taking back a promise already made to a member. (D-004)
+   */
+  rescore(existing: Determination, match: CriteriaMatch): RescoreOutcome {
+    return {
+      determination: existing,
+      openNewRequest:
+        existing.status === AuthStatus.APPROVED && match.score < AUTO_APPROVE_THRESHOLD,
+    };
+  }
+}
+
+/** The result of a re-score. The determination is always the existing one. (D-004) */
+export interface RescoreOutcome {
+  determination: Determination;
+  openNewRequest: boolean;
 }

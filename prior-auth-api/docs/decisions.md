@@ -64,15 +64,28 @@ a channel that authenticates them.
 
 ---
 
+## D-004 — Re-scores never reopen approvals
+
+**Decision:** an existing determination is final. A below-threshold re-score on an APPROVED
+request does not withdraw the approval; it opens a NEW `AuthRequest` so the new evidence
+gets fresh review.
+
+**Why:** once we have told a provider yes, taking it back on a re-score is a member-care
+harm — care may already be scheduled on the strength of that answer. A new request routes
+the changed clinical picture to a nurse without withdrawing a promise.
+
+**Decided by:** Vara (course author), during the hello-world bolt. Not inferred.
+
+**Consequences:** `DeterminationService.rescore` never mutates an existing determination;
+asserted by `keeps_determination_final_on_rescore` and
+`opens_new_request_when_approved_rescores_below_threshold`. Withdrawing an approval, if
+ever wanted, is a new decision that supersedes this one.
+
+---
+
 ## Open — not yet decided
 
 > An honest decision log records what has *not* been decided. These are the gaps an engine
 > must stop and ask about rather than fill with a plausible default.
 
-- **Re-score after determination.** A request auto-approves at 0.91. New clinical notes
-  arrive and it re-scores at 0.62. Does the existing determination stand, or does the
-  request reopen for nurse review? Nobody has decided. The rules above tell an engine what
-  to do with a *score* — nothing tells it what to do with a score that **moves after a
-  determination already exists**. This one has a member's care attached, so it is not the
-  engine's to guess.
-  *(This is the decision the hello-world bolt asks you to make. See `README.md`.)*
+- (nothing right now — the re-score question became D-004 above.)
