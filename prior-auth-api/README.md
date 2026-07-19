@@ -147,6 +147,16 @@ If the engine sailed past the re-score question and just picked one — that's t
 anti-pattern happening to you live, and it's worth sitting with. Tell it so, and watch what
 a steering file is actually for.
 
+### After your attempt: the worked answer
+
+A complete run of this bolt — the deferred question, the failing-first tests, D-004 with
+its reasoning, the steering diff — lives on the
+[`answers/hello-world-bolt`](https://github.com/varasrinivas/ai-dlc-course/tree/answers/hello-world-bolt/prior-auth-api)
+branch ([full diff](https://github.com/varasrinivas/ai-dlc-course/compare/main...answers/hello-world-bolt)).
+Diff your attempt against it *after* you've run your own — reading the answer first defeats
+the bolt. Your D-004 may legitimately differ: what matters is that it was decided by a
+human and recorded with its why.
+
 ---
 
 ## Layout
