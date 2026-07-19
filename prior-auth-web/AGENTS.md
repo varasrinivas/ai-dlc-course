@@ -53,14 +53,9 @@ what may appear on a screen.
 - The API's domain decisions live in `prior-auth-api/docs/decisions.md` — clinical policy
   is decided there, never here.
 
-## Known gap (this is the hello-world bolt)
+## Known gap
 
-The API shipped `PENDING_NURSE_REVIEW` (its D-004 bolt). This UI has not caught up:
-`StatusBadge` renders it with the same label and color as generic `PENDING`, so a nurse
-scanning the queue still cannot tell which rows are actually theirs — the API's fix is
-invisible on screen. A test asserts this gap on purpose
-(`renders_nurse_review_identically_to_pending_TODAY`); your bolt flips it. And
-`docs/decisions.md` has an open question about the default nurse view that nobody has
-answered yet — surface it before you plan.
-
-See `README.md` to run the bolt.
+Closed on this branch: the web hello-world bolt ran. `PENDING_NURSE_REVIEW` renders as
+"Needs nurse review" with its own color and row highlight, the default view shows all rows
+(D-003), and the nurse-only filter is one click away. (`main` stays seeded pre-bolt so
+students can run the bolt themselves — see `README.md`.)

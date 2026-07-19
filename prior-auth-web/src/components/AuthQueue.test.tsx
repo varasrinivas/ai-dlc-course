@@ -41,16 +41,41 @@ describe('StatusBadge', () => {
     expect(screen.getByText('Denied')).toBeInTheDocument();
   });
 
-  // The seeded gap, asserted on purpose: today a nurse cannot tell nurse-review
-  // work from generic pending. The hello-world bolt flips this test.
-  it('renders_nurse_review_identically_to_pending_TODAY', () => {
+  // The bolt's core criterion: a nurse can tell their work apart at a glance.
+  it('nurse_review_badge_is_visibly_distinct', () => {
     render(
       <>
         <StatusBadge status="PENDING" />
         <StatusBadge status="PENDING_NURSE_REVIEW" />
       </>,
     );
-    const badges = screen.getAllByText('Pending');
-    expect(badges).toHaveLength(2);
+    expect(screen.getByText('Needs nurse review')).toBeInTheDocument();
+    expect(screen.getAllByText('Pending')).toHaveLength(1);
+  });
+});
+
+describe('AuthQueue nurse view', () => {
+  // (D-003) the default view hides nothing: all rows, nurse rows marked
+  it('default_view_shows_all_rows', () => {
+    render(<AuthQueue requests={rows} />);
+    expect(screen.getByText('PA-AR-9001')).toBeInTheDocument();
+    expect(screen.getByText('PA-AR-9002')).toBeInTheDocument();
+  });
+
+  it('nurse_review_rows_are_marked', () => {
+    render(<AuthQueue requests={rows} />);
+    expect(screen.getByText('PA-AR-9001').closest('tr')).toHaveAttribute('data-nurse-review', 'true');
+    expect(screen.getByText('PA-AR-9002').closest('tr')).not.toHaveAttribute('data-nurse-review');
+  });
+
+  it('filter_shows_only_nurse_review_rows_when_toggled', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event');
+    render(<AuthQueue requests={rows} />);
+    const toggle = screen.getByRole('button', { name: /nurse review only/i });
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('PA-AR-9001')).toBeInTheDocument();
+    expect(screen.queryByText('PA-AR-9002')).not.toBeInTheDocument();
   });
 });

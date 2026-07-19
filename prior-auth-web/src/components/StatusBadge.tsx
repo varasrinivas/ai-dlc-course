@@ -1,15 +1,10 @@
 import { AuthStatus } from '../domain/auth';
 
-/**
- * Note the gap: PENDING_NURSE_REVIEW renders exactly like PENDING — same label,
- * same look. A nurse scanning the queue cannot tell which rows are actually
- * waiting on a nurse. This is deliberate seed state; closing it is the
- * hello-world bolt (see README.md and docs/decisions.md "not yet decided").
- */
+/** Every API state renders distinctly; nurse-review work is unmissable. (D-003) */
 const LABELS: Record<AuthStatus, string> = {
   DRAFT: 'Draft',
   PENDING: 'Pending',
-  PENDING_NURSE_REVIEW: 'Pending',
+  PENDING_NURSE_REVIEW: 'Needs nurse review',
   APPROVED: 'Approved',
   DENIED: 'Denied',
 };
@@ -17,7 +12,7 @@ const LABELS: Record<AuthStatus, string> = {
 const COLORS: Record<AuthStatus, string> = {
   DRAFT: '#6b7280',
   PENDING: '#b45309',
-  PENDING_NURSE_REVIEW: '#b45309',
+  PENDING_NURSE_REVIEW: '#7c3aed',
   APPROVED: '#0d9488',
   DENIED: '#be185d',
 };

@@ -40,15 +40,28 @@ share the label "Pending" — that is a known, logged gap (see below), not silen
 
 ---
 
+## D-003 — The default nurse view hides nothing
+
+**Decision:** the queue opens showing all rows. Nurse-review rows are unmissable — a
+distinct "Needs nurse review" badge and a row highlight — and a "nurse review only"
+filter is one click away, never the default.
+
+**Why:** the complaint was tell-ability, not volume — nurses couldn't tell which rows
+were theirs, and the marking fixes exactly that. A pre-filtered default would make
+everything outside the filter invisible until someone thought to click, and invisible
+work in a clinical queue is a patient-safety smell, not a UX preference.
+
+**Decided by:** Vara (course author), during the web hello-world bolt. Not inferred.
+
+**Consequences:** asserted by `default_view_shows_all_rows`, `nurse_review_rows_are_marked`,
+and `filter_shows_only_nurse_review_rows_when_toggled`. Changing the default is a care-ops
+decision that supersedes this one — it is not a styling tweak.
+
+---
+
 ## Open — not yet decided
 
 > An honest decision log records what has *not* been decided. These are for humans; an
 > engine must stop and ask rather than fill them with a plausible default.
 
-- **The default nurse view.** When the nurse-review distinction becomes visible (the
-  hello-world bolt), what does a nurse see by default: the whole queue with their rows
-  highlighted, or only `PENDING_NURSE_REVIEW` with the rest a click away? One default
-  buries their work in noise; the other hides context they may need. This decides what a
-  nurse's morning looks like — it has care-ops weight, and it belongs to the nurse
-  supervisor and the PO, not to the engine.
-  *(This is the decision the web hello-world bolt asks you to make. See `README.md`.)*
+- (nothing right now — the default-view question became D-003 above.)
