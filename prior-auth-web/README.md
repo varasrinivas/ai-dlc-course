@@ -63,6 +63,15 @@ changes what a screen shows.
 decision made by you and recorded as D-003; the TODAY test replaced by tests asserting the
 new behavior plus your default-view choice; gates green with output shown.
 
+### After your attempt: the worked answer
+
+A complete run of this bolt lives on the
+[`answers/web-hello-world-bolt`](https://github.com/varasrinivas/ai-dlc-course/tree/answers/web-hello-world-bolt/prior-auth-web)
+branch ([full diff](https://github.com/varasrinivas/ai-dlc-course/compare/main...answers/web-hello-world-bolt)).
+Attempt first — reading the answer defeats the bolt. Your D-003 may legitimately differ
+(a nurse-only default is a defensible call): what matters is that a human decided it and
+the reasoning is recorded.
+
 ## Layout
 
 ```
