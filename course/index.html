@@ -6874,9 +6874,195 @@ calendar unchanged.</code></pre>
     <li>Engineers change practice through practice — a facilitated first bolt beats any deck, and objections are signals answered with mechanisms.</li>
     <li>Opt-in early, standard later, exceptions by conversation — and the four killers all die to the same antidote: evidence gates.</li>
     <li>The engines will be replaced; the methodology compounds. The durable assets are the chain, the rituals, and people who decide fast with recorded rationale.</li>
-    <li>That's the whole course: one methodology, two engines, one domain, thirty-three modules — and a build book you now know how to keep.</li>
+    <li>That's the whole course: one methodology, two engines, one domain, thirty-four modules — and a build book you now know how to keep.</li>
   </ul>
-  <span class="next">Course complete — go run a bolt. ⚡</span>
+  <span class="next">Next → M33 · Responsible AI in the Lifecycle</span>
+</section>
+`
+},
+{
+  id: "M33",
+  track: 7,
+  title: "Responsible AI in the Lifecycle",
+  minutes: 30,
+  audience: "both",
+  body: `
+<p class="hook">Four thousand two hundred requests auto-approved last month, and the compliance officer's question is only seven words: "Who decided each one of those, exactly?" The team's first instinct is to say "the criteria engine" — and that answer, they realize as they're forming it, is the whole problem. An engine can't be accountable. It can't sit in a deposition, can't explain a denial to a member's family, can't sign the attestation the state auditor wants. The portal was built by AI at bolt speed, and every one of those 4,200 determinations needs a human name, a criteria version, and a match score behind it. The good news: AI-DLC already built the scaffolding for that answer. This module makes it explicit.</p>
+
+<h2>Responsible AI is a lifecycle property, not a checklist</h2>
+<p>The responsible-AI dimensions — <strong>fairness, explainability, privacy &amp; security, controllability, transparency, governance</strong> — usually arrive at a team as a compliance checklist bolted on after the build. AI-DLC's claim is structural: each dimension attaches to a checkpoint the lifecycle already runs, so responsibility is exercised where the work happens rather than audited after it ships.</p>
+<p><strong>Inception owns fairness.</strong> Mob Elaboration already asks "what should this do?" — the responsible version adds "who could this harm?" to the same session, while requirements are still cheap to change. <strong>Construction owns controllability and transparency:</strong> understand-every-line (M08) and the chain (M13) mean nothing merges unexplained and every decision has a named approver. <strong>Operations owns the audit trail and drift:</strong> the same observability that watches latency watches approval rates by cohort.</p>
+<p>Hear the echo of M01: an AI-managed shop can't answer the compliance officer at all — nobody validated anything. An AI-assisted shop answers eventually, by archaeology. Oversight at checkpoints is what makes the answer fast <em>and</em> true.</p>
+
+<h2>Fairness where it bites: the auto-approval path</h2>
+<p>The most consequential line in the portal is one constant: <code>AUTO_APPROVE_THRESHOLD (0.85)</code>. It looks like a config variable; it is a <strong>clinical-policy decision wearing a config variable's clothes</strong>. No engine may move it. A diff that touches it is a human decision surfaced at a checkpoint with a recorded rationale — never a silent optimization, no matter how good the throughput numbers look.</p>
+<p>The subtler risk is in the scores themselves. <code>ClinicalCriteria</code> written against typical presentations under-match atypical ones — so match scores can run systematically lower for some member populations, quietly routing them to slower paths. Two defenses: the <strong>nurse review queue is the fairness backstop</strong> — below threshold means a human looks, by design, and that floor is why the threshold is sacred; and <strong>disparate outcomes are tested like regressions</strong> — fixture cohorts in the test suite, approval-rate assertions, and Operations alarms when cohort rates diverge in production.</p>
+
+<aside class="analogy">
+<p>A year after the street party, a hairline crack shows in house nine's guest-room ceiling. The owners call Meera — not the crews. She opens that house's build book: the span decision, the crew that framed it, the inspector's sign-off, the walkthrough photo. One page, four names, one afternoon's fix — and the firm pays, because the firm signed. Nobody on the street asks "which crew wrote this beam?" as a question of blame; the book answers it as a question of record. The crews build. The names on the permit answer for the building.</p>
+<span class="maps-to">maps to → <b>the crack</b> = a production incident or member appeal · <b>the build book page</b> = provenance and audit trail for AI-authored work · <b>the firm pays</b> = accountability stays with humans · <b>record, not blame</b> = transparency designed in, not reconstructed after</span>
+</aside>
+
+<figure>
+<svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Responsible-AI gate map: fairness attaches to Inception, controllability and transparency to Construction, audit and drift to Operations, with explainability and privacy as a cross-cutting rail and governance spanning everything">
+  <defs>
+    <marker id="m33arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace" text-anchor="middle">
+    <!-- dimension chips -->
+    <rect x="75" y="14" width="120" height="26" rx="13" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="135" y="31" font-size="8.4" fill="var(--accent)" font-weight="600">FAIRNESS</text>
+    <rect x="280" y="14" width="128" height="26" rx="13" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="344" y="31" font-size="8.4" fill="var(--accent)" font-weight="600">CONTROLLABILITY</text>
+    <rect x="416" y="14" width="116" height="26" rx="13" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="474" y="31" font-size="8.4" fill="var(--accent)" font-weight="600">TRANSPARENCY</text>
+
+    <!-- phase boxes -->
+    <rect x="30" y="64" width="210" height="84" rx="10" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="135" y="88" font-size="10" fill="var(--t7)" font-weight="600" letter-spacing="1.5">INCEPTION</text>
+    <text x="135" y="110" font-size="8" fill="var(--ink)">Mob Elaboration also asks:</text>
+    <text x="135" y="126" font-size="8" fill="var(--ink)">"who could this harm?"</text>
+
+    <rect x="275" y="64" width="210" height="84" rx="10" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="380" y="88" font-size="10" fill="var(--t7)" font-weight="600" letter-spacing="1.5">CONSTRUCTION</text>
+    <text x="380" y="110" font-size="8" fill="var(--ink)">human checkpoint ·</text>
+    <text x="380" y="126" font-size="8" fill="var(--ink)">understand every line · the chain</text>
+
+    <rect x="520" y="64" width="210" height="84" rx="10" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="625" y="88" font-size="10" fill="var(--t7)" font-weight="600" letter-spacing="1.5">OPERATIONS</text>
+    <text x="625" y="110" font-size="8" fill="var(--ink)">audit trail · approval-rate</text>
+    <text x="625" y="126" font-size="8" fill="var(--ink)">alarms by cohort</text>
+
+    <!-- cross-cutting rail -->
+    <rect x="30" y="214" width="700" height="36" rx="8" fill="none" stroke="var(--t3)" stroke-width="2" stroke-dasharray="6 5"/>
+    <text x="380" y="236" font-size="8.4" fill="var(--t3)" font-weight="600">EXPLAINABILITY · PRIVACY &amp; SECURITY — held in schema + steering file, cross-cutting every phase</text>
+
+    <!-- governance bracket -->
+    <text x="380" y="298" font-size="8.4" fill="var(--ink-soft)" font-weight="600" letter-spacing="1">GOVERNANCE — M30's charter spans every phase and every gate</text>
+  </g>
+  <!-- chip arrows -->
+  <line x1="135" y1="40" x2="135" y2="60" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#m33arr)"/>
+  <line x1="344" y1="40" x2="356" y2="60" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#m33arr)"/>
+  <line x1="474" y1="40" x2="440" y2="60" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#m33arr)"/>
+  <!-- rail connectors -->
+  <line x1="135" y1="148" x2="135" y2="212" stroke="var(--t3)" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="380" y1="148" x2="380" y2="212" stroke="var(--t3)" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="625" y1="148" x2="625" y2="212" stroke="var(--t3)" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <!-- governance bracket line -->
+  <path d="M 30 272 L 30 280 L 730 280 L 730 272" fill="none" stroke="var(--t7)" stroke-width="2"/>
+</svg>
+<figcaption>fig 33.1 — no new review stage: every responsible-AI dimension attaches to a checkpoint AI-DLC already runs</figcaption>
+</figure>
+
+<h2>PHI-safe context hygiene</h2>
+<p>Prompts, steering files, plan files, semantic maps, Mob Elaboration transcripts — all of it is context, and <strong>context leaves the building</strong>. In a healthcare system the rule has to be mechanical, not aspirational: <strong>decisions and schemas belong in the chain; member data never does.</strong> The chain records that the team chose nurse review for sub-threshold scores and why. It never records that Rosa Delgado's request scored 0.71.</p>
+<p>Make the rule enforce itself by putting it where the engine reads first: the steering file. A "fixtures are synthetic-only" line in <code>CLAUDE.md</code> or <code>AGENTS.md</code> means every future bolt inherits the constraint — the steering file is a responsible-AI control surface, not just a productivity trick. And M12's brownfield discipline pays a privacy dividend: a semantic map summarizes structure, not records. High semantics-per-token is also high privacy-per-token.</p>
+
+<h2>Provenance: who wrote this code, who made this call</h2>
+<p>Explainability as aspiration is a paragraph in a policy doc. Explainability as schema is three fields on every <code>Determination</code>: <code>matchScore</code>, <code>criteriaVersion</code>, and <code>decidedBy</code> — <code>"auto"</code> or a nurse identifier. With those three, the compliance officer's seven-word question has a seven-second answer, for any determination, forever.</p>
+<p>Code has provenance too. The chain names the human who approved each plan; understand-every-line is the moment accountability for AI-written code transfers to a person. That's the invariant under everything this course has taught: <strong>accountability never transfers to the engine.</strong> The engine builds. The names on the checkpoint answer for the build.</p>
+
+<table class="bridge">
+  <thead><tr><th>Responsible AI dimension</th><th>Where AI-DLC already holds it</th></tr></thead>
+  <tbody>
+    <tr><td>Fairness</td><td>Mob Elaboration's "who could this harm?" · nurse review queue as backstop · cohort tests</td></tr>
+    <tr><td>Explainability</td><td><code>matchScore</code> + <code>criteriaVersion</code> + <code>decidedBy</code> on every Determination</td></tr>
+    <tr><td>Privacy &amp; security</td><td>Context-hygiene rules in the steering file · synthetic-only fixtures</td></tr>
+    <tr><td>Controllability</td><td>Human checkpoints · <code>AUTO_APPROVE_THRESHOLD</code> changes are human decisions</td></tr>
+    <tr><td>Transparency</td><td>The chain: plan files, decision log, named approvers per bolt</td></tr>
+    <tr><td>Governance</td><td>M30's charter and compliance gates — this table is its operating detail</td></tr>
+  </tbody>
+</table>
+
+<section class="lab">
+  <div class="lab-head">Lab M33 · 25 min</div>
+  <h2>Answer the compliance officer</h2>
+
+  <div class="path">
+    <div class="path-label">Path A — Understand It (no tooling)</div>
+    <p>A responsible-AI gate review of the Bolt 2 criteria-matching diff. The reviewer finds three problems. Trace the transcript and match each finding to its dimension.</p>
+<pre><code>GATE REVIEW — Bolt 2 diff (criteria matching) · reviewer: platform lead
+R:  Line 41: AUTO_APPROVE_THRESHOLD changed 0.85 -&gt; 0.87. Who approved?
+AI: No decision-log entry found. The change came from a performance-
+    optimization pass in this bolt.
+R:  Revert it. Threshold moves are clinical-policy decisions — human,
+    recorded, never silent.                          [finding 1]
+R:  fixtures/members.json line 12: "Rosa Delgado, DOB 1961-03-04,
+    ICD-10 E11.9". That reads like a real person.    [finding 2]
+AI: Replacing with synthetic records; adding a synthetic-only rule
+    to the steering file so it holds for every future bolt.
+R:  Determination records: matchScore is present, but criteriaVersion
+    and decidedBy are missing. A denial we can't explain is a denial
+    we can't defend.                                 [finding 3]</code></pre>
+    <p><strong>Check yourself:</strong> (1) Name the dimension behind each finding. (2) Which checkpoint should have caught the threshold change, and why is it the most serious of the three? (3) Which finding does the steering file fix <em>permanently</em>, and what does that say about steering files?</p>
+    <details><summary>Answers</summary>
+      <p>(1) Finding 1 = controllability (an engine silently moved a human-owned decision); finding 2 = privacy &amp; security (realistic member data in context); finding 3 = explainability (provenance missing from the schema). (2) The Construction human checkpoint — understand-every-line exists precisely so a one-line constant change can't ride in on an optimization pass; it's the most serious because it silently narrows the nurse-review backstop, which is the fairness floor for every future request. (3) Finding 2 — the synthetic-only rule enters the steering file, so every future bolt inherits it without anyone remembering to check: steering files are responsible-AI control surfaces, not just productivity tricks.</p>
+    </details>
+  </div>
+
+  <div class="path">
+    <div class="path-label">Path B — Build It with AI (both engines)</div>
+    <p>One unit of work, two artifacts: a Responsible AI rules section in the steering file, and provenance fields on <code>Determination</code> with tests to hold them. In <code>prior-auth-api</code>:</p>
+    <div class="engine-tabs">
+      <div class="engine-tab-btns" role="tablist">
+        <button class="active" data-engine="cc">Claude Code</button>
+        <button data-engine="cx">Codex CLI</button>
+      </div>
+      <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+cd prior-auth-api
+claude
+&gt; Append a "Responsible AI rules" section to CLAUDE.md with three rules:
+&gt; 1. Never modify AUTO_APPROVE_THRESHOLD without a recorded human
+&gt;    approval in the decision log.
+&gt; 2. Test fixtures are synthetic-only — never realistic member data.
+&gt; 3. Every Determination must carry matchScore, criteriaVersion,
+&gt;    and decidedBy ("auto" or a nurse identifier).
+&gt; Then plan only: how would you extend the Determination type with
+&gt; those three fields, and which Jest tests would hold the invariants?
+# review the plan — this is your checkpoint
+&gt; Approved. Build it: update the type and add tests asserting
+&gt; (a) a score below 0.85 never auto-approves, and
+&gt; (b) every determination carries all three provenance fields.
+npx jest</code></pre>
+        <p><strong>Verify:</strong> the steering section reads back with all three rules; tests are green; and the plan step happened <em>before</em> any file changed.</p>
+      </div>
+      <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+cd prior-auth-api
+codex
+&gt; Append a "Responsible AI rules" section to AGENTS.md with three rules:
+&gt; 1. Never modify AUTO_APPROVE_THRESHOLD without a recorded human
+&gt;    approval in the decision log.
+&gt; 2. Test fixtures are synthetic-only — never realistic member data.
+&gt; 3. Every Determination must carry matchScore, criteriaVersion,
+&gt;    and decidedBy ("auto" or a nurse identifier).
+&gt; Then plan only: how would you extend the Determination type with
+&gt; those three fields, and which Jest tests would hold the invariants?
+# review the proposed plan in the diff view — your checkpoint
+&gt; Approved. Build it: update the type and add tests asserting
+&gt; (a) a score below 0.85 never auto-approves, and
+&gt; (b) every determination carries all three provenance fields.
+npx jest</code></pre>
+        <p><strong>Verify:</strong> same checks. The rules section, the type change, and the test assertions are identical to the Claude Code variant — only the steering filename differs.</p>
+      </div>
+    </div>
+    <p><strong>Done when</strong> both engines produce the same steering section and the same green tests — and you can answer the compliance officer's question for any determination in one query.</p>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>Responsible AI in AI-DLC is not a new stage — each dimension attaches to a checkpoint the lifecycle already runs, which is why the compliance answer is fast and true.</li>
+    <li>The auto-approval threshold is a clinical-policy decision: engines may read it, only named humans may move it, and the nurse review queue is the fairness backstop beneath it.</li>
+    <li>Context leaves the building: decisions and schemas go in the chain; member data never enters a prompt, a fixture, or a steering file.</li>
+    <li>Explainability is schema — <code>matchScore</code>, <code>criteriaVersion</code>, <code>decidedBy</code> on every Determination; provenance for code is the chain plus understand-every-line.</li>
+    <li>The engine builds; the names on the checkpoint answer for the build. Course complete — go run a bolt, responsibly.</li>
+  </ul>
+  <span class="next">Course complete — go run a bolt, responsibly. ⚡</span>
 </section>
 `
 },

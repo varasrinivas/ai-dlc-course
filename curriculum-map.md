@@ -4,7 +4,7 @@
 > **Audience:** Dual-track — Engineering Leaders **and** Hands-on Practitioners
 > **Engines:** Claude Code and OpenAI Codex CLI as the AI-DLC execution engines (methodology is AWS's; engines are tool-agnostic)
 > **Domain anchor:** Prior Auth Portal (healthcare Utilization Management — AuthRequest, Member, Provider, ClinicalCriteria, Determination, AuthStatus)
-> **Total modules:** 33 (M00 orientation + 32 content modules across 8 tracks)
+> **Total modules:** 34 (M00 orientation + 33 content modules across 8 tracks)
 
 Every module carries an audience tag: `leader` | `practitioner` | `both`.
 Two suggested paths are rendered in M00:
@@ -85,6 +85,7 @@ Two suggested paths are rendered in M00:
 | M30 | Governance, Risk & Compliance Gates | leader | Human oversight as governance, regulated-industry gates (healthcare/PHI angle), accountability structures |
 | M31 | Measuring the Shift | leader | Velocity, adoption, quality signals; avoiding vanity metrics; the supporting infrastructure (CI/CD, test fidelity) |
 | M32 | The Rollout Playbook | leader | Pilot → scale → sustain, enablement program design, change management for engineers |
+| M33 | Responsible AI in the Lifecycle | both | Responsible AI dimensions mapped to AI-DLC checkpoints; fairness & bias in clinical criteria matching; PHI-safe prompting and context hygiene; transparency & audit trails for AI-authored code; human accountability as the load-bearing control |
 
 ---
 

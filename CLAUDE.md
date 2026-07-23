@@ -85,6 +85,9 @@ and Codex CLI** as interchangeable engines:
   - T6: the four-room finishing sequence, one room per bolt (mirrors the four capstone bolts)
   - T7: Meera and Ravi as developers of a whole street — permits, inspectors, budgets,
     and how you scale one good build into twelve (governance, metrics, rollout)
+  - T7 epilogue (M33): the warranty call — a year on, a crack in house nine is traced
+    through the build book in one page; the firm pays because the firm signed
+    (provenance, audit trails, accountability stays human). The saga now ends here.
 
   Rules: the analogy block NEVER replaces the technical explanation — it compresses it after
   the fact. One block per module, 60–120 words, placed after the first or second concept
