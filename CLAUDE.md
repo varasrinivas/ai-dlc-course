@@ -101,6 +101,11 @@ and Codex CLI** as interchangeable engines:
 See `templates/module.schema.json`. Required fields: `id`, `track`, `title`, `minutes`,
 `audience`, `body` (template-literal HTML string). Body sections in order:
 
+> **One deliberate exception:** `P00` ("Prelude: You're the Tech Lead Now") is a
+> pre-course overview and carries **no lab and no Lakeview beat** — the saga begins at
+> M00. It is the only entry in `MODS` exempt from the schema below. The lab-link wiring
+> (`wireLabLink`) skips it by design. Do not "fix" P00 by adding a lab.
+
 1. `<p class="hook">` — the scenario
 2. Concept sections (`<h2>`) — 2–4 of them, each ≤ 300 words; exactly one
    `<aside class="analogy">` (the Lakeview beat) after the first or second section

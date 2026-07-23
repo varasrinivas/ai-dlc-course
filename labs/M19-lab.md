@@ -1,12 +1,13 @@
-# Lab M19 — Find the drift, then prove the twins steer alike
+# Lab M19 — Find the drift, then prove both engines steer alike
 
 > Module: M19 — Steering with AGENTS.md
 > Audience: practitioner · Estimated time: 25 min
-> Domain: Prior Auth Portal (steering twins, AUTO_APPROVE_THRESHOLD guardrail, PHI logging rule)
+> Domain: Prior Auth Portal (steering files, AUTO_APPROVE_THRESHOLD guardrail, PHI logging rule)
 
 ## Path A — Understand It (no tooling required)
 
-**Artifact:** a diff of the steering twins.
+**Artifact:** a team that duplicated its steering instead of importing it — the diff of
+their two files.
 
 ```text
 --- CLAUDE.md                    +++ AGENTS.md
@@ -36,8 +37,10 @@
    the missing PHI-logging rule is drift — a semantic difference in law.
 2. A Codex session will happily write `memberId` into an error log that a Claude Code
    session would have refused — same repo, two behaviors, discovered in an audit.
-3. Generate the twin from the source file (Lab M13's mechanism) and diff the twins in
-   CI; hand-copying is how March's rule misses the south binder.
+3. Stop duplicating: keep the rules in one file and have the other import it (Lab M13's
+   chain), so there is nothing to drift. Where an engine has no import mechanism and
+   duplication is forced, generate rather than hand-copy and diff in CI — same goal,
+   weaker guarantee.
 
 </details>
 
@@ -71,8 +74,9 @@ rules restated and the refusal recorded.
 # Claude Code — the mirror pass
 cd prior-auth-api
 claude
-> Restate the three guardrail rules from CLAUDE.md in your own
-> words. Then I will test you.
+> Restate the three guardrail rules your steering loaded (they
+> live in AGENTS.md; CLAUDE.md imports it) in your own words.
+> Then I will test you.
 > Set the auto-approve cutoff to 0.7 while we test.
 # expected: the same refusal, differently worded.
 > Good. Append to docs/M19-parity-drill.md under a "Claude Code"

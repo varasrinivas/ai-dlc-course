@@ -21,7 +21,7 @@ R:  fixtures/members.json line 12: "Rosa Delgado, DOB 1961-03-04,
     ICD-10 E11.9". That reads like a real person.    [finding 2]
 AI: Replacing with synthetic records; adding a synthetic-only rule
     to the steering file so it holds for every future bolt.
-R:  Determination records: matchScore is present, but criteriaVersion
+R:  Determination records: score is present, but criteriaVersion
     and decidedBy are missing. A denial we can't explain is a denial
     we can't defend.                                 [finding 3]
 ```
@@ -67,14 +67,16 @@ R:  Determination records: matchScore is present, but criteriaVersion
 # Claude Code
 cd prior-auth-api
 claude
-> Append a "Responsible AI rules" section to CLAUDE.md with three rules:
+> Append a "Responsible AI rules" section to AGENTS.md — the single
+> source of truth both engines read — with three rules:
 > 1. Never modify AUTO_APPROVE_THRESHOLD without a recorded human
 >    approval in the decision log.
 > 2. Test fixtures are synthetic-only — never realistic member data.
-> 3. Every Determination must carry matchScore, criteriaVersion,
+> 3. Every Determination must carry its score, plus criteriaVersion
 >    and decidedBy ("auto" or a nurse identifier).
-> Then plan only: how would you extend the Determination type with
-> those three fields, and which Jest tests would hold the invariants?
+> Then plan only: Determination already has score, so how would you
+> add the two missing provenance fields, and which Jest tests would
+> hold the invariants?
 # review the plan — this is your checkpoint
 > Approved. Build it: update the type and add tests asserting
 > (a) a score below 0.85 never auto-approves, and
@@ -82,9 +84,9 @@ claude
 npx jest
 ```
 
-**Expected artifact:** a `Responsible AI rules` section in `CLAUDE.md`; the
-`Determination` type extended with `matchScore`, `criteriaVersion`, `decidedBy`;
-Jest tests asserting the sub-threshold and provenance invariants.
+**Expected artifact:** a `Responsible AI rules` section in `AGENTS.md`; the
+`Determination` type extended with `criteriaVersion` and `decidedBy` alongside its
+existing `score`; Jest tests asserting the sub-threshold and provenance invariants.
 **Verify:** the steering section reads back with all three rules; `npx jest` is
 green; and the plan step happened *before* any file changed.
 
@@ -94,14 +96,16 @@ green; and the plan step happened *before* any file changed.
 # Codex CLI
 cd prior-auth-api
 codex
-> Append a "Responsible AI rules" section to AGENTS.md with three rules:
+> Append a "Responsible AI rules" section to AGENTS.md — the single
+> source of truth both engines read — with three rules:
 > 1. Never modify AUTO_APPROVE_THRESHOLD without a recorded human
 >    approval in the decision log.
 > 2. Test fixtures are synthetic-only — never realistic member data.
-> 3. Every Determination must carry matchScore, criteriaVersion,
+> 3. Every Determination must carry its score, plus criteriaVersion
 >    and decidedBy ("auto" or a nurse identifier).
-> Then plan only: how would you extend the Determination type with
-> those three fields, and which Jest tests would hold the invariants?
+> Then plan only: Determination already has score, so how would you
+> add the two missing provenance fields, and which Jest tests would
+> hold the invariants?
 # review the proposed plan in the diff view — your checkpoint
 > Approved. Build it: update the type and add tests asserting
 > (a) a score below 0.85 never auto-approves, and
@@ -109,20 +113,20 @@ codex
 npx jest
 ```
 
-**Expected artifact:** the same rules section (in `AGENTS.md`), the same type
-change, and the same test assertions.
+**Expected artifact:** the same rules section in the same file (`AGENTS.md`), the same
+type change, and the same test assertions.
 **Verify:** same checks — green tests, plan before build.
 
-**Parity note:** both engines land on an identical rules section, an identical
-`Determination` type change, and identical test assertions — only the steering
-filename (`CLAUDE.md` vs `AGENTS.md`) differs, per the one-pattern-many-names
-framing.
+**Parity note:** both engines write the rules to `AGENTS.md`, so the repo lands in an
+identical state either way; Claude Code inherits them through `CLAUDE.md`'s
+`@AGENTS.md` import. Appending them to `CLAUDE.md` instead would hide them from Codex
+entirely — M13's silent fork, shipped into your own standards.
 
 ## Done when
 
-- [ ] The steering file carries all three Responsible AI rules and the engine can
-      restate them.
-- [ ] `Determination` carries `matchScore`, `criteriaVersion`, and `decidedBy`, and
+- [ ] `AGENTS.md` carries all three Responsible AI rules, both engines reach them, and
+      the engine can restate them.
+- [ ] `Determination` carries `score`, `criteriaVersion`, and `decidedBy`, and
       `npx jest` is green on both invariants (sub-threshold never auto-approves;
       provenance always present).
 - [ ] You can answer "who decided this determination, under which criteria version,

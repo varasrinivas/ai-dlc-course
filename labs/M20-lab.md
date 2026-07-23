@@ -89,7 +89,7 @@ with the four comparison rows.
 verdict.
 
 **Parity note:** this lab measures decomposition parity directly. Expect: matching
-restatements (clear intent), matching guardrails (synced twins — a live M19 drift
+restatements (clear intent), matching guardrails (the same steering reached both engines — a live M19 drift
 check), overlapping questions, and possibly one UW boundary difference — which is the
 valuable output, not a defect. Run the experiment on consequential epics; it doubles
 Inception cost and pays for itself in review.

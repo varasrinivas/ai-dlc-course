@@ -36,9 +36,13 @@ CC:  Wrote docs/M15-notify-inception.md.
 
 1. It could rewrite the entire proposal — and could not touch a single file; iteration
    inside plan mode is free by construction.
-2. The [edge] urgent-SLA question — M06 decided it (4 hours including STAT imaging) and
-   it's in decisions.md; the engine either wasn't pointed at the chain or the chain is
-   stale. Fix the pointer.
+2. The [edge] urgent-SLA question — the mob settled it back in M06 (4 hours, including
+   STAT imaging), so a session reading the chain wouldn't raise it. Then open the
+   practice repo for the honest twist: `prior-auth-api/docs/decisions.md` holds
+   D-001…D-003 and no SLA entry at all, so in your copy that decision was never written
+   down. Both cases look identical from inside the transcript, and both are chain
+   failures rather than prompt failures — either the engine wasn't pointed at the chain,
+   or the chain never received the decision. Fix the chain, not the prompt.
 3. "YOU: Approve. [plan mode OFF]" — approval exits the mode and unlocks writes; the
    gate and the mode-exit are the same event.
 

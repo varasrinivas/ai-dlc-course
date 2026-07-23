@@ -2,15 +2,17 @@
 
 > Module: M07 — Construction: Plans, Code, Tests
 > Audience: practitioner · Estimated time: 30 min
-> Domain: Prior Auth Portal (AuthRequest, Member, Provider — UW-1a schema validation)
+> Domain: Prior Auth Portal (AuthRequest, Member, Provider — UW-1a intake validation)
 
 ## Path A — Understand It (no tooling required)
 
 **Artifact:** the AI's implementation plan for UW-1a, as posted for approval.
 
 ```text
-PLAN UW-1a — AuthRequest schema validation      [for approval]
- 1. Define AuthRequestDto: memberId, providerId, serviceCode,
+PLAN UW-1a — AuthRequest intake validation      [for approval]
+     scope: schema + the intake-side eligibility and network
+     checks; UW-1b and UW-1c get ports here, nothing more.
+ 1. Define AuthRequestDto: memberId, providerId, procedureCode,
     urgency.                                     → AC-1
  2. Field-level validation errors (collect all, not fail-fast).
                                                  → AC-1
@@ -22,7 +24,8 @@ PLAN UW-1a — AuthRequest schema validation      [for approval]
  7. Out-of-network → route flag for nurse review, plus urgency
     propagation, plus request-received notification stub. → AC-3
  8. BLOCKED (HUMAN): does intake emit notifications at all, or
-    does Determinations own that? [integration] — blocks step 7c.
+    does Determinations own that? [integration] — blocks the
+    notification stub inside step 7.
  9. Tests: rejects_when_schema_invalid (AC-1),
     writes_outreach_log_once (AC-2), routes_oon_to_review (AC-3).
 ```
@@ -51,7 +54,8 @@ PLAN UW-1a — AuthRequest schema validation      [for approval]
 
 ## Path B — Build It with AI
 
-> The unit of work: UW-1a — AuthRequest schema validation, the course's first real code.
+> The unit of work: UW-1a's schema slice (steps 1–2) — AuthRequest field validation, the
+> course's first real code.
 > The prompt enforces the plan checkpoint: the engine stops and waits for approval before
 > implementing. Both variants must produce the same behavior and test coverage. Run in
 > the `prior-auth-api` folder.
@@ -65,7 +69,7 @@ claude
 > UW-1a: AuthRequest schema validation. First, post an
 > implementation plan (numbered steps, mark any decision you
 > defer to me) and STOP — wait for my approval. After I approve:
-> implement AuthRequestDto (memberId, providerId, serviceCode,
+> implement AuthRequestDto (memberId, providerId, procedureCode,
 > urgency) with field-level validation collecting all errors,
 > plus Jest unit tests named for their acceptance criteria:
 > rejects_when_schema_invalid, plus a happy-path test. Scaffold
@@ -77,8 +81,9 @@ claude
 **Expected artifact:** a minimal TypeScript + Jest scaffold, `AuthRequestDto` with
 field-level validation (collect-all-errors), tests including `rejects_when_schema_invalid`
 and a happy path, and `docs/M07-increment.md` explaining the diff.
-**Verify:** the engine stopped at the plan and waited; `npx jest` is green; test names
-match their criteria; the increment summary leaves nothing non-obvious unexplained.
+**Verify:** the engine stopped at the plan and waited; `npm test` and `npm run typecheck`
+are green — the gates AGENTS.md mandates; test names match their criteria; the increment
+summary leaves nothing non-obvious unexplained.
 
 ### Codex CLI variant
 
@@ -89,7 +94,7 @@ codex
 > UW-1a: AuthRequest schema validation. First, post an
 > implementation plan (numbered steps, mark any decision you
 > defer to me) and STOP — wait for my approval. After I approve:
-> implement AuthRequestDto (memberId, providerId, serviceCode,
+> implement AuthRequestDto (memberId, providerId, procedureCode,
 > urgency) with field-level validation collecting all errors,
 > plus Jest unit tests named for their acceptance criteria:
 > rejects_when_schema_invalid, plus a happy-path test. Scaffold
@@ -102,13 +107,14 @@ codex
 steered by AGENTS.md.
 **Verify:** same checks as the Claude Code variant.
 
-**Parity note:** both engines land on the same behavior, the same named tests, and a green
-`npx jest`. Scaffold layout (folder names, config style) may differ between engines — that
-surface difference doesn't matter and is worth noticing.
+**Parity note:** both engines land on the same behavior, the same named tests, and green
+`npm test` / `npm run typecheck` runs. Scaffold layout (folder names, config style) may
+differ between engines — that surface difference doesn't matter and is worth noticing.
 
 ## Done when
 
 - [ ] A numbered plan existed before any code, and you explicitly approved (or amended)
       it — the checkpoint was real.
-- [ ] `npx jest` passes; tests are named for their acceptance criteria.
+- [ ] `npm test` and `npm run typecheck` pass; tests are named for their acceptance
+      criteria.
 - [ ] `docs/M07-increment.md` explains every non-obvious choice in the diff.

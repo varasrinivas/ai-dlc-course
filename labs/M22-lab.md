@@ -33,7 +33,8 @@ W-3  Kick off the determinations epic — the portal's most
 1. To whichever engine has the threshold gate *mechanized* — per your M17 drill log
    that's the PreToolUse hook (Claude Code) unless you've scripted the Codex gate into
    CI; the decision record satisfies the gate either way. Brand answers score zero.
-2. Codex full-auto in the sandbox or CC acceptEdits+hooks both fit — and afterward,
+2. Codex full-auto in the sandbox (M19's naming; `--sandbox workspace-write` with
+   `--ask-for-approval never` on the current CLI) or CC acceptEdits+hooks both fit — and afterward,
    the union gates run and a human reads the diff summary-free (M21):
    no-behavior-change claims are verified, not believed.
 3. Both — the parity experiment: two independent decompositions for the mob. The tax:
@@ -60,13 +61,13 @@ claude
 > engine + posture, rationale citing the logs; guardrail class
 > routes to "whichever engine has the gate mechanized — currently
 > [name it from the M17 log]". (2) our run-both patterns and their
-> triggers. (3) the drift-sync rule: twins generated, diffed in
-> CI. (4) the lock-in test as a standing bolt-close question.
+> triggers. (3) the drift rule: rules in one file, imported
+> rather than duplicated. (4) the lock-in test as a standing bolt-close question.
 > No code.
 ```
 
 **Expected artifact:** `docs/M22-engine-policy.md` — routing table, run-both patterns,
-drift-sync rule, lock-in test.
+drift rule, lock-in test.
 **Verify:** four sections; routing cites actual log evidence; the guardrail row names
 an engine because of a drill, not a brand.
 
@@ -82,8 +83,8 @@ codex
 > engine + posture, rationale citing the logs; guardrail class
 > routes to "whichever engine has the gate mechanized — currently
 > [name it from the M17 log]". (2) our run-both patterns and their
-> triggers. (3) the drift-sync rule: twins generated, diffed in
-> CI. (4) the lock-in test as a standing bolt-close question.
+> triggers. (3) the drift rule: rules in one file, imported
+> rather than duplicated. (4) the lock-in test as a standing bolt-close question.
 > No code.
 ```
 

@@ -11,13 +11,17 @@
 ```text
 Q1  "The threshold changed to 0.82 for imaging in April.
      Walk me through it."
-A1  Register entry: medical director R.Chen, April 3, rationale
+A1  Register entry: medical director R.Chen, April 3 (T-102) —
+     a per-modality carve-out recorded in config/threshold.json;
+     the 0.85 default and the >= rule are unchanged. Rationale
      attached; gate log shows the config edit blocked twice
      until the record existed; evidence pack signed.
 Q2  "Does the AI ever make the approval decision?"
-A2  Above 0.85, software applies a policy humans set and
-     locked; below, a nurse decides. Here's a determination
-     from each path — walk them yourself.
+A2  At or above the applicable threshold — 0.85, or 0.82 for
+     imaging since April; the rule is >= — software applies a
+     policy humans set and locked; below, a nurse decides.
+     Here's a determination from each path — walk them
+     yourself.
 Q3  "How do you know the guardrail holds in production?"
 A3  The skip-alarm (zero fires, monitored) plus the nightly
      reconciliation sweep; both alert paths documented.

@@ -71,8 +71,8 @@ claude
 which every decision line carries exactly one marker, the three supplied answers appear as
 `[HUMAN-DECIDED: …]`, and a non-empty "Still open — deferred" section closes the file. No
 code files created or modified.
-**Verify:** open the file and check the markers; `Get-ChildItem -Recurse prior-auth-api`
-shows only the steering file and the two docs files (M01 questions, M02 plan).
+**Verify:** open the file and check the markers; `Get-ChildItem -Recurse` from inside
+`prior-auth-api` shows only the steering file and the two docs files (M01 questions, M02 plan).
 
 ### Codex CLI variant
 

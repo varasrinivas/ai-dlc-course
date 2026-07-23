@@ -2,7 +2,7 @@
 
 > Module: M00 — Course Orientation: A New Lifecycle, Two Engines
 > Audience: both · Estimated time: 20 min
-> Domain: Prior Auth Portal (AuthRequest, Member, ClinicalCriteria, Determination, AUTO_APPROVE_THRESHOLD)
+> Domain: Prior Auth Portal (AuthRequest, Member, Provider, ClinicalCriteria, Determination, AuthStatus)
 
 ## Path A — Understand It (no tooling required)
 
@@ -51,25 +51,32 @@ AI:    Updated. UW-2 acceptance criteria now include an immutable score log.
 ```text
 # Claude Code
 mkdir prior-auth-api; cd prior-auth-api
-# create CLAUDE.md with the domain rules, then launch:
+# create CLAUDE.md carrying four rules: (1) a ClinicalCriteria
+# score ≥ AUTO_APPROVE_THRESHOLD (0.85) auto-approves, below it
+# routes to the nurse review queue; (2) an ineligible Member is
+# never auto-approved, whatever the score; (3) notifications
+# carry AuthStatus and reference id only, never clinical
+# content; (4) the entities are AuthRequest, Member, Provider,
+# ClinicalCriteria, Determination, AuthStatus. Then launch:
 claude
-> Read CLAUDE.md. Restate the auto-approval rule and list the four
+> Read CLAUDE.md. Restate the auto-approval rule and list the six
 > entities. Plan only — do not create any files yet.
 ```
 
-**Expected artifact:** a `CLAUDE.md` steering file carrying the domain rules; the
+**Expected artifact:** a `CLAUDE.md` steering file carrying those four rules; the
 engine's reply restating them — and no other files.
-**Verify:** the reply names `AuthRequest`, `Member`, `ClinicalCriteria`,
-`Determination` and states the 0.85 threshold — and creates nothing.
+**Verify:** the reply names all six entities — `AuthRequest`, `Member`, `Provider`,
+`ClinicalCriteria`, `Determination`, `AuthStatus` — and states the threshold rule as
+*at or above* 0.85, not above it — and creates nothing.
 
 ### Codex CLI variant
 
 ```text
 # Codex CLI
 mkdir prior-auth-api; cd prior-auth-api
-# create AGENTS.md with the same domain rules, then launch:
+# create AGENTS.md with the same four rules, then launch:
 codex
-> Read AGENTS.md. Restate the auto-approval rule and list the four
+> Read AGENTS.md. Restate the auto-approval rule and list the six
 > entities. Plan only — do not create any files yet.
 ```
 

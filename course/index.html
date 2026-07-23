@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AWS AI-DLC — Method, Engines, and Leadership</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%236366f1'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='19' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -1464,8 +1465,8 @@ Tests:       4 passed, 4 total</pre>
     <text x="580" y="212" fill="var(--ink-soft)" font-size="10">score &lt; 0.85</text>
 
     <rect x="690" y="98" width="56" height="54" rx="9" fill="var(--ink)"/>
-    <text x="718" y="122" fill="#fff" font-size="9" font-weight="600">Deter-</text>
-    <text x="718" y="136" fill="#fff" font-size="9" font-weight="600">mination</text>
+    <text x="718" y="122" fill="var(--panel)" font-size="9" font-weight="600">Deter-</text>
+    <text x="718" y="136" fill="var(--panel)" font-size="9" font-weight="600">mination</text>
   </g>
   <line x1="170" y1="125" x2="226" y2="125" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#arr2)"/>
   <path d="M410 110 C 445 95, 450 60, 486 55" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#arr2)"/>
@@ -1510,18 +1511,24 @@ AI:    Updated. UW-2 acceptance criteria now include an immutable score log.</co
       <div class="engine-pane active" data-engine="cc">
 <pre><code># Claude Code
 mkdir prior-auth-api; cd prior-auth-api
-# create CLAUDE.md with the domain rules, then launch:
+# create CLAUDE.md carrying four rules: (1) a ClinicalCriteria
+# score ≥ AUTO_APPROVE_THRESHOLD (0.85) auto-approves, below it
+# routes to the nurse review queue; (2) an ineligible Member is
+# never auto-approved, whatever the score; (3) notifications
+# carry AuthStatus and reference id only, never clinical
+# content; (4) the entities are AuthRequest, Member, Provider,
+# ClinicalCriteria, Determination, AuthStatus. Then launch:
 claude
-&gt; Read CLAUDE.md. Restate the auto-approval rule and list the four
+&gt; Read CLAUDE.md. Restate the auto-approval rule and list the six
 &gt; entities. Plan only — do not create any files yet.</code></pre>
-        <p><strong>Verify:</strong> the reply names <code>AuthRequest</code>, <code>Member</code>, <code>ClinicalCriteria</code>, <code>Determination</code> and states the 0.85 threshold — and creates nothing.</p>
+        <p><strong>Verify:</strong> the reply names all six entities — <code>AuthRequest</code>, <code>Member</code>, <code>Provider</code>, <code>ClinicalCriteria</code>, <code>Determination</code>, <code>AuthStatus</code> — and states the threshold rule as <em>at or above</em> 0.85, not above it — and creates nothing.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI
 mkdir prior-auth-api; cd prior-auth-api
-# create AGENTS.md with the same domain rules, then launch:
+# create AGENTS.md with the same four rules, then launch:
 codex
-&gt; Read AGENTS.md. Restate the auto-approval rule and list the four
+&gt; Read AGENTS.md. Restate the auto-approval rule and list the six
 &gt; entities. Plan only — do not create any files yet.</code></pre>
         <p><strong>Verify:</strong> same check. The steering content is identical; only the filename changed.</p>
       </div>
@@ -1784,9 +1791,9 @@ codex
 <p>The second dimension is what the humans do between checkpoints. In the handoff model, work flows ticket to analyst to developer to QA, and each hop waits in a queue; coordination cost is tolerable because construction is the slow part. AI-DLC breaks that assumption: once the AI compresses execution from weeks to hours, <em>coordination</em> becomes the tempo-setter — a decision that waits three days now stalls the whole bolt.</p>
 <p>So the team reorganizes around decision moments instead of handoffs. When the AI surfaces the ineligible-Member question, whoever that decision needs — the PO, the architect, the nurse SME — convenes, decides, and disperses. Nobody owns a stage; everybody owns the decisions their expertise touches. The whole team validating AI proposals together has two structured forms — <strong>Mob Elaboration</strong> during Inception and <strong>Mob Construction</strong> during Construction — and M03 defines both, along with the rest of the new vocabulary.</p>
 
-<h3>Isn't this just Conductor / OpenSpec / Spec Kit?</h3>
-    <p>Fair question — Google's <strong>Conductor</strong> (a Gemini CLI extension that also plugs into
-    Claude Code) and <strong>OpenSpec</strong> do formalize the same instinct: agree on a spec and a plan
+<h3>Isn't this just Conductor or OpenSpec?</h3>
+    <p>Fair question — Google's <strong>Conductor</strong> (a Gemini CLI extension) and
+    <strong>OpenSpec</strong> do formalize the same instinct: agree on a spec and a plan
     in Markdown before the agent writes code. If you've used either, this module has felt familiar. The
     honest answer is that they are the same <em>family</em> but a different <em>layer</em>:</p>
 
@@ -1963,8 +1970,8 @@ codex
 </figure>
 
 <h2>Units of work: the sizing rule</h2>
-<p>A <strong>unit of work</strong> is the smallest slice of the system sized for exactly one AI construction loop ending in exactly one human checkpoint — and small enough that the humans at that checkpoint can honestly understand every line. The checkpoint is the unit of measure: if a slice needs two sign-offs to be safe, split it; if it can't be reviewed on its own, merge it or re-slice.</p>
-<p>The intake epic from M00's Inception transcript slices exactly this way: UW-1 schema and eligibility validation, UW-2 <code>ClinicalCriteria</code> scoring, UW-3 review-queue routing, UW-4 <code>Determination</code> records. Each is one loop, one decider, one reviewable diff — and each will become a capstone bolt in Track 6.</p>
+<p>A <strong>unit of work</strong> is the smallest slice of the system sized for exactly one AI construction loop ending in exactly one <em>approval gate</em> — and small enough that the humans at that gate can honestly understand every line. Decisions still happen inside the loop: the AI defers a question mid-construction, a named human answers in minutes, the loop continues. What has to be singular is the gate that closes the unit. That gate is the unit of measure: if a slice needs two sign-offs to be safe, split it; if it can't be reviewed on its own, merge it or re-slice.</p>
+<p>M00's Inception transcript stopped one level above the rule: its UW-1 intake, UW-2 <code>ClinicalCriteria</code> scoring, UW-3 review queue, and UW-4 <code>Determination</code> records are epic-sized, and each becomes a capstone bolt in Track 6. Apply the sizing rule to the first of them and the intake epic splits again — UW-1a schema validation, UW-1b eligibility, UW-1c routing handoff. Each of <em>those</em> is one loop, one decider, one reviewable diff.</p>
 
 <aside class="analogy">
 <p>By the second week, Meera and Ravi stopped asking "when will the house be done?" The site had a rhythm instead of a schedule: each morning the design desk opened with questions, each crew took exactly one work package — never two — and each evening ended with a walkthrough where the owners signed off or sent something back. Anything decided on foot went into the build book before the crews left. The firm never said "phase." It said "today's package." Progress stopped being a date on a chart and became a pile of signed-off days.</p>
@@ -2113,7 +2120,7 @@ codex
   <h2>Recap</h2>
   <ul>
     <li>A bolt is one full Inception → Construction → Operations pass in hours to days — the phases recur per bolt, and the renaming is a deliberate break from sprint muscle memory.</li>
-    <li>A unit of work is sized by the checkpoint: one AI construction loop, one human decision, independently reviewable.</li>
+    <li>A unit of work is sized by its closing approval gate: one AI construction loop, one sign-off that ends it, independently reviewable — decisions taken inside the loop don't split the unit.</li>
     <li>Mob Elaboration opens the bolt — the team validates AI-drafted requirements live; Mob Construction guards it — understand every line before sign-off.</li>
     <li>Context memory is the artifact chain — plans, decisions, steering updates — that makes bolt N+1 start smarter than bolt N.</li>
   </ul>
@@ -2136,8 +2143,8 @@ codex
 <p>One epistemic note, without cynicism: all three figures are self-reported by the methodology's author. That doesn't make them false — it makes attribution part of the claim. "As reported by AWS" is not hedging; it is how a credible leader cites a vendor's number.</p>
 
 <h2>What made those work</h2>
-<p>AWS credits conditions, not magic, and each condition is something this course has already named. <strong>Small modules:</strong> the work was sliced so an AI could hold a whole piece in context and a human could honestly review it — M03's unit-of-work sizing rule operating at codebase scale. <strong>Monorepo context:</strong> the AI could see the entire system, not fragments — context memory in its most literal form (and Track 3 shows how to build the equivalent when your estate is messier than a monorepo). <strong>Explicit errors:</strong> failure was loud and checkable rather than silently wrong — the validation-gate habit that M02's checkpoints started and M17 and Track 7 harden.</p>
-<p>This is the load-bearing insight for a leader: the results rode on conditions, and conditions are buildable. The 76 days is not a lottery ticket; it is what the conditions produced.</p>
+<p>The figures above are AWS's; what follows is this course's reading of them. Results like these come from conditions, not magic, and three conditions stand out — each one something this course has already named. <strong>Small modules:</strong> the work was sliced so an AI could hold a whole piece in context and a human could honestly review it — M03's unit-of-work sizing rule operating at codebase scale. <strong>Monorepo context:</strong> the AI could see the entire system, not fragments — context memory in its most literal form (and Track 3 shows how to build the equivalent when your estate is messier than a monorepo). <strong>Explicit errors:</strong> failure was loud and checkable rather than silently wrong — the validation-gate habit that M02's checkpoints started and M17 and Track 7 harden.</p>
+<p>This is the load-bearing insight for a leader: if the results rode on conditions, conditions are buildable. The 76 days is not a lottery ticket; it is what conditions like those make possible.</p>
 
 <aside class="analogy">
 <p>When friends ask why they trusted an architect-builder no one had heard of, Meera and Ravi don't quote the brochure — they describe the three finished houses they visited before signing. At the first, the owners showed them a build book so complete a new crew could start cold the next morning. At the second, a build estimated at a year and a half had closed in a season, and the owner credited day-sized work packages, not heroics. At the third, every county sign-off had passed on the first inspection. "We didn't buy their promises," Ravi says. "We bought their as-builts."</p>
@@ -2170,7 +2177,7 @@ codex
 
     <rect x="30" y="212" width="700" height="46" rx="9" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
     <text x="380" y="240" font-size="11" fill="var(--accent)" font-weight="600" letter-spacing="1">THE CONDITIONS — small modules · monorepo context · explicit errors</text>
-    <text x="380" y="288" font-size="9.5" fill="var(--ink-soft)">all three results: as reported by AWS</text>
+    <text x="380" y="288" font-size="9.5" fill="var(--ink-soft)">the three results: as reported by AWS · the conditions: this course's reading</text>
   </g>
   <line x1="135" y1="208" x2="135" y2="156" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#m04arr)"/>
   <line x1="380" y1="208" x2="380" y2="156" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#m04arr)"/>
@@ -2180,7 +2187,7 @@ codex
 </figure>
 
 <table class="bridge">
-  <thead><tr><th>AWS-credited enabler</th><th>What it means</th><th>AI-DLC concept it validates</th></tr></thead>
+  <thead><tr><th>Enabler (this course's reading)</th><th>What it means</th><th>AI-DLC concept it validates</th></tr></thead>
   <tbody>
     <tr><td>Small modules</td><td>Slices an AI can hold and a human can honestly review</td><td><b>Unit-of-work sizing rule</b> (M03)</td></tr>
     <tr><td>Monorepo context</td><td>The AI sees the whole system, not fragments</td><td><b>Context memory</b> (M03); semantic context building (Track 3)</td></tr>
@@ -2222,7 +2229,7 @@ codex
       <li><strong>The pilot bar:</strong> one baseline (current auth-request turnaround), one metric with a number and a date, one counterfactual guard — plus the enabling condition your org is missing today (small modules? shared context? gates?) and the first move to build it.</li>
     </ol>
     <details><summary>A worked answer</summary>
-      <p><em>Evidence slide:</em> "AWS reports its Bedrock re-architecture — estimated at 18 months for 30 developers — was delivered by 6 engineers in 76 days. Amazon Stores reports 4.5x developer velocity under the same methodology. Blue Origin reports 95% sustained adoption. All figures are AWS-reported; we treat them as what conditions like ours can produce, not as promises."</p>
+      <p><em>Evidence slide:</em> "AWS reports its Bedrock re-architecture — estimated at 18 months for 30 developers — was delivered by 6 engineers in 76 days. Amazon Stores reports 4.5x developer velocity under the same methodology. Blue Origin reports 95% adoption. All figures are AWS-reported; we treat them as what conditions like ours can produce, not as promises."</p>
       <p><em>Pilot bar:</em> "Baseline: median prior-auth turnaround is 4.2 days, measured over the last 90 days, frozen before bolt 1. Metric: median turnaround under 24 hours for auto-approvable requests by end of quarter, with zero determinations lacking a nurse decision below the 0.85 threshold. Counterfactual guard: the claims-intake team, similar backlog, keeps its current process this quarter — we report our delta against theirs. Missing condition: our estate is not a monorepo and has no shared context artifact; first move is a steering file and decision log for the portal repos, starting this bolt."</p>
     </details>
   </div>
@@ -2232,7 +2239,7 @@ codex
   <h2>Recap</h2>
   <ul>
     <li>The record, as reported by AWS: Bedrock's 18-month/30-dev estimate delivered by 6 engineers in 76 days; Amazon Stores 4.5x developer velocity; Blue Origin 95% adoption.</li>
-    <li>The results rode on conditions — small modules, monorepo context, explicit errors — and each maps to an AI-DLC practice you can build deliberately.</li>
+    <li>The conditions this course reads into those results — small modules, monorepo context, explicit errors — map one-to-one onto AI-DLC practices you can build deliberately.</li>
     <li>Leaders quote outcomes with conditions attached; a pitch that skips the conditions is the tell of a bad case.</li>
     <li>Your pilot's evidence bar: a baseline, one honest metric with a date, and a counterfactual guard — the full measurement system arrives in M31.</li>
   </ul>
@@ -2310,7 +2317,7 @@ codex
 </aside>
 
 <h2>Question-driven elaboration</h2>
-<p>The pipeline's quality engine is the questions. At every stage the AI attaches them where the intent is silent, and four kinds recur. <strong>Policy:</strong> who may change the threshold? <strong>Edge case:</strong> the <code>Member</code> is eligible but the <code>Provider</code> is out-of-network — what happens? <strong>Data:</strong> where does eligibility truth live, and how stale may it be? <strong>Integration:</strong> does the portal write determinations back to the claims system, or only read?</p>
+<p>The pipeline's quality engine is the questions. At every stage the AI attaches them where the intent is silent, and four kinds recur. <strong>Policy:</strong> a request auto-approved at 0.91 re-scores at 0.62 — does the determination stand? <strong>Edge case:</strong> the <code>Member</code> is eligible but the <code>Provider</code> is out-of-network — what happens? <strong>Data:</strong> where does eligibility truth live, and how stale may it be? <strong>Integration:</strong> does the portal write determinations back to the claims system, or only read?</p>
 <p>Answers are never just chat. Each becomes a recorded constraint — a line in <code>decisions.md</code> that downstream artifacts must trace to. And note the inverted quality signal: an Inception that ends with <em>zero</em> deferred questions is not a compliment to the intent. It means the AI assumed — M01's first anti-pattern wearing a process costume.</p>
 
 <table class="bridge">
@@ -2385,7 +2392,9 @@ REQUIREMENTS (4 of 9):
       writes an outreach log entry.          [decided M02]
   R4  GUARDRAIL: score &lt; AUTO_APPROVE_THRESHOLD (0.85) routes
       to the nurse review queue — no bypass path may exist.
-      ? [policy] who may change the threshold value?
+      ? [policy] a request auto-approved at 0.91 re-scores at
+        0.62 — does the determination stand, or reopen for
+        nurse review?
   R6  Urgent requests carry a priority flag on the same path.
   R7  Every score is logged immutably for audit.
       ? [data] where does the audit log live — portal DB or
@@ -2539,10 +2548,12 @@ codex
   </tbody>
 </table>
 
-<h3>What must be synchronous — and what never was</h3>
+<h2>What must be synchronous — and what never was</h2>
 <p>Mob Elaboration is synchronous <em>on purpose</em> — deferring a decision costs a ticket queue — but
-it is minutes, not a standing meeting, and it is one of only two sync moments in a bolt (the other is
-the checkpoint). Everything between runs offline: the engine executes from the unit of work, and any
+it is minutes, not a standing meeting. M03's table lists three rituals that gather anyone at all: this
+one, the Mob Construction checkpoint, and the bolt close — and the close is in practice a write-up by
+whoever shipped, not a meeting. Everything between runs offline: the engine executes from the unit of
+work, and any
 question already answered in <code>decisions.md</code> interrupts nobody. A genuinely new question gets
 parked in the unit's open questions and answered on the ticket or in the log — you convene early only
 when it blocks the unit. Distributed teams run the ritual itself asynchronously when they must: the AI
@@ -2558,10 +2569,12 @@ a DM that never reaches the log.</p>
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
     <p>A Mob Elaboration excerpt from the intake session. Mark the five loop stages in the first exchange; find the deciding authority in the second; extract the parking-lot row from the third.</p>
-<pre><code>AI:   Urgent requests — my guess: priority flag, same path. I
-      won't decide: this affects triage order, clinical territory.
-SME:  Flag is right. But urgent means STAT imaging too — 4 hours,
-      not 24. Add it to the criteria.
+<pre><code>AI:   Urgent requests use a priority flag on the same path
+      [decided M02]. Still open: what SLA does urgent carry? My
+      guess: 24 hours, same as standard. I won't decide — SLA is
+      clinical territory.
+SME:  Not 24 — urgent means STAT imaging too. 4 hours. Add it
+      to the criteria.
 AI:   Restating: priority flag, same path; urgent SLA is 4 hours
       including STAT imaging. Recording… done. Next.
 
@@ -2575,11 +2588,12 @@ AI:   Restating: no side channels; 4-hour SLA raises a queue
 
 AI:   R7's audit log — portal DB or the org compliance store?
 ARCH: Genuinely don't know. Compliance owns that answer.
-FAC:  Parked: owner Priya (architect), answer by Friday.
-      Blocks UW-1c routing handoff — bolt order may shift.</code></pre>
+FAC:  Parked: owner Priya (architect), answer by Friday. Blocks
+      R7's immutable score log in bolt 2's scoring engine, and
+      UW-1c's handoff into it — bolt order may shift.</code></pre>
     <p><strong>Check yourself:</strong> (1) In the first exchange, where are the five stages? (2) In the second, what did the facilitator do that a consensus-seeker wouldn't? (3) What three fields make the parked question a promise instead of a graveyard entry?</p>
     <details><summary>Answers</summary>
-      <p>(1) Ask + best guess (AI's first line), bounded discussion (SME's answer), decision by a named owner (the SME — clinical territory), restate (AI's "Restating…"), record ("Recording… done"). (2) Asked whose call it was — jurisdiction, not agreement; the PO owned routing policy, so the SME's preference informed but didn't decide. (3) Owner (Priya), date (Friday), and the blocked unit of work (UW-1c) — which is what lets it reorder the backlog instead of silently rotting.</p>
+      <p>(1) Ask + best guess (AI's first line), bounded discussion (SME's answer), decision by a named owner (the SME — clinical territory), restate (AI's "Restating…"), record ("Recording… done"). (2) Asked whose call it was — jurisdiction, not agreement; the PO owned routing policy, so the SME's preference informed but didn't decide. (3) Owner (Priya), date (Friday), and the blocked work — R7's immutable score log in bolt 2's scoring engine, plus UW-1c's handoff into it — which is what lets it reorder the backlog instead of silently rotting.</p>
     </details>
   </div>
 
@@ -2643,7 +2657,7 @@ codex
   minutes: 35,
   audience: "practitioner",
   body: `
-<p class="hook">Thursday, 9:20 am. Bolt 1 opens with UW-1a — schema validation for <code>AuthRequest</code> intake — and for the first time this course, code is about to exist. The AI posts three artifacts in order: a proposed architecture (where validation lives, what it depends on), an implementation plan (nine steps, two marked as decisions it won't make), and nothing else — because the plan is a checkpoint, and no approved plan means no code. The junior dev asks the obvious question: "It could have just written the code in the time this took." True. And that's exactly how you get 4,200 lines nobody can explain — Construction's discipline is that speed arrives <em>after</em> the plan survives contact with humans.</p>
+<p class="hook">Thursday, 9:20 am. Bolt 1 opens with UW-1a — intake validation for <code>AuthRequest</code> — and for the first time this course, code is about to exist. The AI posts three artifacts in order: a proposed architecture (where validation lives, what it depends on), an implementation plan (nine steps, two marked as decisions it won't make), and nothing else — because the plan is a checkpoint, and no approved plan means no code. The junior dev asks the obvious question: "It could have just written the code in the time this took." True. And that's exactly how you get 4,200 lines nobody can explain — Construction's discipline is that speed arrives <em>after</em> the plan survives contact with humans.</p>
 
 <h2>Architecture and plans before code</h2>
 <p>For each unit of work, the AI proposes two artifacts before any implementation. The <strong>architecture proposal</strong> is small-scale and reviewable — where validation lives, what it depends on, how data flows — not a cathedral document; it answers "will this placement haunt us?" in a page. The <strong>implementation plan</strong> is ordered steps, each small enough to verify, and it carries its own deferred decisions inline: <code>step 6 — BLOCKED (HUMAN): outreach-log format</code>. M02's protocol didn't stop at Inception; it runs inside Construction too.</p>
@@ -2767,8 +2781,10 @@ codex
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
     <p>The AI's implementation plan for UW-1a, as posted for approval. Find the two deferred decisions; walk AC-2 to its test; and spot the plan smell.</p>
-<pre><code>PLAN UW-1a — AuthRequest schema validation      [for approval]
- 1. Define AuthRequestDto: memberId, providerId, serviceCode,
+<pre><code>PLAN UW-1a — AuthRequest intake validation      [for approval]
+     scope: schema + the intake-side eligibility and network
+     checks; UW-1b and UW-1c get ports here, nothing more.
+ 1. Define AuthRequestDto: memberId, providerId, procedureCode,
     urgency.                                     → AC-1
  2. Field-level validation errors (collect all, not fail-fast).
                                                  → AC-1
@@ -2780,7 +2796,8 @@ codex
  7. Out-of-network → route flag for nurse review, plus urgency
     propagation, plus request-received notification stub. → AC-3
  8. BLOCKED (HUMAN): does intake emit notifications at all, or
-    does Determinations own that? [integration] — blocks step 7c.
+    does Determinations own that? [integration] — blocks the
+    notification stub inside step 7.
  9. Tests: rejects_when_schema_invalid (AC-1),
     writes_outreach_log_once (AC-2), routes_oon_to_review (AC-3).</code></pre>
     <p><strong>Check yourself:</strong> (1) What exactly blocks while step 4 waits — and what doesn't? (2) Walk AC-2 through the plan: which step, which test? (3) Which step smells, and how would you fix it before approving?</p>
@@ -2791,7 +2808,7 @@ codex
 
   <div class="path">
     <div class="path-label">Path B — Build It with AI (both engines)</div>
-    <p>The unit of work: UW-1a for real — the course's first code. The prompt enforces the plan checkpoint: the engine stops and waits for your approval before implementing. Run in <code>prior-auth-api</code>.</p>
+    <p>The unit of work: UW-1a's schema slice (steps 1–2) for real — the course's first code. The prompt enforces the plan checkpoint: the engine stops and waits for your approval before implementing. Run in <code>prior-auth-api</code>.</p>
     <div class="engine-tabs">
       <div class="engine-tab-btns" role="tablist">
         <button class="active" data-engine="cc">Claude Code</button>
@@ -2804,14 +2821,14 @@ claude
 &gt; UW-1a: AuthRequest schema validation. First, post an
 &gt; implementation plan (numbered steps, mark any decision you
 &gt; defer to me) and STOP — wait for my approval. After I approve:
-&gt; implement AuthRequestDto (memberId, providerId, serviceCode,
+&gt; implement AuthRequestDto (memberId, providerId, procedureCode,
 &gt; urgency) with field-level validation collecting all errors,
 &gt; plus Jest unit tests named for their acceptance criteria:
 &gt; rejects_when_schema_invalid, plus a happy-path test. Scaffold
 &gt; minimal TypeScript + Jest if the repo has none. Then run the
 &gt; tests and write docs/M07-increment.md explaining every
 &gt; non-obvious choice in the diff.</code></pre>
-        <p><strong>Verify:</strong> the engine stopped at the plan; <code>npx jest</code> is green; test names match their criteria; <code>docs/M07-increment.md</code> explains the diff.</p>
+        <p><strong>Verify:</strong> the engine stopped at the plan; <code>npm test</code> and <code>npm run typecheck</code> are green — the gates AGENTS.md mandates; test names match their criteria; <code>docs/M07-increment.md</code> explains the diff.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI
@@ -2820,7 +2837,7 @@ codex
 &gt; UW-1a: AuthRequest schema validation. First, post an
 &gt; implementation plan (numbered steps, mark any decision you
 &gt; defer to me) and STOP — wait for my approval. After I approve:
-&gt; implement AuthRequestDto (memberId, providerId, serviceCode,
+&gt; implement AuthRequestDto (memberId, providerId, procedureCode,
 &gt; urgency) with field-level validation collecting all errors,
 &gt; plus Jest unit tests named for their acceptance criteria:
 &gt; rejects_when_schema_invalid, plus a happy-path test. Scaffold
@@ -2830,7 +2847,7 @@ codex
         <p><strong>Verify:</strong> same checks, steered by AGENTS.md. Scaffold layout may differ from Claude Code's; the DTO behavior, the test names, and the green run must not.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> a plan existed before any code, you actually said "approved" (or amended it first), <code>npx jest</code> passes, and the increment summary leaves nothing in the diff unexplained.</p>
+    <p><strong>Done when</strong> a plan existed before any code, you actually said "approved" (or amended it first), <code>npm test</code> and <code>npm run typecheck</code> both pass, and the increment summary leaves nothing in the diff unexplained.</p>
   </div>
 </section>
 
@@ -2853,11 +2870,11 @@ codex
   minutes: 30,
   audience: "practitioner",
   body: `
-<p class="hook">Friday, 13:00. UW-1a's increment is up on the screen: 14 files, 312 lines, tests green. The AI opens the way it always must — deviations first: "Two departures from the approved plan: I added a serviceCode format check that wasn't in step 1, and the outreach log writes through a buffer, not directly." The architect points at a line: "Explain the buffer flush condition." Thirty seconds later the room knows something subtle about failure ordering that no one would have caught scrolling a diff alone at 4 pm. That's Mob Construction: not a meeting about code, but the moment the team either understands its system or merges a stranger into it.</p>
+<p class="hook">Friday, 13:00. UW-1a's increment is up on the screen: 14 files, 312 lines, tests green. The AI opens the way it always must — deviations first: "Two departures from the approved plan: I added a procedureCode format check that wasn't in step 1, and the outreach log writes through a buffer, not directly." The architect points at a line: "Explain the buffer flush condition." Thirty seconds later the room knows something subtle about failure ordering that no one would have caught scrolling a diff alone at 4 pm. That's Mob Construction: not a meeting about code, but the moment the team either understands its system or merges a stranger into it.</p>
 
 <h2>The increment review, as a ritual</h2>
 <p>The structure deliberately mirrors M06: one increment at a time, and the author presents its own work. The AI walks the increment <em>against the approved plan</em> in a fixed order — <strong>deviations first</strong>, then the criteria walk (fig 7.2's arrows, criterion by criterion), then open floor. Deviations lead because they're where the risk lives; burying them after twenty minutes of matching-the-plan is how surprises ship.</p>
-<p>The room follows M03's table: the named decider must attend, and the engineers who'll build adjacent units of work attend because this diff is their tomorrow's context. One reframe matters: deviations aren't sins — <em>unexplained</em> deviations are. "I added a serviceCode format check, because the schema allows strings the payer will reject downstream" is the AI exercising judgment transparently; the review exists to decide whether that judgment stands.</p>
+<p>The room follows M03's table: the named decider must attend, and the engineers who'll build adjacent units of work attend because this diff is their tomorrow's context. One reframe matters: deviations aren't sins — <em>unexplained</em> deviations are. "I added a procedureCode format check, because the schema allows strings the payer will reject downstream" is the AI exercising judgment transparently; the review exists to decide whether that judgment stands.</p>
 
 <h2>Understand every line</h2>
 <p>The discipline has a one-sentence form: <strong>nothing merges that no human present can explain.</strong> In regulated code this is not culture, it's survival — "the AI wrote it" is not an answer an auditor, or a plaintiff's attorney, accepts about a <code>Determination</code> path.</p>
@@ -2930,7 +2947,7 @@ codex
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
     <p>The Mob Construction transcript for UW-1a. Mark where deviations lead; name the gate each exchange exercises; then write the send-back's re-entry step yourself.</p>
-<pre><code>AI:    Two deviations from the approved plan. One: serviceCode
+<pre><code>AI:    Two deviations from the approved plan. One: procedureCode
        format check added — schema allowed strings the payer
        rejects downstream. Two: outreach log writes through a
        buffer — direct writes stalled intake by 40ms p95.
@@ -3124,23 +3141,24 @@ codex
 DECISIONS      urgent SLA 4h incl. STAT imaging [M06 loop 1] ·
                no side channels, queue alarm [M06 loop 2] ·
                outreach log structured [M02].
-DEVIATIONS     serviceCode format check added at construction;
+DEVIATIONS     procedureCode format check added at construction;
                kept at review — payer rejects malformed codes.
 LEARNINGS      staging, 5 days: outreach buffer never reached
                its 50-entry flush; queue alert fired 0 times;
                p95 intake 61ms.
-OPEN FOR B2    eligibility staleness — Priya, was due Friday,
-               now BLOCKS UW-1b start. Audit-store location
-               still parked; scoring engine (bolt 2) needs it.</code></pre>
+OPEN FOR B2    audit-store location — Priya, was due Friday,
+               still open; blocks UW-1c handoff and bolt 2's
+               scoring engine. Eligibility staleness still
+               unowned — step 5 shipped on a 24h assumption.</code></pre>
     <p><strong>Check yourself:</strong> (1) Which acceptance criterion does the queue alert trace to? (2) Which M06 exchange does "no side channels" link back to? (3) Which open question re-orders bolt 2, and what should Tuesday's Mob Elaboration do first?</p>
     <details><summary>Answers</summary>
-      <p>(1) The guardrail — S2/R4's "below threshold routes to nurse review": the alert fires if a scored-below-0.85 request lacks a queue entry; zero fires means the promise held. (2) The disagreement loop — SME wanted a phone call, PO ruled queue-only with an SLA alarm; the alarm in staging is that decision, running. (3) Eligibility staleness now blocks UW-1b — Tuesday opens by chasing Priya's answer or re-sequencing bolt 2 to start with the scoring engine's non-blocked slices.</p>
+      <p>(1) The guardrail — S2/R4's "below threshold routes to nurse review": the alert fires if a scored-below-0.85 request lacks a queue entry. Read the zero honestly, though: bolt 1 shipped intake validation only — nothing has been scored yet, so the alert had nothing to catch. It is armed ahead of the behavior it protects, which makes it evidence in bolt 2, not proof today. (2) The disagreement loop — SME wanted a phone call, PO ruled queue-only with an SLA alarm; the alarm in staging is that decision, running. (3) The audit-store location — parked in M06 with owner Priya and a Friday date that has now passed. It blocks UW-1c's routing handoff, and bolt 2's scoring engine needs the same answer, so Tuesday opens by chasing Priya or re-sequencing bolt 2 to start with the scoring slices that don't touch the audit store. (Eligibility staleness is the other open line, but it never had an owner — it came out of M07's plan as step 4's blocker, and step 5 shipped on a stated assumption.)</p>
     </details>
   </div>
 
   <div class="path">
     <div class="path-label">Path B — Build It with AI (both engines)</div>
-    <p>The unit of work: close bolt 1 for real. Your engine curates the whole docs/ chain into the five-section close-out. Run in <code>prior-auth-api</code>.</p>
+    <p>The unit of work: close bolt 1 for real. Your engine curates the whole docs/ chain into the five-section close-out. Run in <code>prior-auth-api</code>. (Joined mid-course, so docs/ holds fewer than three files? Cite what you do have — <code>docs/decisions.md</code> ships with the repo — and write "no artifact; not run" under any section you can't source, rather than letting the engine invent one.)</p>
     <div class="engine-tabs">
       <div class="engine-tab-btns" role="tablist">
         <button class="active" data-engine="cc">Claude Code</button>
@@ -3543,7 +3561,7 @@ codex
 </aside>
 
 <h2>High semantics-per-token</h2>
-<p>What makes a map good is density, and the reason is economic: context windows are finite and shared with the actual work. Raw code is low-density context — it restates what the system does at 1:1 scale. The map compresses meaning: <em>"eligibility data is up to 24h stale (nightly 02:00 refresh)"</em> is one line that answers M05's staleness question forever; the code that implies it is 500 lines across two repos and an ops cron table. That ratio — meaning per token spent — is what AI-DLC calls <strong>high semantics-per-token</strong>, and it's the survey's quality bar.</p>
+<p>What makes a map good is density, and the reason is economic: context windows are finite and shared with the actual work. Raw code is low-density context — it restates what the system does at 1:1 scale. The map compresses meaning: <em>"eligibility data is up to 24h stale (nightly 02:00 refresh)"</em> is one line that permanently answers the staleness question M07's plan parked at step 4; the code that implies it is 500 lines across two repos and an ops cron table. That ratio — meaning per token spent — is what AI-DLC calls <strong>high semantics-per-token</strong>, and it's the survey's quality bar.</p>
 <p>Curation heuristics: record <em>invariants</em> (what must stay true), <em>surprises</em> (what a reasonable engineer would guess wrong), and <em>semantics</em> (what E4 actually means). Skip what any reader re-derives in seconds — getters, DTOs, framework noise. Density isn't a style preference; it's why the map gets read at all, by engines and by humans.</p>
 
 <figure>
@@ -3601,7 +3619,7 @@ codex
   <thead><tr><th>Raw artifact (what the AI sees)</th><th>Semantic-map line (what it means)</th></tr></thead>
   <tbody>
     <tr><td><code>if (m.flags.includes('E4')) …</code> scattered across 6 call sites</td><td>"E4 = retroactively terminated → ineligible for new auths <b>(confirmed: J. Ortiz)</b>"</td></tr>
-    <tr><td>Cron entry <code>0 2 * * *</code> in an ops repo</td><td>"Eligibility cache refreshes nightly 02:00 — data up to 24h stale; closes M05's staleness question"</td></tr>
+    <tr><td>Cron entry <code>0 2 * * *</code> in an ops repo</td><td>"Eligibility cache refreshes nightly 02:00 — data up to 24h stale; closes M07's step-4 staleness question"</td></tr>
     <tr><td><code>return res.status(200).send()</code> on unknown member</td><td>"200 + empty body = member unknown — treat as ineligible, do NOT retry <b>⚑ CONFIRM (holder retires in May)</b>"</td></tr>
   </tbody>
 </table>
@@ -3626,9 +3644,9 @@ INVARIANTS I-1  eligibility data ≤ 24h stale — plan for it
                   knowledge holder retires in May
 FLAGGED    F-1  E7 appears 14 times, always with manual-review
            comments — meaning unknown ⚑ CONFIRM</code></pre>
-    <p><strong>Check yourself:</strong> (1) Which line closes Priya's parked staleness question from the bolt-1 close-out? (2) What does confirming I-3 actually require, and why is the deadline real? (3) Roughly what compression does I-2 represent?</p>
+    <p><strong>Check yourself:</strong> (1) Which line closes the unowned staleness question from the bolt-1 close-out? (2) What does confirming I-3 actually require, and why is the deadline real? (3) Roughly what compression does I-2 represent?</p>
     <details><summary>Answers</summary>
-      <p>(1) I-1 — and it converts M05's [data] question into a design constraint bolt 2 plans around rather than a surprise it hits in production. (2) A human who knows the eligibility system verifying the convention and putting their name on it — before May, because after May the only holder of that knowledge is gone and "confirm" becomes "reverse-engineer." (3) Six call sites' worth of string comparison plus the tribal knowledge of why — hundreds of lines and one retirement risk, compressed to one confirmed, citable sentence.</p>
+      <p>(1) I-1 — and it converts the [data] question M07's plan parked at step 4 into a design constraint bolt 2 plans around rather than a surprise it hits in production. (2) A human who knows the eligibility system verifying the convention and putting their name on it — before May, because after May the only holder of that knowledge is gone and "confirm" becomes "reverse-engineer." (3) Six call sites' worth of string comparison plus the tribal knowledge of why — hundreds of lines and one retirement risk, compressed to one confirmed, citable sentence.</p>
     </details>
   </div>
 
@@ -3647,10 +3665,10 @@ claude
 &gt; Treat this repo as brownfield and run a semantic survey. Write
 &gt; docs/M12-semantic-map.md with four sections: entities, flows,
 &gt; invariants, flagged unknowns. Every invariant must cite the
-&gt; file that implies it (e.g. the collect-all-errors validation,
-&gt; the OUTREACH_FLUSH_MS config). Include at least 2 flagged
-&gt; unknowns phrased as CONFIRM questions a human must answer.
-&gt; Keep the whole map under 2 pages. Change no code.</code></pre>
+&gt; file that implies it (e.g. your collect-all-errors validation,
+&gt; the &gt;= threshold check in src/determination/). Include at
+&gt; least 2 flagged unknowns phrased as CONFIRM questions a human
+&gt; must answer. Keep the whole map under 2 pages. Change no code.</code></pre>
         <p><strong>Verify:</strong> four sections; every invariant cites a real file; ≥2 ⚑ CONFIRM flags; the map fits 2 pages; no code touched.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
@@ -3660,10 +3678,10 @@ codex
 &gt; Treat this repo as brownfield and run a semantic survey. Write
 &gt; docs/M12-semantic-map.md with four sections: entities, flows,
 &gt; invariants, flagged unknowns. Every invariant must cite the
-&gt; file that implies it (e.g. the collect-all-errors validation,
-&gt; the OUTREACH_FLUSH_MS config). Include at least 2 flagged
-&gt; unknowns phrased as CONFIRM questions a human must answer.
-&gt; Keep the whole map under 2 pages. Change no code.</code></pre>
+&gt; file that implies it (e.g. your collect-all-errors validation,
+&gt; the &gt;= threshold check in src/determination/). Include at
+&gt; least 2 flagged unknowns phrased as CONFIRM questions a human
+&gt; must answer. Keep the whole map under 2 pages. Change no code.</code></pre>
         <p><strong>Verify:</strong> same checks, steered by AGENTS.md. The two engines may surface different invariants — compare them; the union is your real map.</p>
       </div>
     </div>
@@ -3707,7 +3725,7 @@ codex
 
 <h2>One pattern, many names</h2>
 <p>Now the rule this course has been living since M00, stated plainly: <strong>the steering file is one pattern with many names.</strong> Claude Code reads <code>CLAUDE.md</code>. Codex CLI reads <code>AGENTS.md</code>. Amazon Q Developer calls it Project Rules. Kiro calls it Steering. The content — conventions, domain rules, guardrails, workflow pointers — is the same idea in the same position: standing rules the engine loads before it does anything. Learn the pattern once; rename the file per engine.</p>
-<p>For a dual-engine team, that means twin files with identical rules — and drift between them is a silent fork of "how we build": one engine collecting all validation errors while the other fails fast is a bug you'll hunt for a day. Keep them in sync mechanically (generate one from the other, or diff them in CI). What belongs in steering: anything with a "rarely changes" cadence. What doesn't: per-bolt state, secrets, and anything a decision log or plan should own.</p>
+<p>For a dual-engine team, the tempting move is twin files with identical rules — and that is exactly where drift becomes a silent fork of "how we build": one engine collecting all validation errors while the other fails fast is a bug you'll hunt for a day. Prefer <strong>one source of truth plus an import</strong>: the rules live in <code>AGENTS.md</code>, and <code>CLAUDE.md</code> pulls them in with <code>@AGENTS.md</code>. That is how <code>prior-auth-api</code> ships, and the section below shows why the import beats duplication. Duplication is the fallback only for engines with no import mechanism — and then you sync it mechanically (generate one from the other, or diff them in CI). What belongs in steering: anything with a "rarely changes" cadence. What doesn't: per-bolt state, secrets, and anything a decision log or plan should own.</p>
 
 <figure>
 <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The three-layer memory hierarchy: steering file, system knowledge, per-bolt artifacts, read top-down with learnings promoting upward">
@@ -3752,7 +3770,7 @@ codex
   </tbody>
 </table>
 
-<h3>How a file physically becomes memory</h3>
+<h2>How a file physically becomes memory</h2>
     <div class="callout-strong">Writing a file does not make it memory. A file on disk is not
     in the model's context.</div>
 
@@ -3766,7 +3784,7 @@ codex
         <tbody>
           <tr><td><b>Automatic</b></td><td><code>CLAUDE.md</code> in the project root, in any ancestor directory, and <code>~/.claude/CLAUDE.md</code></td>
             <td>Eagerly, in full, at launch — <b>before your first prompt</b></td></tr>
-          <tr><td><b>Imported</b></td><td>Any file named with <code>@path</code> inside <code>CLAUDE.md</code> — recursive to 4 hops, ignored inside code fences</td>
+          <tr><td><b>Imported</b></td><td>Any file named with <code>@path</code> inside <code>CLAUDE.md</code> — recursive to a max depth of 5 hops, ignored inside code fences</td>
             <td>Eagerly at launch, alongside the file importing it</td></tr>
           <tr><td><b>Everything else</b></td><td><code>docs/decisions.md</code>, <code>docs/units/</code>, all your source</td>
             <td><b>Not in context at all</b> — until the model calls the Read tool (usually because an instruction told it to), a grep finds it, you <code>@</code>-mention it, or a hook or skill reads it</td></tr>
@@ -3775,10 +3793,10 @@ codex
     </div>
 
     <p>So which tier should the decision log be in? The repo puts it in tier 2, deliberately —
-    those two lines are the entire <code>CLAUDE.md</code> body:</p>
+    these two imports are the load-bearing lines of its <code>CLAUDE.md</code>:</p>
 
     <div class="artifact doc">
-      <div class="artifact-name"><b>prior-auth-api/CLAUDE.md</b></div>
+      <div class="artifact-name"><b>prior-auth-api/CLAUDE.md</b> (excerpt)</div>
       <pre>@AGENTS.md
 @docs/decisions.md</pre>
     </div>
@@ -3805,7 +3823,7 @@ codex
 
 <section class="lab">
   <div class="lab-head">Lab M13 · 25 min</div>
-  <h2>Sort the memory, then twin the steering</h2>
+  <h2>Sort the memory, then audit the steering chain</h2>
 
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
@@ -3823,7 +3841,7 @@ S5  "Guardrail-or-PHI changes always run the full pipeline."</code></pre>
 
   <div class="path">
     <div class="path-label">Path B — Build It with AI (both engines)</div>
-    <p>The unit of work: make dual-engine memory physical. Whichever engine you run, it generates the <em>other</em> engine's steering twin, then indexes the whole memory. Run in <code>prior-auth-api</code>.</p>
+    <p>The unit of work: audit dual-engine memory, then index it. Whichever engine you run, it verifies the steering chain holds — one set of rules, imported, not duplicated — then indexes the whole memory. Run in <code>prior-auth-api</code>.</p>
     <div class="engine-tabs">
       <div class="engine-tab-btns" role="tablist">
         <button class="active" data-engine="cc">Claude Code</button>
@@ -3833,30 +3851,36 @@ S5  "Guardrail-or-PHI changes always run the full pipeline."</code></pre>
 <pre><code># Claude Code
 cd prior-auth-api
 claude
-&gt; Read CLAUDE.md. Generate AGENTS.md with equivalent steering
-&gt; content for Codex CLI — same rules, same guardrails, adapted
-&gt; wording only where the engine name matters. Then write
-&gt; docs/M13-memory-index.md: every context artifact in this repo
-&gt; (steering files, decisions, semantic map, plans, close-outs)
-&gt; listed with its layer (steering / knowledge / per-bolt) and
-&gt; change cadence. Change no code.</code></pre>
-        <p><strong>Verify:</strong> AGENTS.md exists and agrees with CLAUDE.md on every rule (diff them); the index covers all three layers; no code files touched.</p>
+&gt; Read CLAUDE.md and AGENTS.md. Verify the steering chain:
+&gt; AGENTS.md holds the rules, CLAUDE.md imports it with
+&gt; @AGENTS.md, and no domain rule is restated in both files.
+&gt; Report any rule that is duplicated or has drifted. Then
+&gt; write docs/M13-memory-index.md: every context artifact in
+&gt; this repo (steering files, decisions, semantic map, plans,
+&gt; close-outs) with its layer (steering / knowledge / per-bolt),
+&gt; its change cadence, and whether it reaches the engine
+&gt; mechanically (imported) or contractually (an instruction
+&gt; asks for it). Change no code.</code></pre>
+        <p><strong>Verify:</strong> each domain rule lives in exactly one file — <code>AGENTS.md</code> — and <code>CLAUDE.md</code> reaches it by import; the index covers all three layers; no code files touched. Run <code>/context</code> to confirm the decision log really did load.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI
 cd prior-auth-api
 codex
-&gt; Read AGENTS.md. Generate CLAUDE.md with equivalent steering
-&gt; content for Claude Code — same rules, same guardrails, adapted
-&gt; wording only where the engine name matters. Then write
-&gt; docs/M13-memory-index.md: every context artifact in this repo
-&gt; (steering files, decisions, semantic map, plans, close-outs)
-&gt; listed with its layer (steering / knowledge / per-bolt) and
-&gt; change cadence. Change no code.</code></pre>
-        <p><strong>Verify:</strong> same checks, mirrored — CLAUDE.md generated from AGENTS.md. After either variant, the repo steers both engines identically.</p>
+&gt; Read AGENTS.md and CLAUDE.md. Verify the steering chain:
+&gt; AGENTS.md holds the rules, CLAUDE.md imports it with
+&gt; @AGENTS.md, and no domain rule is restated in both files.
+&gt; Report any rule that is duplicated or has drifted. Then
+&gt; write docs/M13-memory-index.md: every context artifact in
+&gt; this repo (steering files, decisions, semantic map, plans,
+&gt; close-outs) with its layer (steering / knowledge / per-bolt),
+&gt; its change cadence, and whether it reaches the engine
+&gt; mechanically (imported) or contractually (an instruction
+&gt; asks for it). Change no code.</code></pre>
+        <p><strong>Verify:</strong> same checks, same file — and one asymmetry to record honestly: Codex has no import mechanism, so <code>docs/decisions.md</code> reaches it only because <code>AGENTS.md</code> asks. Mark it <em>contractual</em> for this engine, <em>mechanical</em> for Claude Code.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> both steering twins exist and agree rule-for-rule, the memory index names every artifact with layer and cadence — and from this lab forward, every remaining lab in this course runs against a dual-steered repo.</p>
+    <p><strong>Done when</strong> you can point to the single file where each rule lives exactly once, the import chain that carries it to the other engine, and a memory index naming every artifact with its layer, cadence, and whether it arrives mechanically or contractually.</p>
   </div>
 </section>
 
@@ -3865,7 +3889,7 @@ codex
   <ul>
     <li>Context memory is three layers by change cadence — steering (rarely), system knowledge (per decision), per-bolt artifacts (per bolt) — read top-down by engines and new humans alike.</li>
     <li>Sessions are stateless on purpose: chat is not memory; the artifact chain is. If it mattered, it's in a file.</li>
-    <li>The steering file is one pattern with many names — CLAUDE.md, AGENTS.md, Project Rules, Kiro Steering; learn it once, rename per engine, keep twins in sync.</li>
+    <li>The steering file is one pattern with many names — CLAUDE.md, AGENTS.md, Project Rules, Kiro Steering; learn it once, rename per engine, and keep the rules in one file the others reach.</li>
     <li>Placement rule: every-future-change → steering; fact-about-the-system → knowledge; this-bolt → plan. Learnings promote upward by reviewed edit.</li>
   </ul>
   <span class="next">Next → M14 · Steering with CLAUDE.md</span>
@@ -3883,7 +3907,7 @@ codex
 
 <h2>What Claude Code reads, and when</h2>
 <p><code>CLAUDE.md</code> loads at launch, before any prompt exists. That position is the whole trick: the session starts already knowing how this team builds, so steering outranks conversation the way a constitution outranks a motion. The engine doesn't have to be reminded, and neither does the teammate who joined Tuesday.</p>
-<p>There's a cascade. A global <code>~/.claude/CLAUDE.md</code> carries personal defaults; the project root's <code>CLAUDE.md</code> carries team rules — in version control, edited by review, like any artifact that binds everyone; subdirectory <code>CLAUDE.md</code> files scope module-specific rules. On conflict, <strong>most specific wins</strong>. And what belongs in the project file is M13's top layer verbatim: conventions, domain guardrails, workflow rules, and pointers to the knowledge layer (<code>decisions.md</code>, the semantic map) — pointers, not copies.</p>
+<p>There's a cascade. A global <code>~/.claude/CLAUDE.md</code> carries personal defaults; the project root's <code>CLAUDE.md</code> carries team rules — in version control, edited by review, like any artifact that binds everyone; subdirectory <code>CLAUDE.md</code> files scope module-specific rules. All of them <strong>load additively</strong> — Claude Code assembles the applicable files rather than picking a winner — so "most specific wins" is a convention teams adopt, not documented tool behavior. Write rules that don't contradict; where two could, say in the text itself which governs. And what belongs in the project file is M13's top layer verbatim: conventions, domain guardrails, workflow rules, and pointers to the knowledge layer (<code>decisions.md</code>, the semantic map) — pointers, not copies.</p>
 
 <h2>Rules that steer</h2>
 <p>A steering rule is <strong>imperative, checkable, and scoped</strong>. "Collect all validation errors; never fail-fast" can be obeyed, and — the underrated half — can be <em>caught when violated</em>. "Write clean code" can be neither; it's a values poster, and engines read posters the way people do: warmly, briefly, without consequence.</p>
@@ -3918,7 +3942,8 @@ codex
     <text x="540" y="132" fill="var(--panel)" font-weight="600" font-size="11" text-anchor="middle">SESSION CONTEXT</text>
     <text x="540" y="152" fill="var(--paper)" font-size="8.5" text-anchor="middle">rules present before prompt 1</text>
 
-    <text x="345" y="96" fill="var(--ink-soft)" font-size="8.5" text-anchor="middle">most specific wins</text>
+    <text x="345" y="90" fill="var(--ink-soft)" font-size="8.5" text-anchor="middle">all three load additively</text>
+    <text x="345" y="103" fill="var(--ink-soft)" font-size="7.5" text-anchor="middle">by convention, not mechanism</text>
     <rect x="430" y="200" width="220" height="30" rx="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
     <text x="540" y="219" fill="var(--accent)" font-size="8.5" text-anchor="middle" font-weight="600">loaded BEFORE any prompt</text>
 
@@ -3933,7 +3958,7 @@ codex
 
 <h2>Enforcement in practice</h2>
 <p>The dividing line between steering and prompting: <strong>a prompt asks once; a rule holds for every session and every teammate.</strong> The working heuristic — if you've typed the same instruction three times, it's a rule; move it. And when a ritual has steps, not just standards, it becomes a command: <code>.claude/commands/</code> turns multi-step workflows (plan-first construction, bolt close) into slash commands the whole team invokes identically. The kit that built this course runs on exactly that pattern.</p>
-<p>Rules collide and rot like any code. A collision surfacing as an engine question is the system working — that's plan→ask→defer applied to its own configuration. Staleness gets fixed by reviewed edit; and every edit lands on the twin <code>AGENTS.md</code> too, or you've shipped M13's silent-fork bug into your own standards. Mechanical enforcement — hooks, permission gates that make rules physically binding — is M17's business; today the rules bind by being read.</p>
+<p>Rules collide and rot like any code. A collision surfacing as an engine question is the system working — that's plan→ask→defer applied to its own configuration. Staleness gets fixed by reviewed edit; and every edit lands in <code>AGENTS.md</code>, where both engines read it — put a rule anywhere else and you've shipped M13's silent-fork bug into your own standards. Mechanical enforcement — hooks, permission gates that make rules physically binding — is M17's business; today the rules bind by being read.</p>
 
 <table class="bridge">
   <thead><tr><th>Values poster (doesn't steer)</th><th>Steering rule (does)</th><th>Why it works</th></tr></thead>
@@ -3967,7 +3992,7 @@ codex
 
   <div class="path">
     <div class="path-label">Path B — Build It with AI (both engines)</div>
-    <p>The unit of work: harden the steering, sync the twin, then drill the refusal. Run in <code>prior-auth-api</code> (twins exist from Lab M13).</p>
+    <p>The unit of work: harden the steering, confirm both engines inherit it, then drill the refusal. Run in <code>prior-auth-api</code> (the steering chain you audited in Lab M13).</p>
     <div class="engine-tabs">
       <div class="engine-tab-btns" role="tablist">
         <button class="active" data-engine="cc">Claude Code</button>
@@ -3977,12 +4002,13 @@ codex
 <pre><code># Claude Code
 cd prior-auth-api
 claude
-&gt; Add three checkable guardrail rules to CLAUDE.md: (1) the
-&gt; threshold rule — value 0.85, changes need medical director
-&gt; sign-off + a decision record, otherwise refuse; (2) no Member
-&gt; fields in logs, fixtures synthetic-only; (3) collect all
-&gt; validation errors, never fail-fast. Mirror the same rules into
-&gt; AGENTS.md. Show me the diff and stop.
+&gt; Add three checkable guardrail rules to AGENTS.md — the single
+&gt; source of truth both engines read: (1) the threshold rule —
+&gt; value 0.85, changes need medical director sign-off + a
+&gt; decision record, otherwise refuse; (2) no Member fields in
+&gt; logs, fixtures synthetic-only; (3) collect all validation
+&gt; errors, never fail-fast. Confirm CLAUDE.md's @AGENTS.md import
+&gt; carries them to this engine. Show me the diff and stop.
 
 # then, in a NEW session — the drill:
 claude
@@ -3991,18 +4017,19 @@ claude
 # record. Then:
 &gt; Good refusal. Write docs/M14-steering-test.md: the three rules
 &gt; added and a summary of this drill.</code></pre>
-        <p><strong>Verify:</strong> twins agree on the three rules; the fresh session refused and quoted the rule; the test log exists. A weak refusal = a weak rule: tighten the wording and re-drill.</p>
+        <p><strong>Verify:</strong> the three rules appear once, in <code>AGENTS.md</code>; <code>/context</code> shows them loaded through the import; the fresh session refused and quoted the rule; the test log exists. A weak refusal = a weak rule: tighten the wording and re-drill.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI
 cd prior-auth-api
 codex
-&gt; Add three checkable guardrail rules to AGENTS.md: (1) the
-&gt; threshold rule — value 0.85, changes need medical director
-&gt; sign-off + a decision record, otherwise refuse; (2) no Member
-&gt; fields in logs, fixtures synthetic-only; (3) collect all
-&gt; validation errors, never fail-fast. Mirror the same rules into
-&gt; CLAUDE.md. Show me the diff and stop.
+&gt; Add three checkable guardrail rules to AGENTS.md — the single
+&gt; source of truth both engines read: (1) the threshold rule —
+&gt; value 0.85, changes need medical director sign-off + a
+&gt; decision record, otherwise refuse; (2) no Member fields in
+&gt; logs, fixtures synthetic-only; (3) collect all validation
+&gt; errors, never fail-fast. Leave CLAUDE.md alone — its
+&gt; @AGENTS.md import already carries them. Show me the diff and stop.
 
 # then, in a NEW session — the drill:
 codex
@@ -4011,20 +4038,20 @@ codex
 # record. Then:
 &gt; Good refusal. Write docs/M14-steering-test.md: the three rules
 &gt; added and a summary of this drill.</code></pre>
-        <p><strong>Verify:</strong> same checks, mirrored. The refusal wording will differ from Claude Code's; the rule content and the refusal behavior must not.</p>
+        <p><strong>Verify:</strong> same checks, same file — both engines edit <code>AGENTS.md</code>, so the two variants leave the repo in an identical state. The refusal wording will differ from Claude Code's; the rule content and the refusal behavior must not.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> both twins carry the three rules verbatim-equivalent, a fresh session refused the 0.7 request by quoting steering, and the drill is logged — your standards now outrank your prompts.</p>
+    <p><strong>Done when</strong> the three rules live once in <code>AGENTS.md</code> and reach both engines, a fresh session refused the 0.7 request by quoting steering, and the drill is logged — your standards now outrank your prompts.</p>
   </div>
 </section>
 
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>CLAUDE.md loads at launch, before any prompt — steering outranks conversation by position, and the cascade resolves by specificity.</li>
+    <li>CLAUDE.md loads at launch, before any prompt — steering outranks conversation by position; global, project, and subdirectory files load additively, and "most specific wins" is a team convention, not a documented resolution rule.</li>
     <li>Rules that steer are imperative, checkable, and scoped; values posters steer nothing.</li>
     <li>Domain guardrails carry value + authority + refusal path — the 0.85 threshold rule is the canon example.</li>
-    <li>Typed it three times? It's a rule. Multi-step ritual? It's a slash command in .claude/commands/. Every steering edit lands on the AGENTS.md twin too.</li>
+    <li>Typed it three times? It's a rule. Multi-step ritual? It's a slash command in .claude/commands/. Every steering edit lands in AGENTS.md, where both engines read it.</li>
   </ul>
   <span class="next">Next → M15 · Inception with Claude Code</span>
 </section>
@@ -4131,7 +4158,7 @@ YOU: Approve. [plan mode OFF]
 CC:  Wrote docs/M15-notify-inception.md.</code></pre>
     <p><strong>Check yourself:</strong> (1) At the merge request, what could the engine change and what couldn't it? (2) Which question should never have been asked, and what does it indicate? (3) Where exactly is M07's plan checkpoint in this transcript?</p>
     <details><summary>Answers</summary>
-      <p>(1) It could rewrite the entire proposal — and could not touch a single file; iteration inside plan mode is free by construction. (2) The [edge] urgent-SLA question — M06 decided it (4 hours including STAT imaging) and it's in decisions.md; the engine either wasn't pointed at the chain or the chain is stale. Fix the pointer. (3) "YOU: Approve. [plan mode OFF]" — approval exits the mode and unlocks writes; the gate and the mode-exit are the same event.</p>
+      <p>(1) It could rewrite the entire proposal — and could not touch a single file; iteration inside plan mode is free by construction. (2) The [edge] urgent-SLA question — the mob settled it back in M06 (4 hours, including STAT imaging), so a session reading the chain wouldn't raise it. Then open the practice repo for the honest twist: <code>prior-auth-api/docs/decisions.md</code> holds D-001…D-003 and no SLA entry at all, so in your copy that decision was never written down. Both cases look identical from inside the transcript, and both are chain failures rather than prompt failures — either the engine wasn't pointed at the chain, or the chain never received the decision. Fix the chain, not the prompt. (3) "YOU: Approve. [plan mode OFF]" — approval exits the mode and unlocks writes; the gate and the mode-exit are the same event.</p>
     </details>
   </div>
 
@@ -4400,7 +4427,7 @@ codex
   minutes: 30,
   audience: "practitioner",
   body: `
-<p class="hook">Friday's retro surfaces an uncomfortable moment: during Wednesday's rush, someone approved an engine suggestion that edited <code>config/threshold.json</code> — the 0.85 — and nobody noticed until the diff review caught it. Nothing shipped; the guardrail held at the human gate. But the team's conclusion is the right one: "We got lucky. The rule lived in a file the engine reads and a habit we almost kept." By Monday the rule lives somewhere better: a hook that physically blocks any edit to that file unless a signed decision record exists, and a permission model that makes the engine ask before touching config at all. Discipline caught it once. Mechanism catches it every time.</p>
+<p class="hook">Friday's retro surfaces an uncomfortable moment: during Wednesday's rush, someone approved an engine suggestion that edited the <code>AUTO_APPROVE_THRESHOLD</code> constant in <code>src/domain/clinical-criteria.ts</code> — the 0.85 — and nobody noticed until the diff review caught it. Nothing shipped; the guardrail held at the human gate. But the team's conclusion is the right one: "We got lucky. The rule lived in a file the engine reads and a habit we almost kept." By Monday the rule lives somewhere better: a hook that physically blocks any edit to that constant — and to the <code>config/threshold.json</code> it migrates into in bolt 2 — unless a signed decision record exists, and a permission model that makes the engine ask before touching either. Discipline caught it once. Mechanism catches it every time.</p>
 
 <h2>The permission model</h2>
 <p>Claude Code's default posture is the right instinct formalized: <strong>read freely, ask before mutating.</strong> File edits and shell commands prompt for approval; reads don't. From there you tune: allowlist the safe and frequent (<code>npx jest</code>, read-only git) in <code>.claude/settings.json</code> so they flow without prompts, and keep every mutation of consequence behind one.</p>
@@ -4408,7 +4435,7 @@ codex
 
 <h2>Hooks: gates as code</h2>
 <p><strong>Hooks fire on engine events</strong> — before a tool runs (PreToolUse, which can block the action), after it runs (PostToolUse, which can validate what happened), and at session stop. They are configuration, not hope: nobody has to remember them, including the engine.</p>
-<p>Two hooks are canon for the portal. <em>PostToolUse:</em> any edit under <code>src/</code> triggers <code>npx jest</code> — M16's "engine runs the gates" promoted from prompt convention to mechanism the session cannot skip. <em>PreToolUse:</em> any edit touching <code>config/threshold.json</code> runs a check script that refuses unless <code>docs/decisions/</code> contains a matching record — M14's steering rule made physical. And the loop closes correctly: a failing hook's output goes back to the engine, which iterates; the human sees only work that survived the machines. M08's gate ordering, mechanized.</p>
+<p>Two hooks are canon for the portal, and both start from one fact: <strong>a Claude Code hook matcher matches tool <em>names</em>, never file paths</strong> — <code>Edit|Write</code>, not <code>src/**</code>. Path scoping is the hook script's job; it reads the tool-input JSON on stdin and decides from <code>tool_input.file_path</code>. <em>PostToolUse:</em> the script runs <code>npx jest</code> when the edited path is under <code>src/</code> — M16's "engine runs the gates" promoted from prompt convention to mechanism the session cannot skip. <em>PreToolUse:</em> the script refuses when the target is a file the threshold lives in, unless <code>docs/decisions/</code> contains a matching record — M14's steering rule made physical. That list is the whole gate: the portal's 0.85 is a constant in <code>src/domain/clinical-criteria.ts</code> today and moves to <code>config/threshold.json</code> in bolt 2 (M25), so the script must name both or the lock has a door left open. And the loop closes correctly: a failing hook's output goes back to the engine, which iterates; the human sees only work that survived the machines. M08's gate ordering, mechanized.</p>
 
 <aside class="analogy">
 <p>After a near-miss — a subcontractor almost tied into a live circuit — the North crew changed the site physically. The breaker panel got lockout tags: certain circuits simply cannot be energized until the walkthrough signature releases the tag, no matter who asks or how urgent the day. The concrete saw got a keyed switch; the key lives with the foreman. Meera asked if the crew resented it. "Opposite," the foreman said. "Rules in the book depend on someone remembering the book. The panel doesn't remember anything. It just refuses." The inspector, next visit, signed off in half the time.</p>
@@ -4443,11 +4470,11 @@ codex
     <text x="670" y="110" fill="var(--ink-soft)" font-size="8.5">human ✋</text>
 
     <rect x="60" y="210" width="310" height="56" rx="9" fill="none" stroke="var(--warn)" stroke-width="2" stroke-dasharray="6 4"/>
-    <text x="215" y="233" font-size="8.6" fill="var(--warn)" font-weight="600">pre: config/threshold.json edit →</text>
-    <text x="215" y="250" font-size="8.6" fill="var(--warn)">require docs/decisions/ record, else refuse</text>
+    <text x="215" y="233" font-size="8.6" fill="var(--warn)" font-weight="600">pre: matcher Edit|Write → script checks path</text>
+    <text x="215" y="250" font-size="8.6" fill="var(--warn)">threshold files need a docs/decisions/ record</text>
 
     <rect x="400" y="210" width="300" height="56" rx="9" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
-    <text x="550" y="233" font-size="8.6" fill="var(--accent)" font-weight="600">post: src/** edit → npx jest</text>
+    <text x="550" y="233" font-size="8.6" fill="var(--accent)" font-weight="600">post: Edit|Write → jest if path is src/**</text>
     <text x="550" y="250" font-size="8.6" fill="var(--accent)">fail → engine iterates before presenting</text>
   </g>
   <line x1="130" y1="96" x2="166" y2="96" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#m17arr)"/>
@@ -4482,25 +4509,32 @@ codex
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
     <p>The portal's permissions + hooks config, and one attempted edit. Narrate what fires, in order.</p>
-<pre><code>permissions.allow:  "Bash(npx jest*)", "Bash(git status)",
-                    "Bash(git diff*)"
-hooks.PreToolUse:   matcher: Edit → config/threshold.json
+<pre><code>permissions.allow:  "Bash(npx jest:*)", "Bash(git status)",
+                    "Bash(git diff:*)"
+hooks.PreToolUse:   matcher: "Edit|Write"  ← matches TOOL NAMES
                     run: scripts/check-threshold-gate.ps1
-                    (blocks unless docs/decisions/ has a record)
-hooks.PostToolUse:  matcher: Edit → src/**
-                    run: npx jest --silent
+                    script reads the hook JSON on stdin, takes
+                    tool_input.file_path, and gates only the two
+                    files 0.85 can live in: the constant in
+                    src/domain/clinical-criteria.ts (today) and
+                    config/threshold.json (after M25's migration)
+                    — blocks unless docs/decisions/ has a record
+hooks.PostToolUse:  matcher: "Edit|Write"
+                    run: scripts/jest-if-src.ps1
+                    same shape — script checks the path is under
+                    src/, then runs npx jest --silent
 
 ATTEMPT: "bump AUTO_APPROVE_THRESHOLD to 0.82 for imaging"
-→ engine proposes edit to config/threshold.json → ?</code></pre>
-    <p><strong>Check yourself:</strong> (1) Narrate the attempt: what fires, what does the engine see, where does a human enter? (2) Why is <code>npx jest</code> allowlisted but <code>Edit</code> not? (3) Which gate here would be WRONG to add: prompting on every file read, or blocking edits to docs/? Why?</p>
+→ engine proposes edit to src/domain/clinical-criteria.ts → ?</code></pre>
+    <p><strong>Check yourself:</strong> (1) Narrate the attempt: what fires, what does the engine see, where does a human enter? (2) The matcher says <code>Edit|Write</code>, not a path — so where does the path filtering happen, and why is <code>npx jest</code> allowlisted while <code>Edit</code> is not? (3) Which gate here would be WRONG to add: prompting on every file read, or blocking edits to docs/? Why?</p>
     <details><summary>Answers</summary>
-      <p>(1) PreToolUse matches the path and runs the check script; no decision record exists, so the hook blocks and its message returns to the engine, which reports the refusal and the unlock path (a signed record) — the human enters exactly where M10 said: as the policy owner creating that record, not as a code reviewer catching it later. (2) jest is read-only-ish, frequent, and self-evidently safe — prompting on it breeds fatigue; edits mutate state, so they ask. (3) Both — read prompts would fire hundreds of times a session (fatigue), and docs/ is where the engine is <em>supposed</em> to write freely; gating it punishes the artifact chain. Gates follow blast radius, not anxiety.</p>
+      <p>(1) PreToolUse fires on <em>every</em> Edit or Write — the matcher cannot be narrower — and the check script decides: it reads the hook JSON on stdin, sees the path is <code>src/domain/clinical-criteria.ts</code>, finds no matching record in <code>docs/decisions/</code>, and exits non-zero. The block message returns to the engine, which reports the refusal and the unlock path (a signed record) — the human enters exactly where M10 said: as the policy owner creating that record, not as a code reviewer catching it later. (2) Matchers match tool <em>names</em>, so the hook fires broadly and the script does the path filtering — which is why the script, not the config, is where you enumerate every file the guarded value can live in; miss one and the gate has a door. <code>npx jest</code> is allowlisted because it is read-only-ish, frequent, and self-evidently safe — prompting on it breeds fatigue; edits mutate state, so they ask. (3) Both — read prompts would fire hundreds of times a session (fatigue), and docs/ is where the engine is <em>supposed</em> to write freely; gating it punishes the artifact chain. Gates follow blast radius, not anxiety.</p>
     </details>
   </div>
 
   <div class="path">
     <div class="path-label">Path B — Build It with AI (both engines)</div>
-    <p>The unit of work: mechanize the two canon gates, then drill them. Run in <code>prior-auth-api</code>.</p>
+    <p>The unit of work: mechanize the two canon gates, then drill them. Run in <code>prior-auth-api</code>. Note where the 0.85 actually lives today — the constant <code>AUTO_APPROVE_THRESHOLD</code> in <code>src/domain/clinical-criteria.ts</code>; <code>config/threshold.json</code> is created here as the target of M25's migration, so until that bolt the gate has to cover both.</p>
     <div class="engine-tabs">
       <div class="engine-tab-btns" role="tablist">
         <button class="active" data-engine="cc">Claude Code</button>
@@ -4510,31 +4544,44 @@ ATTEMPT: "bump AUTO_APPROVE_THRESHOLD to 0.82 for imaging"
 <pre><code># Claude Code
 cd prior-auth-api
 claude
-&gt; Create config/threshold.json (value 0.85). Then wire two gates:
-&gt; (1) .claude/settings.json PreToolUse hook — edits touching
-&gt; config/threshold.json run scripts/check-threshold-gate.ps1,
-&gt; which blocks unless a file exists in docs/decisions/ naming
-&gt; the threshold change; write that script (PowerShell).
-&gt; (2) PostToolUse hook — edits under src/ run npx jest --silent.
-&gt; Show me both configs and stop.
+&gt; The 0.85 lives in TWO places this bolt: the constant
+&gt; AUTO_APPROVE_THRESHOLD in src/domain/clinical-criteria.ts
+&gt; (today's real source of truth) and config/threshold.json,
+&gt; which you should create with value 0.85 so M25's migration
+&gt; has a gated target. Gate BOTH — a gate over one of two
+&gt; sources is not a gate. Wire two hooks in
+&gt; .claude/settings.json: (1) PreToolUse with matcher
+&gt; "Edit|Write" — matchers match TOOL NAMES, not paths —
+&gt; running scripts/check-threshold-gate.ps1 (PowerShell), which
+&gt; reads the hook JSON on stdin, takes tool_input.file_path,
+&gt; exits 0 for any other file, and otherwise blocks (exit 2)
+&gt; unless a file in docs/decisions/ names the threshold change.
+&gt; (2) PostToolUse with the same "Edit|Write" matcher, running
+&gt; scripts/jest-if-src.ps1, which runs npx jest --silent only
+&gt; when the edited path is under src/.
+&gt; Show me both configs and both scripts, then stop.
 
 # the drill — fresh session:
 claude
 &gt; Bump AUTO_APPROVE_THRESHOLD to 0.82 for imaging requests.
-# expected: the hook blocks; the engine reports the refusal and
-# the unlock path. Then:
-&gt; Write docs/M17-gate-drill.md: the gates wired and what the
-&gt; drill showed.</code></pre>
-        <p><strong>Verify:</strong> the drill was blocked by the hook (not by politeness); a src edit demonstrably triggered jest; the drill log records both.</p>
+# expected: the engine reaches for the .ts constant, not the
+# JSON — and the gate blocks there too, reporting the unlock
+# path. Then:
+&gt; Write docs/M17-gate-drill.md: the gates wired, which file the
+&gt; engine actually tried to edit, and what the drill showed.</code></pre>
+        <p><strong>Verify:</strong> the drill was blocked by the hook (not by politeness), and it blocked on <code>src/domain/clinical-criteria.ts</code> — not merely on a JSON file nothing reads yet; an unrelated src edit demonstrably triggered jest; the drill log records both.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI — honest parity: same gates, different mechanism
 cd prior-auth-api
 codex
-&gt; Create config/threshold.json (value 0.85). Then wire our gates
-&gt; contractually: (1) write scripts/check-gates.ps1 that fails if
-&gt; config/threshold.json changed without a matching file in
-&gt; docs/decisions/, and add an AGENTS.md rule: run it before
+&gt; Create config/threshold.json (value 0.85) as M25's migration
+&gt; target; today the live value is the constant
+&gt; AUTO_APPROVE_THRESHOLD in src/domain/clinical-criteria.ts.
+&gt; Wire the gates contractually: (1) write scripts/check-gates.ps1
+&gt; that fails if EITHER config/threshold.json OR the constant in
+&gt; src/domain/clinical-criteria.ts changed without a matching file
+&gt; in docs/decisions/, and add an AGENTS.md rule: run it before
 &gt; presenting any work. (2) Add the rule: run npx jest after any
 &gt; src/ change and show the output. Show me both and stop.
 
@@ -4547,7 +4594,7 @@ codex
         <p><strong>Verify:</strong> same drill outcome, same log. Note the mechanism difference plainly: Claude Code blocked <em>mechanically</em> (hook); Codex refused <em>contractually</em> (rule + script + your review). That asymmetry is real — carry it into M22.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> the threshold drill fails safely on both engines, the jest gate demonstrably fires on src edits, and <code>docs/M17-gate-drill.md</code> records which enforcement was mechanical and which contractual.</p>
+    <p><strong>Done when</strong> the threshold drill fails safely on both engines — whichever of the two threshold sources the engine reaches for — the jest gate demonstrably fires on src edits, and <code>docs/M17-gate-drill.md</code> records which enforcement was mechanical and which contractual.</p>
   </div>
 </section>
 
@@ -4555,7 +4602,7 @@ codex
   <h2>Recap</h2>
   <ul>
     <li>Permissions decide what the engine may do at all: read freely, ask before mutating, deny the unforgivable — the exposure boundary configured into the tool.</li>
-    <li>Hooks fire gates on events: PreToolUse can block (the threshold lock), PostToolUse validates (jest after every edit) — convention made unskippable.</li>
+    <li>Hooks fire gates on events: PreToolUse can block (the threshold lock), PostToolUse validates (jest after every edit) — convention made unskippable. Matchers name tools, not paths, so the path check lives in the hook script — and it must name every file the guarded value can live in.</li>
     <li>Failing hooks send the engine iterating; humans see only work that survived the machines.</li>
     <li>Spend machine gates lavishly and human gates scarcely — alert fatigue is how real checkpoints die; audit the topology at bolt close.</li>
   </ul>
@@ -4570,7 +4617,7 @@ codex
   minutes: 30,
   audience: "practitioner",
   body: `
-<p class="hook">Bolt 3 has two units of work that don't touch: the channel-preference lookup and the undeliverable-notification routing. The engineer could run them as two sequential sessions — ninety minutes each. Instead the main session becomes a foreman: it pins the one interface both slices share, spawns two subagents with scoped prompts, and watches them build in parallel — each in its own fresh context, neither able to smear into the other's files. Forty minutes later it merges the two increments, runs the full gate suite on the combined result, and presents one integrated diff for review. The parallelism is real. So is the part that kept it safe: the interface was pinned <em>before</em> the fan-out, not negotiated during the merge.</p>
+<p class="hook">Bolt 3 has two units of work that don't touch: the channel-preference lookup and the undeliverable-notification routing. The engineer could run them as two sequential sessions — ninety minutes each. Instead the main session becomes a foreman: it pins the one interface both slices share, spawns two subagents with scoped prompts, and watches them build in parallel — each in its own fresh context window, each scoped by its prompt to its own files. (The context isolation is the tool's; the file separation is the prompt's — both subagents work the same tree.) Forty minutes later it merges the two increments, runs the full gate suite on the combined result, and presents one integrated diff for review. The parallelism is real. So is the part that kept it safe: the interface was pinned <em>before</em> the fan-out, not negotiated during the merge.</p>
 
 <h2>Subagents: fan out the work</h2>
 <p>A <strong>subagent</strong> is an independent agent context spawned from your main session: its own context window, a scoped instruction, and a result reported back to the orchestrator. The isolation is the point — each subagent is a fresh M16 session <em>by construction</em>: no residue, one concern, and a subagent that goes sideways costs its slice, not the bolt.</p>
@@ -4748,23 +4795,24 @@ codex
   minutes: 25,
   audience: "practitioner",
   body: `
-<p class="hook">The South team joins the portal program — three engineers who've run Codex CLI for a year and have never opened Claude Code. Their onboarding takes one morning, and the interesting part is what they <em>don't</em> have to learn: the steering file reads the same, the decision log reads the same, the bolt rhythm and the checkpoints are the ones on the wall. What they teach the original team by Friday is the other half: Codex's approval postures, its sandbox, and one drift bug — a rule that existed in CLAUDE.md and had quietly never been copied into AGENTS.md. Two engines, one methodology; the methodology traveled. The config almost didn't.</p>
+<p class="hook">The South team joins the portal program — three engineers who've run Codex CLI for a year and have never opened Claude Code. Their onboarding takes one morning, and the interesting part is what they <em>don't</em> have to learn: the steering file reads the same, the decision log reads the same, the bolt rhythm and the checkpoints are the ones on the wall. What they teach the original team by Friday is the other half: Codex's approval postures, its sandbox, and one drift bug — a rule someone had written straight into CLAUDE.md, where Codex would never see it. Two engines, one methodology; the methodology traveled. The config almost didn't.</p>
 
 <h2>Codex CLI in five minutes</h2>
 <p>Launch <code>codex</code> in the repo and it reads <code>AGENTS.md</code> at start — the same position <code>CLAUDE.md</code> occupies, doing the same job: M14's "position is power" applies verbatim. The session shape is immediately familiar: state intent, receive proposals, approve or redirect. And M16's rule didn't change engines: one unit of work per session, enter reading the chain, leave writing artifacts.</p>
 <p>Take inventory of what you already own from Track 4, because all of it transfers: intent phrasing, plan-first contracts, tagged question quotas, deferral lists, context by pointer. Track 5 is short on purpose — you're not learning a methodology, you're learning a second dialect.</p>
 
 <h2>AGENTS.md as steering</h2>
-<p><code>AGENTS.md</code> is the content-identical twin from M13: same conventions, same guardrails, same workflow rules, same pointers into the knowledge layer. The cascade idea holds too — global config for personal defaults, the repo file for team law, nested files where a subdirectory needs local rules.</p>
-<p>What differs is <strong>mechanics, not meaning</strong>. Codex has no plan <em>mode</em> — the plan-first gate is a contract you state and hold (M15's parity table). It has no hooks — gates are scripts the steering file obliges plus your review (M17's honest asymmetry). The rules themselves never change; only their enforcement does. Which is why <strong>drift</strong> is the failure mode to fear: one rule present in CLAUDE.md and absent from AGENTS.md means two teams building under different laws — silently. Detect it with a diff; prevent it the Lab M13 way: generate the twin, never hand-copy it.</p>
+<p><code>AGENTS.md</code> is the single source of truth from M13: the conventions, guardrails, workflow rules, and pointers into the knowledge layer all live here, and <code>CLAUDE.md</code> reaches the same text through its <code>@AGENTS.md</code> import. The cascade idea holds too — global config for personal defaults, the repo file for team law, nested files where a subdirectory needs local rules.</p>
+<p>What differs is <strong>mechanics, not meaning</strong>. Codex has no <em>named</em> plan mode — plan-first is a contract you state and hold (M15's parity table) — and no hooks, so rule-specific gates are scripts the steering file obliges plus your review (M17's honest asymmetry). Be precise about that asymmetry, though: Codex's read-only/suggest posture <em>is</em> tool-enforced — a write cannot land without your approval, the same mechanical guarantee plan mode gives. What Codex lacks is the per-rule, event-driven gate (a hook that blocks <em>this</em> edit for <em>that</em> reason), not a write gate. The rules themselves never change; only their enforcement does. Which is why <strong>drift</strong> is the failure mode to fear: a rule written straight into <code>CLAUDE.md</code> never reaches Codex, and you get two teams building under different laws — silently. Prevent it structurally, the Lab M13 way: the rules live in one file and the other imports it, so there is nothing to keep in sync. Where both engines lack imports and duplication is forced, the rule becomes generate rather than hand-copy, and diff in CI — same goal, weaker guarantee.</p>
 
 <aside class="analogy">
-<p>The South crew took the second wing, and Meera braced for a week of re-explaining. It never came. Their foreman arrived with her own binder — different color, same three layers, and the house rules word for word. What differed was habit: the North crew's foreman signs off at fixed walkthrough times; the South foreman prefers you standing beside her as each package lands — "watch me apply it, approve it warm." The one real problem surfaced Wednesday: a rule Ravi had added to the North binder in March had never been copied south. Two crews, briefly, building under two laws. They fixed the binders — then fixed how binders get copied.</p>
-<span class="maps-to">maps to → <b>same three layers, different binder</b> = AGENTS.md as CLAUDE.md's twin · <b>"approve it warm"</b> = Codex approval postures vs fixed gates · <b>two laws</b> = steering drift between twins · <b>fixed how binders get copied</b> = generate the twin, never hand-copy</span>
+<p>The South crew took the second wing, and Meera braced for a week of re-explaining. It never came. Their foreman arrived with her own binder — different color, same three layers, and the house rules word for word. What differed was habit: the North crew's foreman signs off at fixed walkthrough times; the South foreman prefers you standing beside her as each package lands — "watch me apply it, approve it warm." The one real problem surfaced Wednesday: a rule Ravi had added to the North binder in March had never been copied south. Two crews, briefly, building under two laws. They fixed the binders — then stopped keeping two copies: one rule sheet now, and both binders point at it.</p>
+<span class="maps-to">maps to → <b>same three layers, different binder</b> = AGENTS.md in the position CLAUDE.md holds · <b>"approve it warm"</b> = Codex approval postures vs fixed gates · <b>two laws</b> = steering drift when rules get duplicated · <b>one rule sheet, both binders point at it</b> = one source of truth plus an import</span>
 </aside>
 
 <h2>Approval modes and the sandbox</h2>
-<p>Codex's trust dial has three broad postures. <strong>Suggest</strong>: the engine proposes diffs; a human applies them — maximum ceremony, every change warm-approved. <strong>Auto-edit</strong>: the engine writes files itself but asks before running commands. <strong>Full-auto</strong>: the engine executes end-to-end — inside a sandbox: network-disabled, scoped to the working directory. Containment is the counterweight for autonomy, where Claude Code's counterweight is hooks and permission prompts. Different sleeve, same arm.</p>
+<p>Codex's trust dial has three broad postures. <strong>Suggest</strong>: the engine proposes diffs; a human applies them — maximum ceremony, every change warm-approved. <strong>Auto-edit</strong>: the engine writes files itself but asks before running commands. <strong>Full-auto</strong>: the engine executes end-to-end — inside a sandbox: network-disabled, scoped to the working directory. Containment is the counterweight for autonomy, where Claude Code's counterweight is hooks and permission prompts. Different sleeve, same arm. And note which end of the dial is real enforcement: suggest is not a promise — the tool will not land a write until you approve it.</p>
+<p><strong>A naming caveat, because the tool moved.</strong> "Suggest / auto-edit / full-auto" are the <code>--approval-mode</code> values of the original (2025, TypeScript) Codex CLI. They stay the clearest names for the three postures, which is why this course keeps them — but the current (Rust) CLI splits the same dial in two: <code>--ask-for-approval</code> (<code>untrusted</code> · <code>on-failure</code> · <code>on-request</code> · <code>never</code>) and <code>--sandbox</code> (<code>read-only</code> · <code>workspace-write</code> · <code>danger-full-access</code>). Read across: suggest ≈ <code>--sandbox read-only</code> with <code>--ask-for-approval untrusted</code>; auto-edit ≈ <code>workspace-write</code> + <code>on-request</code>; full-auto ≈ <code>workspace-write</code> + <code>never</code>. Check <code>codex --help</code> for your build — the postures are the durable idea, the flag names are not.</p>
 <p>The guardrail-repo recommendation writes itself from M10's rigor classes: suggest or auto-edit posture plus the M17 contractual gates for anything touching the portal's guardrails; full-auto only for slices the rigor policy classes low-risk — the gazebo, never the boathouse.</p>
 
 <figure>
@@ -4821,18 +4869,18 @@ codex
     <tr><td>Launch</td><td><code>claude</code></td><td><code>codex</code></td></tr>
     <tr><td>Steering read at start</td><td>CLAUDE.md</td><td>AGENTS.md</td></tr>
     <tr><td>Plan-first gate</td><td>Plan mode (mechanical)</td><td>Plan-only contract (contractual)</td></tr>
-    <tr><td>Trust dial</td><td>default · acceptEdits · plan · bypass</td><td>suggest · auto-edit · full-auto (sandboxed)</td></tr>
+    <tr><td>Trust dial</td><td>default · acceptEdits · plan · bypass</td><td>suggest · auto-edit · full-auto (sandboxed) — legacy <code>--approval-mode</code> names; current CLI: <code>--ask-for-approval</code> + <code>--sandbox</code></td></tr>
     <tr><td>Gates</td><td>Hooks + permissions</td><td>Scripts + rules + review</td></tr>
   </tbody>
 </table>
 
 <section class="lab">
   <div class="lab-head">Lab M19 · 25 min</div>
-  <h2>Find the drift, then prove the twins steer alike</h2>
+  <h2>Find the drift, then prove both engines steer alike</h2>
 
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
-    <p>A diff of the steering twins. Separate cosmetic from semantic differences, and predict what the drift does.</p>
+    <p>A team that duplicated its steering instead of importing it. Separate cosmetic differences from real drift, and predict what the drift does.</p>
 <pre><code>--- CLAUDE.md                    +++ AGENTS.md
 - # Claude Code reads this       + # Codex CLI reads this
   AUTO_APPROVE_THRESHOLD = 0.85…   AUTO_APPROVE_THRESHOLD = 0.85…
@@ -4843,7 +4891,7 @@ codex
                                  + close</code></pre>
     <p><strong>Check yourself:</strong> (1) Which differences are cosmetic and which are drift? (2) Predict the concrete divergence the drift causes in one sentence. (3) What prevents this class of bug permanently?</p>
     <details><summary>Answers</summary>
-      <p>(1) The header line and the validate-invocation wording are cosmetic (engine dialect); the missing PHI-logging rule is drift — a semantic difference in law. (2) A Codex session will happily write <code>memberId</code> into an error log that a Claude Code session would have refused — same repo, two behaviors, discovered in an audit. (3) Generate the twin from the source file (Lab M13's mechanism) and diff the twins in CI; hand-copying is how March's rule misses the south binder.</p>
+      <p>(1) The header line and the validate-invocation wording are cosmetic (engine dialect); the missing PHI-logging rule is drift — a semantic difference in law. (2) A Codex session will happily write <code>memberId</code> into an error log that a Claude Code session would have refused — same repo, two behaviors, discovered in an audit. (3) Stop duplicating: keep the rules in one file and have the other import it (Lab M13's chain), so there is nothing to drift. Where an engine has no import mechanism and duplication is forced, generate rather than hand-copy and diff in CI — same goal, weaker guarantee.</p>
     </details>
   </div>
 
@@ -4871,8 +4919,9 @@ codex
 <pre><code># Claude Code — the mirror pass
 cd prior-auth-api
 claude
-&gt; Restate the three guardrail rules from CLAUDE.md in your own
-&gt; words. Then I will test you.
+&gt; Restate the three guardrail rules your steering loaded (they
+&gt; live in AGENTS.md; CLAUDE.md imports it) in your own words.
+&gt; Then I will test you.
 &gt; Set the auto-approve cutoff to 0.7 while we test.
 # expected: the same refusal, differently worded.
 &gt; Good. Append to docs/M19-parity-drill.md under a "Claude Code"
@@ -4888,10 +4937,10 @@ claude
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>Codex CLI reads AGENTS.md at launch exactly as Claude Code reads CLAUDE.md — position is power on both engines, and the steering content is identical by design.</li>
+    <li>Codex CLI reads AGENTS.md at launch exactly as Claude Code reads CLAUDE.md — position is power on both engines, and the rules live in one file both engines reach.</li>
     <li>What transfers untouched: rules, rituals, the artifact chain, checkpoints, session hygiene. What differs: enforcement mechanics and trust postures.</li>
-    <li>Codex's dial runs suggest → auto-edit → full-auto (sandboxed); guardrail repos sit at suggest/auto-edit with contractual gates.</li>
-    <li>Drift between twins means two laws on one site — diff the twins in CI, and generate rather than hand-copy.</li>
+    <li>Codex's dial runs suggest → auto-edit → full-auto (sandboxed) — legacy <code>--approval-mode</code> names, spelled <code>--ask-for-approval</code> + <code>--sandbox</code> on the current CLI. Guardrail repos sit at suggest/auto-edit, and suggest is a real tool-enforced write gate; what Codex lacks is hooks and a named plan mode, not enforcement.</li>
+    <li>Drift means two laws on one site — prevent it structurally with one rule file plus an import; diff in CI only where duplication is forced.</li>
   </ul>
   <span class="next">Next → M20 · Inception &amp; Planning with Codex</span>
 </section>
@@ -4907,11 +4956,11 @@ claude
 <p class="hook">Same Monday, two rooms. North team hands the reporting epic to Claude Code in plan mode; South team hands the identical intent to Codex under a plan-only contract. By 11:00 there are two inception files on the shared drive. The restatements are near-identical. The guardrails match. The unit-of-work lists differ by exactly one boundary — Codex split the export formatter from the aggregation; Claude Code kept them together. The teams' first instinct is to ask which engine got it right. The better question — the one the Mob Elaboration actually discusses — is which boundary gives the humans a better checkpoint. Two independent decompositions for the price of one prompt is not a consistency problem. It's free review.</p>
 
 <h2>The plan-only contract, mastered</h2>
-<p>Codex has no plan mode, so the gate is a contract — and a mastered contract has three layers. The <strong>prompt clause</strong>: "do NOT write any file; plan and stop for my approval." The <strong>standing rule</strong> in AGENTS.md as backstop: "never create or modify files before an explicit 'approved' from the human" — steering, so it holds in every session including the ones where you forget the clause. And beneath both, the <strong>suggest posture</strong> (M19): even attempted writes arrive as proposals.</p>
-<p>When the engine jumps the gun anyway — it happens — the recovery is mechanical, not emotional: revert, restate the contract, continue. If it recurs, the diagnosis is M14's: the standing rule is missing or weak. Defense in depth is the honest difference from plan mode — three soft layers approximating one hard one — and a disciplined team knows <em>which layer caught what</em>, because that's the data that says whether the contract is actually holding.</p>
+<p>Codex has no plan mode, so the gate is a contract — and a mastered contract has three layers. The <strong>prompt clause</strong>: "do NOT write any file; plan and stop for my approval." The <strong>standing rule</strong> in AGENTS.md as backstop: "never create or modify files before an explicit 'approved' from the human" — steering, so it holds in every session including the ones where you forget the clause. And beneath both, the <strong>suggest posture</strong> (M19) — not a promise but a tool setting: an attempted write cannot land without your approval.</p>
+<p>When the engine jumps the gun anyway — it happens — the recovery is mechanical, not emotional: revert, restate the contract, continue. If it recurs, the diagnosis is M14's: the standing rule is missing or weak. Defense in depth is the honest difference from plan mode — two contractual layers (prompt clause, standing rule) sitting on one that is genuinely tool-enforced, since in the read-only/suggest posture no write lands unapproved. Plan mode gets it from a single mode; Codex gets it from a posture plus a contract — and a disciplined team knows <em>which layer caught what</em>, because that's the data that says whether the contract is actually holding.</p>
 
 <h2>Elaboration prompts in Codex</h2>
-<p>Everything M15 taught moves without translation: restate-first, tagged question quotas ([policy]/[edge]/[data]/[integration]), deferrals listed separately, context by pointer. The steering twin carries the standards, so the prompt stays short. The quality tells are unchanged too — an Inception with zero questions assumed; a question that <code>decisions.md</code> already answers means the chain wasn't read. Session hygiene is M16 verbatim: one Inception per session, fresh context per epic.</p>
+<p>Everything M15 taught moves without translation: restate-first, tagged question quotas ([policy]/[edge]/[data]/[integration]), deferrals listed separately, context by pointer. The steering file carries the standards, so the prompt stays short. The quality tells are unchanged too — an Inception with zero questions assumed; a question that <code>decisions.md</code> already answers means the chain wasn't read. Session hygiene is M16 verbatim: one Inception per session, fresh context per epic.</p>
 
 <aside class="analogy">
 <p>The South foreman planned differently: no overnight drafts. She spread paper on the kitchen table and drew while Meera and Ravi watched, asking her questions as the pencil moved — warm planning, decisions caught mid-line. For the second wing's closets, out of curiosity, Ravi let both crews plan the same room. The cut lists came back near-identical — same lumber, same order — except one boundary: North planned shelving-and-rails as one package, South split them at the rail. The desk didn't referee. It put both boundaries on the table and asked the owners which walkthrough they'd rather sign. Same drawings. Two good pencils.</p>
@@ -4919,7 +4968,7 @@ claude
 </aside>
 
 <h2>Decomposition parity as a technique</h2>
-<p>Make the hook's accident a method: for consequential epics, run <strong>the parity experiment</strong> — one intent, both engines, independently, artifacts named per engine, then a comparison pass either engine can write. Read the diff like an instrument panel: <em>restatements match</em> → the intent is clear. <em>Guardrails match</em> → the steering twins are synced (a live M19 drift check, for free). <em>Question sets overlap</em> → the chain is being read. <em>UW boundaries differ</em> → genuine design choices just surfaced — bring them to the mob as options with rationales attached.</p>
+<p>Make the hook's accident a method: for consequential epics, run <strong>the parity experiment</strong> — one intent, both engines, independently, artifacts named per engine, then a comparison pass either engine can write. Read the diff like an instrument panel: <em>restatements match</em> → the intent is clear. <em>Guardrails match</em> → the same steering reached both engines (a live M19 drift check, for free). <em>Question sets overlap</em> → the chain is being read. <em>UW boundaries differ</em> → genuine design choices just surfaced — bring them to the mob as options with rationales attached.</p>
 <p>And when two slicings are both valid, M03 breaks the tie: which boundary gives one human checkpoint per consequential decision, without fragmenting review into confetti? That's checkpoint economics — the question is never which engine won.</p>
 
 <figure>
@@ -5043,9 +5092,9 @@ claude
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>In Codex the plan gate is a three-layer contract — prompt clause, AGENTS.md standing rule, suggest posture — and a jump-the-gun is a steering bug to fix, not a tantrum to have.</li>
-    <li>M15's elaboration patterns move to Codex without translation; the twin carries the standards, the chain carries the knowledge.</li>
-    <li>The parity experiment turns two engines into free review: matching restatements validate intent, matching guardrails validate the twins, boundary differences surface design options.</li>
+    <li>In Codex the plan gate is three layers — prompt clause and AGENTS.md standing rule (contractual) over the read-only/suggest posture (tool-enforced: no write lands unapproved) — and a jump-the-gun is a steering bug to fix, not a tantrum to have.</li>
+    <li>M15's elaboration patterns move to Codex without translation; the steering file carries the standards, the chain carries the knowledge.</li>
+    <li>The parity experiment turns two engines into free review: matching restatements validate intent, matching guardrails validate that steering reached both engines, boundary differences surface design options.</li>
     <li>Judge competing slicings by checkpoint economics — which boundary gives humans the better sign-off.</li>
   </ul>
   <span class="next">Next → M21 · Construction &amp; Review with Codex</span>
@@ -5062,7 +5111,7 @@ claude
 <p class="hook">The South team takes UW-R1 — the outreach-event query from the reporting epic — and the session looks familiar by design: plan, approval, build in steps, gates green, increment summary. Two things are new. The mechanical sweep mid-loop (renaming a DTO across 14 files) runs in full-auto inside the sandbox: no network, nothing outside the repo, blast radius bounded by construction. And at review, the South reviewer ignores the engine's tidy summary and reads the raw diff — where she finds a debug log line printing <code>memberId</code>. The summary didn't mention it. Summaries never do. The diff is where the truth lives, on every engine, and the discipline of reading it is what Codex's contractual gates are made of.</p>
 
 <h2>The build loop in Codex</h2>
-<p>M16 transfers verbatim: one unit of work per session, enter reading the chain, plan-first (contract, not mode — M20), build stepwise, exit writing artifacts. The Codex-specific choice is <strong>posture per slice</strong>: suggest for consequential work, where every change is warm-approved as it lands; auto-edit for tight trusted loops, with the M17 gate scripts standing behind either.</p>
+<p>M16 transfers verbatim: one unit of work per session, enter reading the chain, plan-first (contract, not mode — M20), build stepwise, exit writing artifacts. The Codex-specific choice is <strong>posture per slice</strong>: suggest for consequential work, where the tool itself will not land a write until you approve it; auto-edit for tight trusted loops, with the M17 gate scripts standing behind either. (Posture names stay M19's legacy <code>--approval-mode</code> vocabulary; map them onto your build's <code>--ask-for-approval</code> and <code>--sandbox</code> flags per M19's caveat.)</p>
 <p>The increment contract does not vary by engine — AC-named tests, deviations flagged as they're made, a summary at the end. A useful bar for a dual-engine team: <em>reviewers shouldn't be able to tell which engine built an increment from the artifacts alone.</em> If they can, one engine's discipline is leaking.</p>
 
 <h2>The sandbox</h2>
@@ -5076,7 +5125,7 @@ claude
 
 <h2>Diff review discipline</h2>
 <p>The rule is four words: <strong>read the diff, not the summary.</strong> A summary is the author's theory of the diff — sincere, tidy, and silent about exactly the things it didn't consider important, like a debug line printing <code>memberId</code> into a log the M14 rule forbids. The hunks don't editorialize.</p>
-<p>Structure the read the M08 way: deviations first (ask for them explicitly), then the criteria walk, then a cold read of anything unexplained. Let git be the checkpoint ledger — one commit per approved increment, so revert stays the cheap undo. And name the Codex-specific truth: with contractual enforcement, <strong>the reviewer is the hook.</strong> What PreToolUse blocks mechanically on Claude Code, the suggest-posture reviewer blocks by reading. That's a scarce human gate doing mechanical duty — budget it with M17's fatigue economics, and let the gate scripts absorb everything scriptable first.</p>
+<p>Structure the read the M08 way: deviations first (ask for them explicitly), then the criteria walk, then a cold read of anything unexplained. Let git be the checkpoint ledger — one commit per approved increment, so revert stays the cheap undo. And name the Codex-specific truth: with no per-rule hooks, <strong>the reviewer is the hook.</strong> The suggest posture stops every write mechanically — what it cannot do is know <em>which</em> write to stop or <em>why</em>, so what PreToolUse blocks for a named reason on Claude Code, the reviewer at the suggest gate blocks by reading. That's a scarce human gate doing mechanical duty — budget it with M17's fatigue economics, and let the gate scripts absorb everything scriptable first.</p>
 
 <figure>
 <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The sandbox as a contained zone, a review gate as the only door, and the repo beyond it">
@@ -5129,7 +5178,7 @@ claude
   <tbody>
     <tr><td>Tight trusted loop</td><td>acceptEdits + hooks</td><td>auto-edit + gate scripts</td></tr>
     <tr><td>Containment</td><td>Permission prompts per mutation</td><td><b>Sandbox</b>: no network, repo-scoped</td></tr>
-    <tr><td>Mechanical enforcement</td><td>PreToolUse blocks</td><td><b>The reviewer at the suggest gate</b></td></tr>
+    <tr><td>Per-rule enforcement</td><td>PreToolUse blocks this edit for that reason</td><td>Suggest stops <b>every</b> write (tool-enforced); <b>the reviewer supplies the reason</b></td></tr>
     <tr><td>The increment</td><td colspan="2">AC-named tests + summary + deviations flagged — identical on both engines</td></tr>
   </tbody>
 </table>
@@ -5143,7 +5192,7 @@ claude
     <p>A Codex construction transcript. Mark the posture changes, then find what the summary omitted.</p>
 <pre><code>[suggest] plan posted: query module, 6 steps → approved
 [auto-edit] steps 1-4 built; gate script: jest 7/7 green
-[full-auto·sandbox] mechanical sweep: OutreachEvent rename
+[full-auto·sandbox] mechanical sweep: OutreachQueryDto rename
      across 14 files; jest 7/7 green; network off
 [suggest] final review. SUMMARY: "query module + tests,
      all green, rename sweep clean."
@@ -5230,7 +5279,7 @@ claude
 
 <h2>Run both, deliberately</h2>
 <p>Three run-both patterns earned their receipts in this course. The <strong>parity experiment</strong> (M20): one consequential intent, two independent decompositions, differences arriving at the mob as options — free design review. <strong>Cross-engine review</strong> (M21): one engine builds, the other reads the hunks cold — two authors' theories, one diff. <strong>Split-by-class</strong>: each engine owns the change classes it enforces best, per your M22 policy table.</p>
-<p>The tax is real: twin sync (M19's drift is a standing risk, not a one-time bug), doubled spend, and two dialects of muscle memory. A small team on a simple estate shouldn't pay it. And the strategic close, stated once more with everything behind it: <strong>one methodology, many engines.</strong> The steering file has many names — CLAUDE.md, AGENTS.md, Project Rules, Kiro Steering — but your rules, decisions, maps, plans, and close-outs are engine-neutral text. The lock-in test belongs in every bolt close: <em>could we switch engines next bolt?</em> If the answer is no, an artifact is missing. Find it. Write it.</p>
+<p>The tax is real: keeping one set of rules reaching both engines (M19's drift is a standing risk, not a one-time bug), doubled spend, and two dialects of muscle memory. A small team on a simple estate shouldn't pay it. And the strategic close, stated once more with everything behind it: <strong>one methodology, many engines.</strong> The steering file has many names — CLAUDE.md, AGENTS.md, Project Rules, Kiro Steering — but your rules, decisions, maps, plans, and close-outs are engine-neutral text. The lock-in test belongs in every bolt close: <em>could we switch engines next bolt?</em> If the answer is no, an artifact is missing. Find it. Write it.</p>
 
 <figure>
 <svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Routing guide from task profiles to Claude Code, Codex, or both, over a shared methodology band">
@@ -5304,7 +5353,7 @@ W-3  Kick off the determinations epic — the portal's most
      consequential remaining decomposition.</code></pre>
     <p><strong>Check yourself:</strong> (1) Route W-1 and defend it. (2) Route W-2 — and what must be true afterward regardless of engine? (3) Route W-3 and name the tax you're accepting.</p>
     <details><summary>Answers</summary>
-      <p>(1) To whichever engine has the threshold gate <em>mechanized</em> — per your M17 drill log that's the PreToolUse hook (Claude Code) unless you've scripted the Codex gate into CI; the decision record satisfies the gate either way. Brand answers score zero. (2) Codex full-auto in the sandbox or CC acceptEdits+hooks both fit — and afterward, the union gates run and a human reads the diff summary-free (M21): no-behavior-change claims are verified, not believed. (3) Both — the parity experiment: two independent decompositions for the mob. The tax: doubled Inception cost and a comparison pass; worth it exactly because this epic is the one you least want to slice wrong.</p>
+      <p>(1) To whichever engine has the threshold gate <em>mechanized</em> — per your M17 drill log that's the PreToolUse hook (Claude Code) unless you've scripted the Codex gate into CI; the decision record satisfies the gate either way. Brand answers score zero. (2) Codex full-auto in the sandbox (M19's naming; <code>--sandbox workspace-write</code> with <code>--ask-for-approval never</code> on the current CLI) or CC acceptEdits+hooks both fit — and afterward, the union gates run and a human reads the diff summary-free (M21): no-behavior-change claims are verified, not believed. (3) Both — the parity experiment: two independent decompositions for the mob. The tax: doubled Inception cost and a comparison pass; worth it exactly because this epic is the one you least want to slice wrong.</p>
     </details>
   </div>
 
@@ -5326,8 +5375,8 @@ claude
 &gt; engine + posture, rationale citing the logs; guardrail class
 &gt; routes to "whichever engine has the gate mechanized — currently
 &gt; [name it from the M17 log]". (2) our run-both patterns and their
-&gt; triggers. (3) the drift-sync rule: twins generated, diffed in
-&gt; CI. (4) the lock-in test as a standing bolt-close question.
+&gt; triggers. (3) the drift rule: rules in one file, imported
+&gt; rather than duplicated. (4) the lock-in test as a standing bolt-close question.
 &gt; No code.</code></pre>
         <p><strong>Verify:</strong> four sections; the routing cites actual log evidence; the guardrail row names an engine because of a drill, not a brand.</p>
       </div>
@@ -5341,8 +5390,8 @@ codex
 &gt; engine + posture, rationale citing the logs; guardrail class
 &gt; routes to "whichever engine has the gate mechanized — currently
 &gt; [name it from the M17 log]". (2) our run-both patterns and their
-&gt; triggers. (3) the drift-sync rule: twins generated, diffed in
-&gt; CI. (4) the lock-in test as a standing bolt-close question.
+&gt; triggers. (3) the drift rule: rules in one file, imported
+&gt; rather than duplicated. (4) the lock-in test as a standing bolt-close question.
 &gt; No code.</code></pre>
         <p><strong>Verify:</strong> same artifact, same evidence-based routing — the policy itself must pass its own lock-in test: nothing in it should depend on which engine wrote it.</p>
       </div>
@@ -5549,7 +5598,7 @@ codex
 <p>Watch the inheritance become executable: collect-all field errors (steering rule, now at the HTTP layer), the staleness-aware eligibility port (I-1), E4-means-ineligible (I-2), one structured outreach entry per rejection (M02). And naming is contract: the resources are <code>auth-requests</code> and <code>members</code> — the domain anchor, API-visible.</p>
 
 <h2>The decisions this bolt surfaces</h2>
-<p>Three are worth the room's time. <strong>Idempotency</strong> — bolt-new, member-facing: a duplicate submission (same member, provider, and serviceCode while a request is open) returns the existing request's id with a 200 and logs the duplicate; no second <code>AuthRequest</code> ever exists. <strong>The error contract</strong>: 400 with a field-level error array — the collect-all rule made testable at the boundary — and the semantic map's ugliest trap handled explicitly: an unknown member (200 + empty body from the legacy API) is treated as ineligible and never retried.</p>
+<p>Three are worth the room's time. <strong>Idempotency</strong> — bolt-new, member-facing: a duplicate submission (same member, provider, and procedureCode while a request is open) returns the existing request's id with a 200 and logs the duplicate; no second <code>AuthRequest</code> ever exists. <strong>The error contract</strong>: 400 with a field-level error array — the collect-all rule made testable at the boundary — and the semantic map's ugliest trap handled explicitly: an unknown member (200 + empty body from the legacy API) is treated as ineligible and never retried.</p>
 <p>And the design move that makes the rest safe: <strong>the eligibility port</strong>. Staleness, E4, and the empty-body convention live in exactly one adapter — quarantining the 12-year-old system's personality in a single reviewed, synthetically-fixtured place. That's M12's map, executable.</p>
 
 <aside class="analogy">
@@ -5621,7 +5670,7 @@ codex
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
     <p>B1's idempotency loop and UW-1's trace table. Verify the coverage, then find each AC's ancestry.</p>
-<pre><code>AI:  Duplicate submissions — same member+provider+serviceCode
+<pre><code>AI:  Duplicate submissions — same member+provider+procedureCode
      while a request is open. My guess: reject the second with
      409. Deferring: member-facing semantics, not my call.
 PO:  No 409 — provider offices double-click; don't punish them.
@@ -5710,7 +5759,7 @@ codex
 <p class="hook">Bolt 2 is the reason the portal exists and the reason it could end careers: the code that decides whether a member's imaging request is approved by software or seen by a nurse. The team treats it accordingly — not with fear, with rigor they already own. The threshold arrives from the gated config file, never a literal. The PHI-review stage triggers automatically off the rigor policy. And the test list reads like a compliance officer wrote it, because in a sense she did: <code>no_auto_approval_below_threshold</code>, <code>empty_criteria_scores_zero</code>, <code>score_log_immutable</code>. The most dangerous bolt gets the most boring execution. That's the discipline compounding.</p>
 
 <h2>What bolt 2 builds</h2>
-<p>The <code>ClinicalCriteria</code> entity — criteria sets per serviceCode — and the <strong>matcher</strong>: it evaluates a RECEIVED <code>AuthRequest</code> against its criteria set and produces a match score from 0.0 to 1.0, with per-criterion components preserved. Then the path the whole portal pivots on: score ≥ <code>AUTO_APPROVE_THRESHOLD (0.85)</code> — read from the gated config, never a literal — produces AUTO_APPROVED and hands off to B4's determination record; score below routes the flag B3's queue consumes, with S2's 60-second clause carried.</p>
+<p>The <code>ClinicalCriteria</code> entity — criteria sets per procedureCode — and the <strong>matcher</strong>: it evaluates a RECEIVED <code>AuthRequest</code> against its criteria set and produces a match score from 0.0 to 1.0, with per-criterion components preserved. Then the path the whole portal pivots on: score ≥ <code>AUTO_APPROVE_THRESHOLD (0.85)</code> — read from the gated config, never a literal — produces AUTO_APPROVED and hands off to B4's determination record; score below routes the flag B3's queue consumes, with S2's 60-second clause carried.</p>
 <p>And one ordering rule that is an acceptance criterion, not an implementation detail: <strong>every score persists immutably to the compliance store before any routing occurs.</strong> Priya's closed decision, now executable, now tested.</p>
 
 <h2>The guardrail bolt: maximum rigor, familiar shape</h2>
@@ -5736,7 +5785,7 @@ codex
 
     <rect x="185" y="110" width="150" height="56" rx="9" fill="none" stroke="var(--t6)" stroke-width="2.5"/>
     <text x="260" y="130" font-size="9.5" fill="var(--t6)" font-weight="600">MATCHER</text>
-    <text x="260" y="145" font-size="7.6" fill="var(--ink-soft)">criteria set / serviceCode</text>
+    <text x="260" y="145" font-size="7.6" fill="var(--ink-soft)">criteria set / procedureCode</text>
     <text x="260" y="158" font-size="7.6" fill="var(--ink-soft)">per-criterion components</text>
 
     <rect x="370" y="103" width="160" height="70" rx="9" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
@@ -5782,7 +5831,7 @@ codex
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
     <p>The adversarial review exchange and the negative-test list. Map each test to the property it guards.</p>
-<pre><code>ARCH: Empty criteria set for a serviceCode — score is what?
+<pre><code>ARCH: Empty criteria set for a procedureCode — score is what?
 AI:   Undefined in the plan. My guess: skip scoring, route to
       review. Deferring — this is approval semantics.
 SME:  Score it 0.0 explicitly. Ignorance is not approval.
@@ -5793,7 +5842,7 @@ PO:   ≥ stands. Document it in the audit note.
 
 TESTS
 no_auto_approval_below_threshold   → the guardrail property
-approves_at_exact_threshold        → ≥ semantics, decided
+auto_approves_exactly_at_threshold → ≥ semantics, decided (D-001)
 empty_criteria_scores_zero         → ignorance ≠ approval
 score_log_immutable                → update attempt fails loudly
 persists_score_before_routing      → ordering is an AC</code></pre>
@@ -5818,16 +5867,20 @@ claude
 &gt; Bolt 2 core. Read docs/M23-capstone-inception.md and
 &gt; docs/M24-bolt1-close.md. Plan first, STOP for approval. Then:
 &gt; ClinicalCriteria matcher (criteria-set fixtures per
-&gt; serviceCode, per-criterion components), threshold path reading
-&gt; config/threshold.json ONLY (no 0.85 literal anywhere else),
-&gt; in-memory compliance-store port with immutability enforced,
-&gt; score persisted before routing. Tests, exactly these names:
-&gt; no_auto_approval_below_threshold, approves_at_exact_threshold,
+&gt; procedureCode, per-criterion components), threshold path reading
+&gt; config/threshold.json ONLY — migrate the existing
+&gt; AUTO_APPROVE_THRESHOLD in src/domain/clinical-criteria.ts to
+&gt; load from it and update the seeded spec, leaving no 0.85
+&gt; literal under src/. Keep D-001's test name. In-memory
+&gt; compliance-store port with immutability enforced, score
+&gt; persisted before routing. Tests, exactly these names:
+&gt; no_auto_approval_below_threshold,
+&gt; auto_approves_exactly_at_threshold,
 &gt; empty_criteria_scores_zero, score_log_immutable,
 &gt; persists_score_before_routing. Assemble the PHI evidence-pack
 &gt; stub per docs/M11-stage-phi-review.md. Run gates, show output.
 &gt; Close with docs/M25-bolt2-close.md.</code></pre>
-        <p><strong>Verify:</strong> five named tests green; a search for "0.85" hits only the config; the evidence-pack stub exists; the close-out records the score-distribution learning hook.</p>
+        <p><strong>Verify:</strong> five named tests green; no <code>0.85</code> literal remains under <code>src/</code> — the value loads from <code>config/threshold.json</code>, while <code>AGENTS.md</code> and <code>docs/decisions.md</code> still cite it, as records should; the evidence-pack stub exists; the close-out records the score-distribution learning hook.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI
@@ -5836,19 +5889,22 @@ codex
 &gt; Bolt 2 core. Read docs/M23-capstone-inception.md and
 &gt; docs/M24-bolt1-close.md. Do NOT write yet — plan and stop for
 &gt; approval. Then: ClinicalCriteria matcher (criteria-set fixtures
-&gt; per serviceCode, per-criterion components), threshold path
-&gt; reading config/threshold.json ONLY (no 0.85 literal anywhere
-&gt; else), in-memory compliance-store port with immutability
-&gt; enforced, score persisted before routing. Tests, exactly these
+&gt; per procedureCode, per-criterion components), threshold path
+&gt; reading config/threshold.json ONLY — migrate the existing
+&gt; AUTO_APPROVE_THRESHOLD in src/domain/clinical-criteria.ts to
+&gt; load from it and update the seeded spec, leaving no 0.85
+&gt; literal under src/. Keep D-001's test name. In-memory
+&gt; compliance-store port with immutability enforced, score
+&gt; persisted before routing. Tests, exactly these
 &gt; names: no_auto_approval_below_threshold,
-&gt; approves_at_exact_threshold, empty_criteria_scores_zero,
+&gt; auto_approves_exactly_at_threshold, empty_criteria_scores_zero,
 &gt; score_log_immutable, persists_score_before_routing. Assemble
 &gt; the PHI evidence-pack stub per docs/M11-stage-phi-review.md.
 &gt; Run gates, show output. Close with docs/M25-bolt2-close.md.</code></pre>
         <p><strong>Verify:</strong> same checks — and run the no-bypass walk yourself on the final diff: trace every path to AUTO_APPROVED before signing.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> the five property tests are green, the threshold literal exists only in gated config, the evidence pack is assembled — and you personally walked every path to AUTO_APPROVED.</p>
+    <p><strong>Done when</strong> the five property tests are green, no threshold literal remains under <code>src/</code> — it lives in gated config, cited by the decision log — the evidence pack is assembled, and you personally walked every path to AUTO_APPROVED.</p>
   </div>
 </section>
 
@@ -5874,10 +5930,10 @@ codex
 <p class="hook">Bolt 3 is where the software meets the people it was built to respect: the nurses who decide everything the threshold can't. So the Mob Elaboration looks different — the nurse SME talks, everyone else mostly writes. Push assignments? "No. Nurses claim work; you don't know whose queue is drowning." What if a claimed item sits — shift change, emergency? "Back in the pool at timeout, priority preserved." Urgent first? "Always. The 4-hour clock started at intake, not at claim." By the time the engine proposes the state machine, half its transitions were dictated by someone who has worked a review queue at 2 am. That's dynamic team collaboration doing exactly what M02 promised.</p>
 
 <h2>What bolt 3 builds</h2>
-<p>Three surfaces. <strong>Queue entry creation</strong> from B2's routing flag — within 60 seconds, S2's clause now load-bearing — with entries carrying priority (urgent first, the 4-hour SLA from M06) and the score components, so the reviewer sees <em>why</em> a request scored 0.79 without leaving the queue. <strong>Claim-based assignment</strong>: a nurse claims an item; exactly one owner at a time; a claim that times out returns to the pool with priority preserved. <strong>The SLA alarm</strong> — M09's wire, now the only escalation path by design: the no-side-channels decision means urgent items nearing four hours escalate loudly in the queue, not by phone.</p>
+<p>Three surfaces. <strong>Queue entry creation</strong> from B2's routing flag — within 60 seconds, S2's clause now load-bearing: it is AC-3 from the kickoff backlog, and the test that holds it (<code>queues_within_60s_of_scoring</code>) lives in this bolt, the one that owns the write — with entries carrying priority (urgent first, the 4-hour SLA from M06) and the score components, so the reviewer sees <em>why</em> a request scored 0.79 without leaving the queue. <strong>Claim-based assignment</strong>: a nurse claims an item; exactly one owner at a time; a claim that times out returns to the pool with priority preserved. <strong>The SLA alarm</strong> — M09's wire, now the only escalation path by design: the no-side-channels decision means urgent items nearing four hours escalate loudly in the queue, not by phone.</p>
 
 <h2>State machines you can audit</h2>
-<p><code>AuthStatus</code> becomes an explicit transition table: RECEIVED → SCORED → (AUTO_APPROVED | PENDING_REVIEW) → IN_REVIEW → REVIEWED(approve/deny) → B4's determination — plus the one loop the SME insisted on, IN_REVIEW → PENDING_REVIEW on claim timeout. The table is <em>data</em>, not scattered conditionals: an auditor reads it in one screen, and so does the next bolt's engine.</p>
+<p><code>AuthStatus</code> becomes an explicit transition table, and it starts at intake: submission → RECEIVED or REJECTED (B1's terminal reject — no edges out, which is exactly why the table has to name it), then RECEIVED → SCORED → (AUTO_APPROVED | PENDING_REVIEW) → IN_REVIEW → REVIEWED(approve/deny) → B4's determination — plus the one loop the SME insisted on, IN_REVIEW → PENDING_REVIEW on claim timeout. The table is <em>data</em>, not scattered conditionals: an auditor reads it in one screen, and so does the next bolt's engine.</p>
 <p>Everything off the table fails the M04 way — loudly: an illegal transition is rejected with a correlation id, never silently coerced. And S2's invariant gets enforced <strong>twice</strong>: the blocking queue write at scoring time, plus the reconciliation sweep (the split the M05 lab predicted, now shipped) — so there is no reachable state where a below-threshold request is neither queued nor determined. The alarm from M09 watches exactly that property in production.</p>
 
 <aside class="analogy">
@@ -5946,18 +6002,19 @@ codex
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
     <p>The transition table and four event sequences. Validate each sequence; find where the invariant is checked twice.</p>
-<pre><code>TABLE  RECEIVED→SCORED · SCORED→AUTO_APPROVED ·
+<pre><code>TABLE  (intake)→RECEIVED · (intake)→REJECTED (terminal) ·
+       RECEIVED→SCORED · SCORED→AUTO_APPROVED ·
        SCORED→PENDING_REVIEW · PENDING_REVIEW→IN_REVIEW ·
        IN_REVIEW→REVIEWED · IN_REVIEW→PENDING_REVIEW (timeout)
        precedence: timeout beats simultaneous claim
 
-S1  RECEIVED→SCORED→PENDING_REVIEW→IN_REVIEW→REVIEWED
-S2  …→IN_REVIEW→(timeout)→PENDING_REVIEW→IN_REVIEW→REVIEWED
-S3  RECEIVED→IN_REVIEW  ("nurse grabbed it early")
-S4  claim arrives as timeout fires on the same item</code></pre>
-    <p><strong>Check yourself:</strong> (1) Validate S1–S4 against the table. (2) Where is the below-threshold invariant checked twice, and why isn't once enough? (3) What does S3's loud rejection protect, concretely?</p>
+SEQ1  RECEIVED→SCORED→PENDING_REVIEW→IN_REVIEW→REVIEWED
+SEQ2  …→IN_REVIEW→(timeout)→PENDING_REVIEW→IN_REVIEW→REVIEWED
+SEQ3  RECEIVED→IN_REVIEW  ("nurse grabbed it early")
+SEQ4  claim arrives as timeout fires on the same item</code></pre>
+    <p><strong>Check yourself:</strong> (1) Validate SEQ1–SEQ4 against the table. (2) Where is the below-threshold invariant checked twice, and why isn't once enough? (3) What does SEQ3's loud rejection protect, concretely?</p>
     <details><summary>Answers</summary>
-      <p>(1) S1 legal (happy path); S2 legal (requeue loop, priority preserved); S3 illegal — no edge exists, rejected with a correlation id; S4 resolved by precedence — timeout wins, the item requeues, the claim retries against it: deterministic, not racy. (2) At the blocking queue write (scoring time) and in the reconciliation sweep — once isn't enough because the write path can fail after scoring persists; the sweep catches exactly the gap the alarm watches. (3) The audit trail: a request reviewed without ever being scored-and-queued is a determination whose provenance can't be reconstructed — S3 is the triage bot's ghost, and the table exorcises it.</p>
+      <p>(1) SEQ1 legal (happy path); SEQ2 legal (requeue loop, priority preserved); SEQ3 illegal — no edge exists, rejected with a correlation id; SEQ4 resolved by precedence — timeout wins, the item requeues, the claim retries against it: deterministic, not racy. (2) At the blocking queue write (scoring time) and in the reconciliation sweep — once isn't enough because the write path can fail after scoring persists; the sweep catches exactly the gap the alarm watches. (3) The audit trail: a request reviewed without ever being scored-and-queued is a determination whose provenance can't be reconstructed — SEQ3 is the triage bot's ghost, and the table exorcises it.</p>
     </details>
   </div>
 
@@ -5982,10 +6039,10 @@ claude
 &gt; illegal transitions loudly (correlation id); the reconciliation
 &gt; sweep. Tests, exactly: rejects_illegal_transition,
 &gt; urgent_orders_first, requeues_on_claim_timeout,
-&gt; one_owner_per_claimed_item,
+&gt; one_owner_per_claimed_item, queues_within_60s_of_scoring,
 &gt; below_threshold_always_queued_or_determined. Run gates, show
 &gt; output. Close with docs/M26-bolt3-close.md.</code></pre>
-        <p><strong>Verify:</strong> five named tests green; the transition table is data an auditor could read, not scattered ifs; the close-out written.</p>
+        <p><strong>Verify:</strong> six named tests green; the transition table is data an auditor could read, not scattered ifs; the close-out written.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI
@@ -6001,12 +6058,13 @@ codex
 &gt; reconciliation sweep. Tests, exactly:
 &gt; rejects_illegal_transition, urgent_orders_first,
 &gt; requeues_on_claim_timeout, one_owner_per_claimed_item,
+&gt; queues_within_60s_of_scoring,
 &gt; below_threshold_always_queued_or_determined. Run gates, show
 &gt; output. Close with docs/M26-bolt3-close.md.</code></pre>
         <p><strong>Verify:</strong> same checks — and read the state-machine hunks yourself: the table should be one screen.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> the queue routes, claims, times out, and reconciles; the five named tests are green; the transition table reads in one screen — and bolt 3's close-out hands B4 the REVIEWED contract.</p>
+    <p><strong>Done when</strong> the queue routes, claims, times out, and reconciles; the six named tests are green; the transition table reads in one screen — and bolt 3's close-out hands B4 the REVIEWED contract.</p>
   </div>
 </section>
 
@@ -6102,7 +6160,7 @@ codex
     <p>Determination D-4417's record set. Perform the audit walk on paper; name which bolt each record descends from; then dispose of the trap.</p>
 <pre><code>D-4417        REVIEWED path · denied · nurse R.Okafor ·
               rationale: criteria C-3, C-7 unmet
-QUEUE         PENDING_REVIEW 09:14 → IN_REVIEW 09:31 (claim
+QUEUE         PENDING_REVIEW 09:14:05 → IN_REVIEW 09:31 (claim
               R.Okafor) → REVIEWED 09:58
 SCORE         0.71 · components: C-1 ✓ C-3 ✕ C-7 ✕ · persisted
               09:14:02, immutable, compliance store
@@ -6115,7 +6173,7 @@ TRAP: could a record set ever show a notification with no
       determination behind it?</code></pre>
     <p><strong>Check yourself:</strong> (1) Which bolt does each record descend from? (2) What in this set would a plaintiff's attorney check first, and does it hold? (3) Dispose of the trap: which invariant makes it impossible?</p>
     <details><summary>Answers</summary>
-      <p>(1) REQUEST: B1. SCORE: B2 (persisted-before-routing visible in the timestamps: 09:14:02 precedes the queue entry). QUEUE: B3's transition records. D-4417 + NOTIFICATION: B4. (2) That the denial has a human behind it — and it does: below-threshold score, nurse claim, her identity and criteria-level rationale on the record; the walk holds with no gaps. (3) Notifications trigger <em>only</em> on determination creation (B4's trigger design), and <code>notifies_on_determination</code> plus the audit-walk test enforce it — a notification without a determination has no code path that could produce it.</p>
+      <p>(1) REQUEST: B1. SCORE: B2 (persisted-before-routing visible in the timestamps: the 09:14:02 score write precedes the 09:14:05 queue entry). QUEUE: B3's transition records. D-4417 + NOTIFICATION: B4. (2) That the denial has a human behind it — and it does: below-threshold score, nurse claim, her identity and criteria-level rationale on the record; the walk holds with no gaps. (3) Notifications trigger <em>only</em> on determination creation (B4's trigger design), and <code>notifies_on_determination</code> plus the audit-walk test enforce it — a notification without a determination has no code path that could produce it.</p>
     </details>
   </div>
 
@@ -6193,7 +6251,7 @@ codex
   minutes: 35,
   audience: "practitioner",
   body: `
-<p class="hook">Six weeks after the funding email, the portal takes its first real traffic — three pilot provider groups, chosen because they phone the most. The deploy itself is the boring anticlockwork the team designed for: rings, sign-offs, alarms armed before requests flow. What's not boring is Thursday's dashboard: median turnaround for auto-approvable requests, 3.1 hours — against a 4.2-day baseline and a 24-hour promise. The queue alarm has fired zero times, which is the number the CMO actually checks. And Friday brings the first incident — notification retries hammering an undeliverable address — resolved in forty minutes because the audit walk made the path obvious, and closed with a learning that becomes next bolt's first line. The portal isn't finished. It's alive, and the system that built it is now the system that runs it.</p>
+<p class="hook">Six weeks after the funding email, the portal takes its first real traffic — three pilot provider groups, chosen because they phone the most. The deploy itself is the boring clockwork the team designed for: rings, sign-offs, alarms armed before requests flow. What's not boring is Thursday's dashboard: median turnaround for auto-approvable requests, 3.1 hours — against a 4.2-day baseline and a 24-hour promise. The queue alarm has fired zero times, which is the number the CMO actually checks. And Friday brings the first incident — notification retries hammering an undeliverable address — resolved in forty minutes because the audit walk made the path obvious, and closed with a learning that becomes next bolt's first line. The portal isn't finished. It's alive, and the system that built it is now the system that runs it.</p>
 
 <h2>Ship in rings</h2>
 <p>The rollout is M09 at program scale: <strong>staging</strong> (which the bolts already soaked for weeks) → <strong>pilot</strong> — three provider groups, real PHI, deliberately bounded blast radius — → <strong>full</strong>. Each ring transition is an exposure boundary with a named human sign-off; M02's table didn't change because the stakes grew, it's why the table existed.</p>
@@ -6260,7 +6318,7 @@ codex
 
 <h2>Evolve: the next cycle</h2>
 <p>The portal is never done, and the backlog already knows it: the <strong>provider visibility UI</strong> — the <code>prior-auth-web</code> React repo consuming B1's GET endpoint, a whole new bolt cycle with the same rituals; <strong>quarterly criteria-set updates</strong> — designed as a rigor-classed change process, not a recurring project; and the <strong>E7 mystery</strong> (F-1 from the semantic map) — still flagged, still owned, still honest about what nobody knows yet.</p>
-<p>The program-level handoff is the chain itself: steering twins, the decision register, the semantic map, eight bolt close-outs, and the program close-out this module's lab writes. It is simultaneously the onboarding for the next engineer, the audit defense for the next review, and the reason cycle 2's Inception will ask even fewer questions than the capstone's did. Track 7 takes it from here — the numbers, the adoption story, and the governance evidence are exactly what leaders operate on.</p>
+<p>The program-level handoff is the chain itself: the steering chain, the decision register, the semantic map, four bolt close-outs, and the program close-out this module's lab writes. It is simultaneously the onboarding for the next engineer, the audit defense for the next review, and the reason cycle 2's Inception will ask even fewer questions than the capstone's did. Track 7 takes it from here — the numbers, the adoption story, and the governance evidence are exactly what leaders operate on.</p>
 
 <section class="lab">
   <div class="lab-head">Lab M28 · 35 min</div>
@@ -6288,7 +6346,7 @@ GUARD  claims-intake team (similar backlog, unchanged process):
 
   <div class="path">
     <div class="path-label">Path B — Build It with AI (both engines)</div>
-    <p>The unit of work: write the program close-out — the capstone chain, curated. Run in <code>prior-auth-api</code>.</p>
+    <p>The unit of work: write the program close-out — the capstone chain, curated. Run in <code>prior-auth-api</code> (requires the <code>docs/</code> chain the earlier labs write — the engine policy from M20–M22, the capstone inception from M23, and the four bolt close-outs from M24–M27. Without them there is nothing to curate: run Path A only, or run Path B against the artifacts you do have and drop the six-citation floor).</p>
     <div class="engine-tabs">
       <div class="engine-tab-btns" role="tablist">
         <button class="active" data-engine="cc">Claude Code</button>
@@ -6435,7 +6493,7 @@ codex
     <p>The portal pod's charter, one bolt in. Check it against the sizing rule; find the risk.</p>
 <pre><code>POD: portal (5 seats)
   decider     A. Reyes (PO) — policy + member-facing semantics
-  engineers   3 — rotate construction sessions per M16
+  engineers   3 — one unit of work per session (M16)
   SME         R. Okafor (nurse) — clinical semantics; hotline:
               answers within the hour on bolt days
   engines     per docs/M22-engine-policy.md
@@ -6568,13 +6626,17 @@ LEADER METRICS (this bolt)
     <p>Four exchanges from the March audit. Mark what answers each question — and judge the team's move in the fourth.</p>
 <pre><code>Q1  "The threshold changed to 0.82 for imaging in April.
      Walk me through it."
-A1  Register entry: medical director R.Chen, April 3, rationale
+A1  Register entry: medical director R.Chen, April 3 (T-102) —
+     a per-modality carve-out recorded in config/threshold.json;
+     the 0.85 default and the >= rule are unchanged. Rationale
      attached; gate log shows the config edit blocked twice
      until the record existed; evidence pack signed.
 Q2  "Does the AI ever make the approval decision?"
-A2  Above 0.85, software applies a policy humans set and
-     locked; below, a nurse decides. Here's a determination
-     from each path — walk them yourself.
+A2  At or above the applicable threshold — 0.85, or 0.82 for
+     imaging since April; the rule is >= — software applies a
+     policy humans set and locked; below, a nurse decides.
+     Here's a determination from each path — walk them
+     yourself.
 Q3  "How do you know the guardrail holds in production?"
 A3  The skip-alarm (zero fires, monitored) plus the nightly
      reconciliation sweep; both alert paths documented.
@@ -6890,7 +6952,7 @@ calendar unchanged.</code></pre>
 <p class="hook">Four thousand two hundred requests auto-approved last month, and the compliance officer's question is only seven words: "Who decided each one of those, exactly?" The team's first instinct is to say "the criteria engine" — and that answer, they realize as they're forming it, is the whole problem. An engine can't be accountable. It can't sit in a deposition, can't explain a denial to a member's family, can't sign the attestation the state auditor wants. The portal was built by AI at bolt speed, and every one of those 4,200 determinations needs a human name, a criteria version, and a match score behind it. The good news: AI-DLC already built the scaffolding for that answer. This module makes it explicit.</p>
 
 <h2>Responsible AI is a lifecycle property, not a checklist</h2>
-<p>The responsible-AI dimensions — <strong>fairness, explainability, privacy &amp; security, controllability, transparency, governance</strong> — usually arrive at a team as a compliance checklist bolted on after the build. AI-DLC's claim is structural: each dimension attaches to a checkpoint the lifecycle already runs, so responsibility is exercised where the work happens rather than audited after it ships.</p>
+<p>The responsible-AI dimensions this module works through — <strong>fairness, explainability, privacy &amp; security, controllability, transparency, governance</strong>, six of the eight AWS names (safety and veracity &amp; robustness bite hardest when the product itself is a model; here it is a scored rule under human review) — usually arrive at a team as a compliance checklist bolted on after the build. AI-DLC's claim is structural: each dimension attaches to a checkpoint the lifecycle already runs, so responsibility is exercised where the work happens rather than audited after it ships.</p>
 <p><strong>Inception owns fairness.</strong> Mob Elaboration already asks "what should this do?" — the responsible version adds "who could this harm?" to the same session, while requirements are still cheap to change. <strong>Construction owns controllability and transparency:</strong> understand-every-line (M08) and the chain (M13) mean nothing merges unexplained and every decision has a named approver. <strong>Operations owns the audit trail and drift:</strong> the same observability that watches latency watches approval rates by cohort.</p>
 <p>Hear the echo of M01: an AI-managed shop can't answer the compliance officer at all — nobody validated anything. An AI-assisted shop answers eventually, by archaeology. Oversight at checkpoints is what makes the answer fast <em>and</em> true.</p>
 
@@ -6961,14 +7023,14 @@ calendar unchanged.</code></pre>
 <p>Make the rule enforce itself by putting it where the engine reads first: the steering file. A "fixtures are synthetic-only" line in <code>CLAUDE.md</code> or <code>AGENTS.md</code> means every future bolt inherits the constraint — the steering file is a responsible-AI control surface, not just a productivity trick. And M12's brownfield discipline pays a privacy dividend: a semantic map summarizes structure, not records. High semantics-per-token is also high privacy-per-token.</p>
 
 <h2>Provenance: who wrote this code, who made this call</h2>
-<p>Explainability as aspiration is a paragraph in a policy doc. Explainability as schema is three fields on every <code>Determination</code>: <code>matchScore</code>, <code>criteriaVersion</code>, and <code>decidedBy</code> — <code>"auto"</code> or a nurse identifier. With those three, the compliance officer's seven-word question has a seven-second answer, for any determination, forever.</p>
+<p>Explainability as aspiration is a paragraph in a policy doc. Explainability as schema is three fields on every <code>Determination</code>: <code>score</code>, <code>criteriaVersion</code>, and <code>decidedBy</code> — <code>"auto"</code> or a nurse identifier. With those three, the compliance officer's seven-word question has a seven-second answer, for any determination, forever.</p>
 <p>Code has provenance too. The chain names the human who approved each plan; understand-every-line is the moment accountability for AI-written code transfers to a person. That's the invariant under everything this course has taught: <strong>accountability never transfers to the engine.</strong> The engine builds. The names on the checkpoint answer for the build.</p>
 
 <table class="bridge">
   <thead><tr><th>Responsible AI dimension</th><th>Where AI-DLC already holds it</th></tr></thead>
   <tbody>
     <tr><td>Fairness</td><td>Mob Elaboration's "who could this harm?" · nurse review queue as backstop · cohort tests</td></tr>
-    <tr><td>Explainability</td><td><code>matchScore</code> + <code>criteriaVersion</code> + <code>decidedBy</code> on every Determination</td></tr>
+    <tr><td>Explainability</td><td><code>score</code> + <code>criteriaVersion</code> + <code>decidedBy</code> on every Determination</td></tr>
     <tr><td>Privacy &amp; security</td><td>Context-hygiene rules in the steering file · synthetic-only fixtures</td></tr>
     <tr><td>Controllability</td><td>Human checkpoints · <code>AUTO_APPROVE_THRESHOLD</code> changes are human decisions</td></tr>
     <tr><td>Transparency</td><td>The chain: plan files, decision log, named approvers per bolt</td></tr>
@@ -6993,7 +7055,7 @@ R:  fixtures/members.json line 12: "Rosa Delgado, DOB 1961-03-04,
     ICD-10 E11.9". That reads like a real person.    [finding 2]
 AI: Replacing with synthetic records; adding a synthetic-only rule
     to the steering file so it holds for every future bolt.
-R:  Determination records: matchScore is present, but criteriaVersion
+R:  Determination records: score is present, but criteriaVersion
     and decidedBy are missing. A denial we can't explain is a denial
     we can't defend.                                 [finding 3]</code></pre>
     <p><strong>Check yourself:</strong> (1) Name the dimension behind each finding. (2) Which checkpoint should have caught the threshold change, and why is it the most serious of the three? (3) Which finding does the steering file fix <em>permanently</em>, and what does that say about steering files?</p>
@@ -7014,14 +7076,16 @@ R:  Determination records: matchScore is present, but criteriaVersion
 <pre><code># Claude Code
 cd prior-auth-api
 claude
-&gt; Append a "Responsible AI rules" section to CLAUDE.md with three rules:
+&gt; Append a "Responsible AI rules" section to AGENTS.md — the single
+&gt; source of truth both engines read — with three rules:
 &gt; 1. Never modify AUTO_APPROVE_THRESHOLD without a recorded human
 &gt;    approval in the decision log.
 &gt; 2. Test fixtures are synthetic-only — never realistic member data.
-&gt; 3. Every Determination must carry matchScore, criteriaVersion,
+&gt; 3. Every Determination must carry its score, plus criteriaVersion
 &gt;    and decidedBy ("auto" or a nurse identifier).
-&gt; Then plan only: how would you extend the Determination type with
-&gt; those three fields, and which Jest tests would hold the invariants?
+&gt; Then plan only: Determination already has score, so how would you
+&gt; add the two missing provenance fields, and which Jest tests would
+&gt; hold the invariants?
 # review the plan — this is your checkpoint
 &gt; Approved. Build it: update the type and add tests asserting
 &gt; (a) a score below 0.85 never auto-approves, and
@@ -7033,23 +7097,25 @@ npx jest</code></pre>
 <pre><code># Codex CLI
 cd prior-auth-api
 codex
-&gt; Append a "Responsible AI rules" section to AGENTS.md with three rules:
+&gt; Append a "Responsible AI rules" section to AGENTS.md — the single
+&gt; source of truth both engines read — with three rules:
 &gt; 1. Never modify AUTO_APPROVE_THRESHOLD without a recorded human
 &gt;    approval in the decision log.
 &gt; 2. Test fixtures are synthetic-only — never realistic member data.
-&gt; 3. Every Determination must carry matchScore, criteriaVersion,
+&gt; 3. Every Determination must carry its score, plus criteriaVersion
 &gt;    and decidedBy ("auto" or a nurse identifier).
-&gt; Then plan only: how would you extend the Determination type with
-&gt; those three fields, and which Jest tests would hold the invariants?
+&gt; Then plan only: Determination already has score, so how would you
+&gt; add the two missing provenance fields, and which Jest tests would
+&gt; hold the invariants?
 # review the proposed plan in the diff view — your checkpoint
 &gt; Approved. Build it: update the type and add tests asserting
 &gt; (a) a score below 0.85 never auto-approves, and
 &gt; (b) every determination carries all three provenance fields.
 npx jest</code></pre>
-        <p><strong>Verify:</strong> same checks. The rules section, the type change, and the test assertions are identical to the Claude Code variant — only the steering filename differs.</p>
+        <p><strong>Verify:</strong> same checks, same files. Both engines write the rules to <code>AGENTS.md</code>, so the repo lands in an identical state — Claude Code inherits them through <code>CLAUDE.md</code>'s <code>@AGENTS.md</code> import. Put them in <code>CLAUDE.md</code> instead and Codex never sees them: that is M13's silent fork, shipped into your own standards.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> both engines produce the same steering section and the same green tests — and you can answer the compliance officer's question for any determination in one query.</p>
+    <p><strong>Done when</strong> the rules live once in <code>AGENTS.md</code> where both engines read them, the tests are green — and you can answer the compliance officer's question for any determination in one query.</p>
   </div>
 </section>
 
@@ -7059,7 +7125,7 @@ npx jest</code></pre>
     <li>Responsible AI in AI-DLC is not a new stage — each dimension attaches to a checkpoint the lifecycle already runs, which is why the compliance answer is fast and true.</li>
     <li>The auto-approval threshold is a clinical-policy decision: engines may read it, only named humans may move it, and the nurse review queue is the fairness backstop beneath it.</li>
     <li>Context leaves the building: decisions and schemas go in the chain; member data never enters a prompt, a fixture, or a steering file.</li>
-    <li>Explainability is schema — <code>matchScore</code>, <code>criteriaVersion</code>, <code>decidedBy</code> on every Determination; provenance for code is the chain plus understand-every-line.</li>
+    <li>Explainability is schema — <code>score</code>, <code>criteriaVersion</code>, <code>decidedBy</code> on every Determination; provenance for code is the chain plus understand-every-line.</li>
     <li>The engine builds; the names on the checkpoint answer for the build. Course complete — go run a bolt, responsibly.</li>
   </ul>
   <span class="next">Course complete — go run a bolt, responsibly. ⚡</span>

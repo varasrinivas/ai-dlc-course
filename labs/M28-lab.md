@@ -51,7 +51,10 @@ GUARD  claims-intake team (similar backlog, unchanged process):
 
 > The unit of work: write the program close-out — the capstone chain, curated. Both
 > variants produce the same artifact from the same engine-neutral chain. Run in the
-> `prior-auth-api` folder.
+> `prior-auth-api` folder (requires the `docs/` chain the earlier labs write — the
+> engine policy from M20–M22, `docs/M23-capstone-inception.md`, and the four bolt
+> close-outs from M24–M27. Without them there is nothing to curate: run Path A only,
+> or run Path B against the artifacts you do have and drop the six-citation floor).
 
 ### Claude Code variant
 

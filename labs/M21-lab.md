@@ -21,6 +21,9 @@ REVIEWER: blocked — M14 rule: no Member fields in logs.
      Send-back: correlation id, not memberId. Re-run gates.
 ```
 
+> Posture names above are the legacy Codex CLI `--approval-mode` vocabulary kept from
+> M19; on the current CLI the same dial is `--ask-for-approval` plus `--sandbox`.
+
 **Trace it:**
 1. Mark each posture change and judge whether it matched the phase's risk.
 2. Find what the summary omitted, and where it actually lived.

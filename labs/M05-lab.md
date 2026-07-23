@@ -17,7 +17,9 @@ REQUIREMENTS (4 of 9):
       writes an outreach log entry.          [decided M02]
   R4  GUARDRAIL: score < AUTO_APPROVE_THRESHOLD (0.85) routes
       to the nurse review queue — no bypass path may exist.
-      ? [policy] who may change the threshold value?
+      ? [policy] a request auto-approved at 0.91 re-scores at
+        0.62 — does the determination stand, or reopen for
+        nurse review?
   R6  Urgent requests carry a priority flag on the same path.
   R7  Every score is logged immutably for audit.
       ? [data] where does the audit log live — portal DB or
@@ -80,8 +82,8 @@ claude
 **Expected artifact:** `docs/M05-inception.md` — restated intent, 4–6 requirements with a
 PHI guardrail, ≥3 tagged clarifying questions, and a justified unit-of-work list. No code.
 **Verify:** the restatement is faithful to the intent; the guardrail names PHI; every UW
-carries a sizing justification; `Get-ChildItem -Recurse prior-auth-api` shows docs files
-only (steering file, M01, M02, M03, M05).
+carries a sizing justification; `Get-ChildItem -Recurse` from inside `prior-auth-api` shows
+docs files only (steering file, M01, M02, M03, M05).
 
 ### Codex CLI variant
 

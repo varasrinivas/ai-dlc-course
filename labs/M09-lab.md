@@ -14,14 +14,15 @@ WHAT SHIPPED   UW-1a intake validation → staging. Flush
 DECISIONS      urgent SLA 4h incl. STAT imaging [M06 loop 1] ·
                no side channels, queue alarm [M06 loop 2] ·
                outreach log structured [M02].
-DEVIATIONS     serviceCode format check added at construction;
+DEVIATIONS     procedureCode format check added at construction;
                kept at review — payer rejects malformed codes.
 LEARNINGS      staging, 5 days: outreach buffer never reached
                its 50-entry flush; queue alert fired 0 times;
                p95 intake 61ms.
-OPEN FOR B2    eligibility staleness — Priya, was due Friday,
-               now BLOCKS UW-1b start. Audit-store location
-               still parked; scoring engine (bolt 2) needs it.
+OPEN FOR B2    audit-store location — Priya, was due Friday,
+               still open; blocks UW-1c handoff and bolt 2's
+               scoring engine. Eligibility staleness still
+               unowned — step 5 shipped on a 24h assumption.
 ```
 
 **Trace it:**
@@ -39,11 +40,18 @@ OPEN FOR B2    eligibility staleness — Priya, was due Friday,
 <details><summary>Answers</summary>
 
 1. The guardrail — S2/R4's "below threshold routes to nurse review": the alert fires if a
-   scored-below-0.85 request lacks a queue entry; zero fires means the promise held.
+   scored-below-0.85 request lacks a queue entry. Read the zero honestly, though: bolt 1
+   shipped intake validation only — nothing has been scored yet, so the alert had nothing
+   to catch. It is armed ahead of the behavior it protects, which makes it evidence in
+   bolt 2, not proof today.
 2. The disagreement loop — SME wanted a phone call, PO ruled queue-only with an SLA
    alarm; the alarm in staging is that decision, running.
-3. Eligibility staleness now blocks UW-1b — Tuesday opens by chasing Priya's answer or
-   re-sequencing bolt 2 to start with the scoring engine's non-blocked slices.
+3. The audit-store location — parked in M06 with owner Priya and a Friday date that has
+   now passed. It blocks UW-1c's routing handoff, and bolt 2's scoring engine needs the
+   same answer, so Tuesday opens by chasing Priya or re-sequencing bolt 2 to start with
+   the scoring slices that don't touch the audit store. (Eligibility staleness is the
+   other open line, but it never had an owner — it came out of M07's plan as step 4's
+   blocker, and step 5 shipped on a stated assumption.)
 
 </details>
 
@@ -52,6 +60,10 @@ OPEN FOR B2    eligibility staleness — Priya, was due Friday,
 > The unit of work: close bolt 1 for real — your engine curates the whole docs/ chain
 > into the five-section close-out. Both variants produce the same artifact. Run in the
 > `prior-auth-api` folder.
+>
+> Joined mid-course, so docs/ holds fewer than three files? Cite what you do have —
+> `docs/decisions.md` ships with the repo — and write "no artifact; not run" under any
+> section you can't source, rather than letting the engine invent one.
 
 ### Claude Code variant
 

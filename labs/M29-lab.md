@@ -11,7 +11,7 @@
 ```text
 POD: portal (5 seats)
   decider     A. Reyes (PO) — policy + member-facing semantics
-  engineers   3 — rotate construction sessions per M16
+  engineers   3 — one unit of work per session (M16)
   SME         R. Okafor (nurse) — clinical semantics; hotline:
               answers within the hour on bolt days
   engines     per docs/M22-engine-policy.md
