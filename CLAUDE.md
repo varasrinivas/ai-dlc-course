@@ -104,10 +104,18 @@ and Codex CLI** as interchangeable engines:
 See `templates/module.schema.json`. Required fields: `id`, `track`, `title`, `minutes`,
 `audience`, `body` (template-literal HTML string). Body sections in order:
 
-> **One deliberate exception:** `P00` ("Prelude: You're the Tech Lead Now") is a
-> pre-course overview and carries **no lab and no Lakeview beat** — the saga begins at
-> M00. It is the only entry in `MODS` exempt from the schema below. The lab-link wiring
-> (`wireLabLink`) skips it by design. Do not "fix" P00 by adding a lab.
+> **Two deliberate exceptions — the `P`-prefixed front matter.** `P00` ("Prelude: You're
+> the Tech Lead Now") is a pre-course overview and `P01` ("Setup: run the companion
+> repos") is a machine-setup reference. Both carry **no lab and no Lakeview beat** — the
+> saga begins at M00 — and both are exempt from the schema below. The lab-link wiring
+> (`wireLabLink`) skips any non-`M##` id by design; P01 links its standalone copy
+> (`SETUP.md`) with a hand-authored `.lab-gh` anchor instead. Do not "fix" either by
+> adding a lab or an analogy block. Every other entry in `MODS` follows the schema.
+>
+> `P01` is the one page whose content is checked against reality rather than the
+> standards: its expected-output blocks are transcripts of real runs. If the companion
+> repos' test counts, tool versions, or seeded gaps change, re-run the commands and
+> update **both** the P01 body and `SETUP.md`.
 
 1. `<p class="hook">` — the scenario
 2. Concept sections (`<h2>`) — 2–4 of them, each ≤ 300 words; exactly one

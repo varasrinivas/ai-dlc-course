@@ -4,7 +4,7 @@
 > **Audience:** Dual-track — Engineering Leaders **and** Hands-on Practitioners
 > **Engines:** Claude Code and OpenAI Codex CLI as the AI-DLC execution engines (methodology is AWS's; engines are tool-agnostic)
 > **Domain anchor:** Prior Auth Portal (healthcare Utilization Management — AuthRequest, Member, Provider, ClinicalCriteria, Determination, AuthStatus)
-> **Total modules:** 36 entries — the P00 prelude + M00 orientation + 34 content modules across 8 tracks
+> **Total modules:** 37 entries — the P00 prelude + P01 setup page + M00 orientation + 34 content modules across 8 tracks
 
 Every module carries an audience tag: `leader` | `practitioner` | `both`.
 Two suggested paths are rendered in M00:
@@ -18,6 +18,7 @@ Two suggested paths are rendered in M00:
 | ID  | Title | Audience | Key Concepts |
 |-----|-------|----------|--------------|
 | P00 | Prelude: You're the Tech Lead Now | both | The whole method in one sitting, before the vocabulary arrives. **Deliberate schema exception:** the prelude carries no lab and no Lakeview beat — the saga starts at M00. Skippable for anyone who has run a bolt. |
+| P01 | Setup: run the companion repos | both | Prerequisites, clone, `npm install`/`test`/`typecheck`/`dev` for `prior-auth-api` and `prior-auth-web`, verbatim expected output, the seeded gaps, troubleshooting. **Same schema exception as P00:** no lab, no Lakeview beat. Standalone copy: `SETUP.md`. |
 | M00 | Course Orientation: A New Lifecycle, Two Engines | both | Course structure, the two paths, Prior Auth Portal domain intro, environment setup (Claude Code + Codex CLI) |
 
 ## Track 1 — The Case for AI-DLC (color: #b45309)

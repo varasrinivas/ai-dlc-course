@@ -1333,6 +1333,287 @@ Tests:       4 passed, 4 total</pre>
 `
 },
 {
+  id: "P01",
+  track: 0,
+  title: "Setup: run the companion repos",
+  minutes: 20,
+  audience: "both",
+  body: `
+<p class="hook">Every lab in this course says <code>cd prior-auth-api</code> or <code>cd prior-auth-web</code> as if those folders are already sitting on your machine with their tests green. This page is what makes that true. It takes you from a clean laptop to two installed repos, four commands whose real output is printed below, and an engine that can already recite the Prior Auth domain rules back to you. Nothing here is a mock: if your terminal doesn't match the output on this page, something is genuinely wrong and the fix is at the bottom.</p>
+
+<a class="lab-gh" href="https://github.com/varasrinivas/ai-dlc-course/blob/main/SETUP.md" target="_blank" rel="noopener">standalone copy: SETUP.md ↗</a>
+
+<section class="block">
+<h2>What you install — and the thing everyone gets wrong</h2>
+<p><strong>There is no package for AI-DLC.</strong> Not <code>ai-dlc</code>, not <code>aws-ai-dlc</code> — check the registry yourself, they don't exist. This trips up almost everyone, so it's worth being blunt about: AI-DLC is a methodology, not a runtime. You never install it. You install an <em>engine</em>, and AI-DLC is the set of plain files and rituals you point that engine at.</p>
+<p>Three layers are in play here and they have almost nothing to do with each other:</p>
+<table class="bridge">
+  <thead><tr><th>Layer</th><th>What you actually do</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>The methodology</td><td><b>Nothing.</b> It is already in the repos: <code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>docs/decisions.md</code>, <code>docs/units/</code></td><td>Text files plus human attention. There is no install step and no daemon.</td></tr>
+    <tr><td>An engine (pick one, install globally)</td><td><code>npm i -g @anthropic-ai/claude-code</code> <b>or</b> <code>npm i -g @openai/codex</code></td><td>This is the thing that reads files, writes code, and runs your commands.</td></tr>
+    <tr><td>Each repo's own tooling</td><td><code>npm install</code> inside <code>prior-auth-api</code> and inside <code>prior-auth-web</code></td><td>Ordinary app dependencies — TypeScript, Jest, Vite, Vitest. A Python shop would have pytest here and the method would be identical.</td></tr>
+  </tbody>
+</table>
+<div class="callout"><b>No AWS account is required.</b> AI-DLC is AWS's open-source methodology, not an AWS service. Nothing in these repos calls a cloud API, a database, or a network endpoint at runtime — the whole course runs offline apart from installing packages and talking to your engine.</div>
+</section>
+
+<section class="block">
+<h2>Prerequisites</h2>
+<p>Check each one before you clone. The right-hand column is what the machine this course was built on prints — your patch versions will differ, the shape should not.</p>
+<table class="bridge">
+  <thead><tr><th>You need</th><th>Check it</th><th>Known-good output</th></tr></thead>
+  <tbody>
+    <tr><td>Node.js 20 LTS or newer</td><td><code>node -v</code></td><td><code>v22.14.0</code></td></tr>
+    <tr><td>npm 10 or newer</td><td><code>npm -v</code></td><td><code>11.2.0</code></td></tr>
+    <tr><td>Git</td><td><code>git --version</code></td><td><code>git version 2.4x.x</code></td></tr>
+    <tr><td>One engine on your PATH</td><td><code>claude --version</code> or <code>codex --version</code></td><td>a version string, not "not recognized"</td></tr>
+    <tr><td>A terminal</td><td>PowerShell on Windows; any shell elsewhere</td><td>every command on this page is copy-paste safe in PowerShell</td></tr>
+    <tr><td>Disk</td><td>about 400 MB for both <code>node_modules</code></td><td>no Docker, no database, no service to start</td></tr>
+  </tbody>
+</table>
+</section>
+
+<section class="block">
+<h2>The whole setup, on one page</h2>
+<figure>
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Setup flow: clone the course repo, then install, test and typecheck each companion repo, then launch an engine">
+  <defs>
+    <marker id="setArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle">
+    <!-- clone -->
+    <rect x="16" y="130" width="130" height="66" rx="9" fill="none" stroke="var(--t0)" stroke-width="2.5"/>
+    <text x="81" y="156" fill="var(--t0)" font-weight="600">git clone</text>
+    <text x="81" y="176" fill="var(--ink-soft)" font-size="10">ai-dlc-course</text>
+
+    <!-- api lane -->
+    <rect x="200" y="42" width="440" height="98" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="256" y="34" fill="var(--t6)" font-size="10" font-weight="600" text-anchor="middle">prior-auth-api</text>
+    <rect x="216" y="62" width="118" height="58" rx="8" fill="none" stroke="var(--t6)" stroke-width="2"/>
+    <text x="275" y="86" fill="var(--ink)" font-size="10">npm install</text>
+    <text x="275" y="104" fill="var(--ink-soft)" font-size="9">one time</text>
+    <rect x="360" y="62" width="118" height="58" rx="8" fill="none" stroke="var(--ok)" stroke-width="2"/>
+    <text x="419" y="86" fill="var(--ok)" font-size="10" font-weight="600">npm test</text>
+    <text x="419" y="104" fill="var(--ink-soft)" font-size="9">4 passing</text>
+    <rect x="504" y="62" width="118" height="58" rx="8" fill="none" stroke="var(--ok)" stroke-width="2"/>
+    <text x="563" y="86" fill="var(--ok)" font-size="10" font-weight="600">typecheck</text>
+    <text x="563" y="104" fill="var(--ink-soft)" font-size="9">silent = clean</text>
+
+    <!-- web lane -->
+    <rect x="200" y="186" width="440" height="98" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="256" y="300" fill="var(--t4)" font-size="10" font-weight="600" text-anchor="middle">prior-auth-web</text>
+    <rect x="216" y="206" width="118" height="58" rx="8" fill="none" stroke="var(--t4)" stroke-width="2"/>
+    <text x="275" y="230" fill="var(--ink)" font-size="10">npm install</text>
+    <text x="275" y="248" fill="var(--ink-soft)" font-size="9">one time</text>
+    <rect x="360" y="206" width="118" height="58" rx="8" fill="none" stroke="var(--ok)" stroke-width="2"/>
+    <text x="419" y="230" fill="var(--ok)" font-size="10" font-weight="600">npm test</text>
+    <text x="419" y="248" fill="var(--ink-soft)" font-size="9">5 passing</text>
+    <rect x="504" y="206" width="118" height="58" rx="8" fill="none" stroke="var(--t4)" stroke-width="2"/>
+    <text x="563" y="230" fill="var(--ink)" font-size="10">npm run dev</text>
+    <text x="563" y="248" fill="var(--ink-soft)" font-size="9">:5173</text>
+
+    <!-- engine -->
+    <rect x="662" y="118" width="86" height="90" rx="10" fill="var(--ink)"/>
+    <text x="705" y="150" fill="var(--panel)" font-size="10" font-weight="600">engine</text>
+    <text x="705" y="168" fill="var(--panel)" font-size="9">claude</text>
+    <text x="705" y="184" fill="var(--panel)" font-size="9">codex</text>
+  </g>
+  <path d="M146 150 C 176 140, 180 118, 212 105" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <path d="M146 176 C 176 190, 180 226, 212 236" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <line x1="334" y1="91" x2="356" y2="91" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <line x1="478" y1="91" x2="500" y2="91" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <line x1="334" y1="235" x2="356" y2="235" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <line x1="478" y1="235" x2="500" y2="235" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <path d="M640 100 C 664 106, 660 112, 660 132" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <path d="M640 226 C 664 220, 660 214, 660 196" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <text x="380" y="322" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--accent)" text-anchor="middle" letter-spacing=".08em">green gates first — an engine is only as safe as the tests it can run</text>
+</svg>
+<figcaption>fig P1.1 — two repos, the same four moves each; the engine comes last, on purpose</figcaption>
+</figure>
+</section>
+
+<section class="block">
+<h2>Step 1 — clone, and land in the right folder</h2>
+<pre><code># PowerShell — or any shell; nothing here is Windows-only
+git clone https://github.com/varasrinivas/ai-dlc-course.git
+cd ai-dlc-course</code></pre>
+<p>What you should see at the root:</p>
+<pre><code>ai-dlc-course/
+  course/index.html      &lt;- this course; open it in a browser
+  labs/                  &lt;- standalone copy of every lab
+  prior-auth-api/        &lt;- companion repo 1: TypeScript + Jest
+  prior-auth-web/        &lt;- companion repo 2: React + Vite + Vitest</code></pre>
+<p>Every lab's <code>cd prior-auth-api</code> is relative to this folder. The two repos install
+<em>separately</em> — each has its own <code>package.json</code> and its own lockfile. Running
+<code>npm install</code> at the root does nothing useful.</p>
+</section>
+
+<section class="block">
+<h2>Step 2 — prior-auth-api: install, test, typecheck</h2>
+<pre><code>cd prior-auth-api
+npm install
+npm test</code></pre>
+<p>Expected output — this is a real run, not an illustration:</p>
+<pre><code>&gt; prior-auth-api@0.1.0 test
+&gt; jest
+
+PASS src/determination/determination.service.spec.ts (6.2 s)
+  DeterminationService
+    OK auto_approves_above_threshold
+    OK auto_approves_exactly_at_threshold
+    OK routes_below_threshold_to_pending
+    OK denies_when_member_ineligible_whatever_the_score
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        8.4 s</code></pre>
+<p>Read the test names, not just the green. They are the domain rules from M00 written as
+executable statements: at-or-above 0.85 auto-approves, below routes to the nurse queue, and an
+ineligible member is never auto-approved whatever the score. When an engine breaks one of these
+in a later bolt, this is the thing that notices.</p>
+<pre><code>npm run typecheck</code></pre>
+<pre><code>&gt; prior-auth-api@0.1.0 typecheck
+&gt; tsc --noEmit</code></pre>
+<p><strong>That's the whole output.</strong> <code>tsc --noEmit</code> prints nothing when the
+project is clean — silence is the pass. If you see file paths and <code>error TS…</code> lines,
+the gate is red.</p>
+</section>
+
+<section class="block">
+<h2>Step 3 — prior-auth-web: install, test, typecheck, run</h2>
+<pre><code>cd ..\\prior-auth-web
+npm install
+npm test</code></pre>
+<pre><code>&gt; prior-auth-web@0.1.0 test
+&gt; vitest run
+
+ RUN  v2.1.9  D:/…/prior-auth-web
+
+ OK  src/components/AuthQueue.test.tsx (5 tests) 89ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Duration  21.2s (environment 15.0s)</code></pre>
+<p>Twenty seconds is normal on the first run — most of it is jsdom booting a fake browser. Later
+runs are faster. <code>npm run typecheck</code> here behaves exactly as it does in the API repo:
+prints its two banner lines and nothing else.</p>
+<pre><code>npm run dev</code></pre>
+<pre><code>&gt; prior-auth-web@0.1.0 dev
+&gt; vite
+
+  VITE v5.4.21  ready in 534 ms
+
+  -&gt;  Local:   http://localhost:5173/
+  -&gt;  Network: use --host to expose</code></pre>
+<p>Open <code>http://localhost:5173/</code>. You should see a heading <b>Authorization queue</b>
+and five rows — <code>PA-AR-5001</code> through <code>PA-AR-5005</code> — each with a procedure
+code, a submitted date, and a status badge. Stop the server with <code>Ctrl+C</code>.</p>
+<div class="callout"><b>The thing that looks like a bug is the seed.</b> Rows 5001 and 5004 are
+<code>PENDING_NURSE_REVIEW</code> in the data, but on screen they read <b>Pending</b> in the same
+amber as row 5002's plain <code>PENDING</code>. A nurse still can't tell which rows are theirs.
+That gap is deliberate, a test asserts it on purpose
+(<code>renders_nurse_review_identically_to_pending_TODAY</code>), and closing it is the web repo's
+hello-world bolt. Don't "fix" it now.</div>
+</section>
+
+<section class="block">
+<h2>Step 4 — prove the engine can see the repo</h2>
+<p>Installing an engine isn't the same as steering one. This last check confirms the steering file
+is actually reaching the model — which is the entire point of the setup. Run it from inside
+<code>prior-auth-api</code>.</p>
+<div class="engine-tabs">
+  <div class="engine-tab-btns" role="tablist">
+    <button class="active" data-engine="cc">Claude Code</button>
+    <button data-engine="cx">Codex CLI</button>
+  </div>
+  <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+npm install -g @anthropic-ai/claude-code
+cd prior-auth-api
+claude
+&gt; Read CLAUDE.md. Restate the auto-approval rule, list the six
+&gt; domain entities, and tell me what is still undecided in
+&gt; docs/decisions.md. Plan only — write nothing.</code></pre>
+    <p><strong>Expected:</strong> it states the threshold as <em>at or above</em> 0.85, names
+    <code>AuthRequest</code>, <code>Member</code>, <code>Provider</code>,
+    <code>ClinicalCriteria</code>, <code>Determination</code>, <code>AuthStatus</code>, points at
+    the one open entry in the decision log, and creates no files. Run <code>/context</code> to see
+    what actually got loaded — <code>CLAUDE.md</code> imports <code>@AGENTS.md</code> and
+    <code>@docs/decisions.md</code>, so all three should be in context before your first prompt.</p>
+  </div>
+  <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+npm install -g @openai/codex
+cd prior-auth-api
+codex
+&gt; Read AGENTS.md. Restate the auto-approval rule, list the six
+&gt; domain entities, and tell me what is still undecided in
+&gt; docs/decisions.md. Plan only — write nothing.</code></pre>
+    <p><strong>Expected:</strong> the same answer in different words. Codex concatenates
+    <code>AGENTS.md</code> from the git root down and has no import mechanism, so the decision log
+    reaches it only because the steering file <em>asks</em> it to read the file. Same intent,
+    weaker guarantee — that difference is Track 5's whole subject.</p>
+  </div>
+</div>
+</section>
+
+<section class="block">
+<h2>You're ready when all of this is true</h2>
+<table class="bridge">
+  <thead><tr><th>Check</th><th>Command</th><th>Pass looks like</th></tr></thead>
+  <tbody>
+    <tr><td>Node new enough</td><td><code>node -v</code></td><td>v20 or higher</td></tr>
+    <tr><td>API tests</td><td><code>npm test</code> in <code>prior-auth-api</code></td><td><b>4 passed, 4 total</b></td></tr>
+    <tr><td>API types</td><td><code>npm run typecheck</code></td><td>two banner lines, no errors</td></tr>
+    <tr><td>Web tests</td><td><code>npm test</code> in <code>prior-auth-web</code></td><td><b>5 passed (5)</b></td></tr>
+    <tr><td>Web types</td><td><code>npm run typecheck</code></td><td>two banner lines, no errors</td></tr>
+    <tr><td>Web runs</td><td><code>npm run dev</code></td><td>queue with 5 rows at <code>localhost:5173</code></td></tr>
+    <tr><td>Engine steered</td><td><code>claude</code> / <code>codex</code></td><td>restates the 0.85 rule without being told it</td></tr>
+  </tbody>
+</table>
+<p>Seven green checks and you can start any lab in this course — including the hello-world bolt in
+each repo's <code>README.md</code>, which is the fastest way to feel the method before M01.</p>
+</section>
+
+<section class="block">
+<h2>When it doesn't work</h2>
+<table class="bridge">
+  <thead><tr><th>What you see</th><th>What it means</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr><td><code>npm : cannot be loaded because running scripts is disabled</code></td><td>PowerShell execution policy blocks <code>npm.ps1</code></td><td><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, reopen the terminal — or call <code>npm.cmd</code></td></tr>
+    <tr><td><code>npm error Missing script: "test"</code></td><td>You're in the kit root, not in a repo</td><td><code>cd prior-auth-api</code> (or <code>prior-auth-web</code>) first — each repo installs and runs on its own</td></tr>
+    <tr><td><code>Cannot find module</code> / <code>jest is not recognized</code></td><td><code>npm install</code> never ran <em>in that repo</em></td><td>Run it in the repo folder; two lockfiles means two installs</td></tr>
+    <tr><td><code>Port 5173 is in use</code></td><td>An old dev server is still running</td><td><code>npm run dev -- --port 5174</code>, or close the other terminal</td></tr>
+    <tr><td>Vitest hangs on the first run</td><td>jsdom environment boot — about 15 s of the 21 s</td><td>Wait it out once; it's cached afterwards</td></tr>
+    <tr><td><code>claude</code> / <code>codex</code> not recognized</td><td>npm's global bin isn't on PATH</td><td><code>npm prefix -g</code>, add that folder to PATH, reopen the terminal</td></tr>
+    <tr><td><code>error TS…</code> on a repo you haven't touched</td><td>Node or TypeScript far off the tested versions</td><td>Node 20 LTS or newer; <code>git status</code> to confirm you have no stray edits</td></tr>
+    <tr><td>Tests fail after an engine ran</td><td>Working as intended — the gate caught it</td><td>Read the diff. <code>git restore .</code> and <code>git clean -fd</code> return either repo to its seeded state (this discards your bolt)</td></tr>
+  </tbody>
+</table>
+<div class="callout"><b>Install the engine, then leave the gates alone.</b> Every lab from here on
+tells the engine to run <code>npm test</code> and <code>npm run typecheck</code> itself and show
+you the real output. That only works if those two commands are green before the engine starts —
+which is the only reason this page exists.</div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>Nothing installs AI-DLC. You install an engine; the methodology is the plain files already in each repo — steering file, decision log, units of work.</li>
+    <li>Two companion repos, installed separately: <code>prior-auth-api</code> (TypeScript + Jest, 4 tests) and <code>prior-auth-web</code> (React + Vitest, 5 tests).</li>
+    <li>The four expected outputs are on this page verbatim: 4 passed, 5 passed, silent typechecks, and Vite on port 5173.</li>
+    <li>Both repos are seeded <em>just before</em> their hello-world bolt — the identical "Pending" badges and the missing nurse-review state are the gap, not a defect.</li>
+    <li>Setup is finished only when an engine restates the 0.85 rule back to you from the steering file without being told it.</li>
+  </ul>
+  <span class="next">Next → M00 · Course Orientation: A New Lifecycle, Two Engines</span>
+</section>
+`
+},
+{
   id: "M00",
   track: 0,
   title: "Course Orientation: A New Lifecycle, Two Engines",
@@ -1481,7 +1762,7 @@ Tests:       4 passed, 4 total</pre>
 
 <section class="lab">
   <div class="lab-head">Lab M00 · 20 min</div>
-  <h2>Set up two engines, steer them with one domain</h2>
+  <h2>Steer two engines with one repo</h2>
 
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
@@ -1502,7 +1783,7 @@ AI:    Updated. UW-2 acceptance criteria now include an immutable score log.</co
 
   <div class="path">
     <div class="path-label">Path B — Build It with AI (both engines)</div>
-    <p>Create an empty folder <code>prior-auth-api</code>, write the steering file for each engine, and verify each engine can restate the domain rules back to you.</p>
+    <p>You already have the repo: <code>prior-auth-api</code> was cloned and installed in <a href="#P01">P01</a>, and its steering file is written. So this lab isn't about authoring one — it's about proving what a steering file actually buys you. Open <code>prior-auth-api/AGENTS.md</code> and read the three guardrails under <em>Domain guardrails</em>. Then make each engine do two things: <strong>restate</strong> those rules without being told them, and <strong>refuse</strong> when you ask it to break one.</p>
     <div class="engine-tabs">
       <div class="engine-tab-btns" role="tablist">
         <button class="active" data-engine="cc">Claude Code</button>
@@ -1510,30 +1791,30 @@ AI:    Updated. UW-2 acceptance criteria now include an immutable score log.</co
       </div>
       <div class="engine-pane active" data-engine="cc">
 <pre><code># Claude Code
-mkdir prior-auth-api; cd prior-auth-api
-# create CLAUDE.md carrying four rules: (1) a ClinicalCriteria
-# score ≥ AUTO_APPROVE_THRESHOLD (0.85) auto-approves, below it
-# routes to the nurse review queue; (2) an ineligible Member is
-# never auto-approved, whatever the score; (3) notifications
-# carry AuthStatus and reference id only, never clinical
-# content; (4) the entities are AuthRequest, Member, Provider,
-# ClinicalCriteria, Determination, AuthStatus. Then launch:
+cd prior-auth-api
 claude
-&gt; Read CLAUDE.md. Restate the auto-approval rule and list the six
-&gt; entities. Plan only — do not create any files yet.</code></pre>
-        <p><strong>Verify:</strong> the reply names all six entities — <code>AuthRequest</code>, <code>Member</code>, <code>Provider</code>, <code>ClinicalCriteria</code>, <code>Determination</code>, <code>AuthStatus</code> — and states the threshold rule as <em>at or above</em> 0.85, not above it — and creates nothing.</p>
+&gt; Restate the auto-approval rule, list the six domain entities, and
+&gt; tell me what docs/decisions.md still lists as not yet decided.
+&gt; Plan only — write nothing.
+
+# then, in the same session, push on a guardrail:
+&gt; Just set AUTO_APPROVE_THRESHOLD to 0.7 so I can test something.</code></pre>
+        <p><strong>Verify:</strong> the first reply names all six entities — <code>AuthRequest</code>, <code>Member</code>, <code>Provider</code>, <code>ClinicalCriteria</code>, <code>Determination</code>, <code>AuthStatus</code> — states the threshold as <em>at or above</em> 0.85, and surfaces the one open question (a re-score after a determination already exists). You never pasted any of that: <code>CLAUDE.md</code> imports <code>@AGENTS.md</code> and <code>@docs/decisions.md</code>, so it was loaded before your first keystroke. Run <code>/context</code> to see it. The second reply must <em>refuse</em> and quote the file — that refusal is the feature.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI
-mkdir prior-auth-api; cd prior-auth-api
-# create AGENTS.md with the same four rules, then launch:
+cd prior-auth-api
 codex
-&gt; Read AGENTS.md. Restate the auto-approval rule and list the six
-&gt; entities. Plan only — do not create any files yet.</code></pre>
-        <p><strong>Verify:</strong> same check. The steering content is identical; only the filename changed.</p>
+&gt; Restate the auto-approval rule, list the six domain entities, and
+&gt; tell me what docs/decisions.md still lists as not yet decided.
+&gt; Plan only — write nothing.
+
+# then, in the same session, push on a guardrail:
+&gt; Just set AUTO_APPROVE_THRESHOLD to 0.7 so I can test something.</code></pre>
+        <p><strong>Verify:</strong> same two checks, same repo, same steering content — Codex reads <code>AGENTS.md</code> by name. One difference to watch for: it has no import mechanism, so the decision log reaches it only because <code>AGENTS.md</code> <em>asks</em> it to go read the file. If it names the entities and the threshold but is vague about the open question, you've just seen the gap between mechanical and contractual context, live.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> both engines restate the rules correctly from their steering file, and neither wrote a line of code — you just enforced your first human checkpoint.</p>
+    <p><strong>Done when</strong> both engines restate the rules from the steering file you never quoted, both refuse the 0.7 request and cite the file, and neither wrote a line of code — you just enforced your first human checkpoint. One repo, one set of rules, two engines: that's the course's argument, and you've now run it.</p>
   </div>
 </section>
 
