@@ -1,65 +1,58 @@
-# Lab M33 — Answer the compliance officer
+# Lab M33 — Critique a migration plan, then convert a sprint story
 
-> Module: M33 — Responsible AI in the Lifecycle
-> Audience: both · Estimated time: 25 min
-> Domain: Prior Auth Portal (Determination, ClinicalCriteria, AUTO_APPROVE_THRESHOLD,
-> nurse review queue)
+> Module: M33 — Migrating a Sprint Team
+> Audience: both · Estimated time: 30 min
+> Domain: Prior Auth Portal (sprint→bolt migration; provider-visibility squad, prior-auth-web)
 
 ## Path A — Understand It (no tooling required)
 
-**Artifact:** a responsible-AI gate review of the Bolt 2 criteria-matching diff. The
-reviewer finds three problems.
+**Artifact:** a migration plan for the provider-visibility squad. Find the three moves
+that will stall it.
 
 ```text
-GATE REVIEW — Bolt 2 diff (criteria matching) · reviewer: platform lead
-R:  Line 41: AUTO_APPROVE_THRESHOLD changed 0.85 -> 0.87. Who approved?
-AI: No decision-log entry found. The change came from a performance-
-    optimization pass in this bolt.
-R:  Revert it. Threshold moves are clinical-policy decisions — human,
-    recorded, never silent.                          [finding 1]
-R:  fixtures/members.json line 12: "Rosa Delgado, DOB 1961-03-04,
-    ICD-10 E11.9". That reads like a real person.    [finding 2]
-AI: Replacing with synthetic records; adding a synthetic-only rule
-    to the steering file so it holds for every future bolt.
-R:  Determination records: score is present, but criteriaVersion
-    and decidedBy are missing. A denial we can't explain is a denial
-    we can't defend.                                 [finding 3]
+MIGRATION — provider-visibility squad (prior-auth-web)
+  Bolt 1  Re-architect the legacy provider-lookup module
+          (brownfield, 3 subsystems) — "start with the
+          hard one to prove it works."
+  Cadence Keep the daily standup and the two-week sprint
+          board through bolt 3, "for safety."
+  Metric  Compare bolt story-point velocity to last
+          sprint's; green-light rollout if it beats it.
+  Decider Marta, but she stays on her old sprint team
+          full-time until migration "proves out."
 ```
 
 **Trace it:**
-1. Match each of the three findings to a responsible-AI dimension.
-2. For each finding, name the AI-DLC checkpoint that should have caught it.
-3. Note which fix lands in an artifact that future bolts inherit automatically.
+1. Rate the bolt-1 choice against M10's adaptive-rigor test.
+2. Name the ceremonies being kept and what should replace them (M29).
+3. Decide what breaks when the decider isn't on call.
 
 **Check yourself:**
-1. Name the dimension behind each finding.
-2. Which checkpoint should have caught the threshold change, and why is it the most
-   serious of the three?
-3. Which finding does the steering file fix *permanently*, and what does that say
-   about steering files?
+1. Why is that a bad first bolt?
+2. Which two habits are being kept that should be starving?
+3. What breaks when the decider isn't on call?
 
 <details><summary>Answers</summary>
 
-1. Finding 1 = controllability (an engine silently moved a human-owned decision);
-   finding 2 = privacy & security (realistic member data in context); finding 3 =
-   explainability (provenance missing from the schema).
-2. The Construction human checkpoint — understand-every-line exists precisely so a
-   one-line constant change can't ride in on an optimization pass. It's the most
-   serious because it silently narrows the nurse-review backstop, which is the
-   fairness floor for every future request.
-3. Finding 2 — the synthetic-only rule enters the steering file, so every future
-   bolt inherits it without anyone remembering to check: steering files are
-   responsible-AI control surfaces, not just productivity tricks.
+1. It is the highest-risk unit in the estate — brownfield, three subsystems, exactly the
+   M10 profile that needs semantic context and maximum rigor. Bolt 1 should teach the
+   loop on a low-risk, well-understood unit; a hard first bolt makes the team blame the
+   method for the difficulty.
+2. The daily standup and the sprint board as system-of-record — kept "for safety," they
+   hand the team both operating systems' overhead; they should starve (M29), not be
+   scheduled.
+3. Everything: a decider who is not on call means bolts stall at the first deferred
+   decision, re-importing the sprint's batch latency and proving the method "slow" for
+   the wrong reason. Marta needs the delegation ladder (M29) and calendar protection, not
+   a part-time seat.
 
 </details>
 
 ## Path B — Build It with AI
 
-> The unit of work: make every determination explainable and every responsible-AI
-> rule self-enforcing — a Responsible AI rules section in the steering file, plus
-> provenance fields on `Determination` held by tests.
-> Both variants below must produce the same artifact. Prompts model AI-DLC: state
-> intent, ask the engine to plan first, checkpoint before code.
+> The unit of work: convert one real Jira story into a bolt's Inception artifact — the
+> migration mechanic, done once for real. Both variants produce the same artifact. Run in
+> the `prior-auth-api` folder.
 
 ### Claude Code variant
 
@@ -67,28 +60,21 @@ R:  Determination records: score is present, but criteriaVersion
 # Claude Code
 cd prior-auth-api
 claude
-> Append a "Responsible AI rules" section to AGENTS.md — the single
-> source of truth both engines read — with three rules:
-> 1. Never modify AUTO_APPROVE_THRESHOLD without a recorded human
->    approval in the decision log.
-> 2. Test fixtures are synthetic-only — never realistic member data.
-> 3. Every Determination must carry its score, plus criteriaVersion
->    and decidedBy ("auto" or a nurse identifier).
-> Then plan only: Determination already has score, so how would you
-> add the two missing provenance fields, and which Jest tests would
-> hold the invariants?
-# review the plan — this is your checkpoint
-> Approved. Build it: update the type and add tests asserting
-> (a) a score below 0.85 never auto-approves, and
-> (b) every determination carries all three provenance fields.
-npx jest
+> Here is a Jira story: "As a provider I want to see why an
+> auth is pending so I can act on it." Treat it as a bolt intent.
+> Restate it in one line, then run Inception: slice it into 2-4
+> units of work, and for each write testable, traceable
+> acceptance criteria that name the rule they serve. Flag any
+> dependency between units (one consuming another's output) and
+> say whether you would serialise or stub it. Park any unknown
+> with an owner. Write docs/M33-migration-inception.md. No code.
 ```
 
-**Expected artifact:** a `Responsible AI rules` section in `AGENTS.md`; the
-`Determination` type extended with `criteriaVersion` and `decidedBy` alongside its
-existing `score`; Jest tests asserting the sub-threshold and provenance invariants.
-**Verify:** the steering section reads back with all three rules; `npx jest` is
-green; and the plan step happened *before* any file changed.
+**Expected artifact:** `docs/M33-migration-inception.md` — an intent restatement, 2-4
+units of work, testable and traceable acceptance criteria, at least one flagged
+dependency with a serialise-or-stub call. No code.
+**Verify:** the story became an intent plus 2-4 units of work; every acceptance clause
+names its rule; at least one dependency is flagged; no code files.
 
 ### Codex CLI variant
 
@@ -96,39 +82,28 @@ green; and the plan step happened *before* any file changed.
 # Codex CLI
 cd prior-auth-api
 codex
-> Append a "Responsible AI rules" section to AGENTS.md — the single
-> source of truth both engines read — with three rules:
-> 1. Never modify AUTO_APPROVE_THRESHOLD without a recorded human
->    approval in the decision log.
-> 2. Test fixtures are synthetic-only — never realistic member data.
-> 3. Every Determination must carry its score, plus criteriaVersion
->    and decidedBy ("auto" or a nurse identifier).
-> Then plan only: Determination already has score, so how would you
-> add the two missing provenance fields, and which Jest tests would
-> hold the invariants?
-# review the proposed plan in the diff view — your checkpoint
-> Approved. Build it: update the type and add tests asserting
-> (a) a score below 0.85 never auto-approves, and
-> (b) every determination carries all three provenance fields.
-npx jest
+> Here is a Jira story: "As a provider I want to see why an
+> auth is pending so I can act on it." Treat it as a bolt intent.
+> Restate it in one line, then run Inception: slice it into 2-4
+> units of work, and for each write testable, traceable
+> acceptance criteria that name the rule they serve. Flag any
+> dependency between units (one consuming another's output) and
+> say whether you would serialise or stub it. Park any unknown
+> with an owner. Write docs/M33-migration-inception.md. No code.
 ```
 
-**Expected artifact:** the same rules section in the same file (`AGENTS.md`), the same
-type change, and the same test assertions.
-**Verify:** same checks — green tests, plan before build.
+**Expected artifact:** the same `docs/M33-migration-inception.md`, steered by AGENTS.md.
+**Verify:** same checks. The slicing will differ from Claude Code's; the artifact's
+structure — intent, units of work, traceable criteria, a flagged dependency — must not.
 
-**Parity note:** both engines write the rules to `AGENTS.md`, so the repo lands in an
-identical state either way; Claude Code inherits them through `CLAUDE.md`'s
-`@AGENTS.md` import. Appending them to `CLAUDE.md` instead would hide them from Codex
-entirely — M13's silent fork, shipped into your own standards.
+**Parity note:** both engines convert the same sprint story into the same kind of bolt
+Inception artifact. Different slicing is fine and instructive; the structure — intent,
+units of work, criteria that name their rule, a flagged dependency — is the deliverable.
 
 ## Done when
 
-- [ ] `AGENTS.md` carries all three Responsible AI rules, both engines reach them, and
-      the engine can restate them.
-- [ ] `Determination` carries `score`, `criteriaVersion`, and `decidedBy`, and
-      `npx jest` is green on both invariants (sub-threshold never auto-approves;
-      provenance always present).
-- [ ] You can answer "who decided this determination, under which criteria version,
-      at what score?" for any determination in one query — the compliance officer's
-      question, closed.
+- [ ] `docs/M33-migration-inception.md` holds one sprint story converted to a bolt
+      Inception: intent, 2-4 units of work, testable/traceable criteria.
+- [ ] At least one cross-unit dependency is flagged with a serialise-or-stub call.
+- [ ] You can point at how each piece would remap the Jira board (epic→bolt,
+      story→unit of work, criteria→M06 criteria).

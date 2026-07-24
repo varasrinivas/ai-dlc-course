@@ -85,7 +85,10 @@ and Codex CLI** as interchangeable engines:
   - T6: the four-room finishing sequence, one room per bolt (mirrors the four capstone bolts)
   - T7: Meera and Ravi as developers of a whole street — permits, inspectors, budgets,
     and how you scale one good build into twelve (governance, metrics, rollout)
-  - T7 epilogue (M33): the warranty call — a year on, a crack in house nine is traced
+  - T7 migration beat (M33): the fourth crew comes off two-week jobs and is run on both
+    clocks for its first house — dual-tracking the first bolts — until the daily rhythm
+    takes and the old schedule starves, unread (sprint→bolt team migration)
+  - T7 epilogue (M34): the warranty call — a year on, a crack in house nine is traced
     through the build book in one page; the firm pays because the firm signed
     (provenance, audit trails, accountability stays human). The saga now ends here.
 

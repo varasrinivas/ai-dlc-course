@@ -7035,12 +7035,158 @@ calendar unchanged.</code></pre>
     <li>The engines will be replaced; the methodology compounds. The durable assets are the chain, the rituals, and people who decide fast with recorded rationale.</li>
     <li>That's the whole course: one methodology, two engines, one domain, thirty-four modules — and a build book you now know how to keep.</li>
   </ul>
-  <span class="next">Next → M33 · Responsible AI in the Lifecycle</span>
+  <span class="next">Next → M33 · Migrating a Sprint Team</span>
 </section>
 `
 },
 {
   id: "M33",
+  track: 7,
+  title: "Migrating a Sprint Team",
+  minutes: 30,
+  audience: "both",
+  body: `
+<p class="hook">The provider-visibility squad (prior-auth-web) was hired out of a Scrum shop, and it shows: they estimated the quarter in story points, booked two-week sprints, and asked which week was "hardening." M29's pod topology tells them where they're going — a decider on call, bolts not fortnights, the chain instead of the standup. What it doesn't tell them is how to get there from Monday without dropping the work in flight. You don't flip a team to AI-DLC; you migrate it — and a migration has a first bolt, a board to remap, and a fortnight of muscle memory that has to starve rather than be ripped out.</p>
+
+<h2>What you can't flip overnight</h2>
+<p>A sprint team runs on three habits, and a Monday memo changes none of them. The <strong>calendar</strong> is fortnight-shaped — planning, standups, review, retro, all sized for two weeks of slow construction. The <strong>board</strong> is the system of record, trusted more than any prose. And the <strong>decision cadence</strong> is batched: questions wait for refinement because, in a sprint, a day's delay costs nothing. AI-DLC inverts all three, and inverting them by decree gets you the worst of both — a team carrying sprint overhead while a bolt waits on a decision nobody is on call to make.</p>
+<p>So migrate in stages. Run the <strong>first two or three bolts with training wheels</strong>: alongside — not instead of — the closing sprint, on one low-risk unit of work, with a coach in the room. The goal of bolt 1 is not velocity; it is the team feeling the loop once — Inception in the morning, an engine building against approved criteria, a checkpoint that is real. You are teaching a rhythm, and a rhythm is learned by doing it, not by reading the schedule that describes it.</p>
+
+<h2>Your Jira or Rally board after the switch</h2>
+<p>The board is not thrown away — it is <strong>remapped</strong>, and keeping it as the record of <em>what</em> is what makes the migration survivable. A Jira epic becomes a bolt (or a short run of them); its stories become the <strong>units of work</strong> the bolt is sliced into at Inception; the acceptance criteria you would have written on the story are exactly M06's testable criteria, just authored in the room with the decider present. Story points and velocity retire in favor of <strong>bolt lead time</strong> (M31) — time from signed intent to signed increment, measured not estimated. The burndown and the standup give way to the chain: <code>decisions.md</code>, the plan, and the close-out say where things stand, and they say <em>why</em>, which a board column never did.</p>
+<p>Two rules keep the remap honest. The tracker records <em>what</em> and <em>who</em>; the chain records <em>why</em> — never split a decision's rationale into a Jira comment the engine can't read. And migrate the board incrementally: one epic converted to a bolt is a demonstration the team can watch, not a big-bang re-import that leaves everyone hunting for their work on Monday.</p>
+
+<aside class="analogy">
+<p>The fourth crew came off two-week jobs — pour, wait, inspect, repeat — and their foreman kept asking Meera when "framing week" was. She didn't lecture. She ran their first house on both clocks: the old two-week schedule stayed pinned to the trailer wall for comfort, but every morning the build book handed them one package and one walkthrough, same as every other crew on the street. By the third house the old schedule was curling at the corners, unread — the daily rhythm had simply become how they worked. Meera never took the calendar down. It starved.</p>
+<span class="maps-to">maps to → <b>the two-week clock</b> = the sprint calendar · <b>one package each morning</b> = the bolt cadence · <b>both clocks for the first house</b> = dual-tracking the first bolts · <b>the schedule that starved, not torn down</b> = ceremonies die by disuse (M29)</span>
+</aside>
+
+<h2>Sequencing the migration</h2>
+<p>Pick the first bolt for <strong>learning, not impact</strong>. A well-understood, low-risk unit — greenfield-ish by M10's adaptive-rigor test — lets the team meet the loop without also fighting a brownfield tangle or a regulated guardrail on day one. Save the criteria-matching bolt for after the rhythm is muscle. Where two candidate units are coupled — one consumes another's output — sequence them the M06/M18 way: serialise, or pin the interface and stub it, so the migration doesn't stall on a dependency the team hasn't learned to name yet.</p>
+<p>From the first bolt, <strong>protect the decider's calendar</strong> (M29's delegation ladder) and measure the two numbers that matter — decision latency and checkpoint integrity (M31) — never velocity, which no longer means anything. By the third bolt the sprint ceremonies will have starved: the standup lost to <code>decisions.md</code>, planning to Inception, the retro to the bolt close. The failure mode to name out loud is the <strong>half-migration</strong> — the leader who keeps the standup "just in case" hands the team the overhead of both operating systems and the benefits of neither. Migration finishes when the old calendar comes down because no one has looked at it in a week.</p>
+
+<figure>
+<svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A staged migration timeline. The last two-week sprint overlaps bolt 1, run with training wheels and a coach; bolts 2 and 3 follow in daily cadence; by bolt 3 the ceremonies have starved and the old calendar comes down. The team tracks decision latency and checkpoint integrity, not velocity.">
+  <defs>
+    <marker id="m33arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace" text-anchor="middle">
+    <line x1="40" y1="150" x2="720" y2="150" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m33arr)"/>
+    <rect x="48" y="60" width="230" height="30" rx="6" fill="var(--line)" opacity="0.55"/>
+    <text x="163" y="79" font-size="9" fill="var(--ink-soft)">last two-week sprint</text>
+    <text x="200" y="50" font-size="7.6" fill="var(--ink-soft)">both clocks run</text>
+
+    <rect x="170" y="108" width="108" height="34" rx="7" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="224" y="130" font-size="10" fill="var(--t7)" font-weight="600">BOLT 1</text>
+    <text x="224" y="166" font-size="7.6" fill="var(--ink-soft)">training wheels + coach</text>
+
+    <rect x="330" y="108" width="108" height="34" rx="7" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="384" y="130" font-size="10" fill="var(--t7)" font-weight="600">BOLT 2</text>
+
+    <rect x="490" y="108" width="108" height="34" rx="7" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="544" y="130" font-size="10" fill="var(--t7)" font-weight="600">BOLT 3</text>
+    <text x="544" y="166" font-size="7.6" fill="var(--accent)">old calendar comes down</text>
+
+    <text x="640" y="204" font-size="8" fill="var(--ink-soft)">track: decision latency,</text>
+    <text x="640" y="217" font-size="8" fill="var(--ink-soft)">checkpoint integrity</text>
+    <text x="163" y="214" font-size="8" fill="var(--ink-soft)" text-decoration="line-through">velocity / story points</text>
+  </g>
+</svg>
+<figcaption>fig 33.1 — migrate in stages: dual-track the first bolt, let the ceremonies starve by bolt 3</figcaption>
+</figure>
+
+<table class="bridge">
+  <thead><tr><th>Scrum / Jira · Rally</th><th>AI-DLC home</th><th>What changes</th></tr></thead>
+  <tbody>
+    <tr><td>Sprint</td><td><b>Bolt</b></td><td>Hours-to-days, not a fortnight</td></tr>
+    <tr><td>Epic</td><td><b>A bolt (or a short run)</b></td><td>Sliced into units of work at Inception</td></tr>
+    <tr><td>Story</td><td><b>A unit of work</b></td><td>One loop, one checkpoint</td></tr>
+    <tr><td>Story acceptance criteria</td><td><b>M06 testable criteria</b></td><td>Authored in the room with the decider</td></tr>
+    <tr><td>Story points / velocity</td><td><b>Bolt lead time (M31)</b></td><td>Measured, not estimated</td></tr>
+    <tr><td>Refinement · standup · burndown</td><td><b>Mob Elaboration + the chain</b></td><td><code>decisions.md</code> and close-outs report state</td></tr>
+  </tbody>
+</table>
+
+<section class="lab">
+  <div class="lab-head">Lab M33 · 30 min</div>
+  <h2>Critique a migration plan, then convert a sprint story</h2>
+
+  <div class="path">
+    <div class="path-label">Path A — Understand It (no tooling)</div>
+    <p>A migration plan for the provider-visibility squad. Find the three moves that will stall it.</p>
+<pre><code>MIGRATION — provider-visibility squad (prior-auth-web)
+  Bolt 1  Re-architect the legacy provider-lookup module
+          (brownfield, 3 subsystems) — "start with the
+          hard one to prove it works."
+  Cadence Keep the daily standup and the two-week sprint
+          board through bolt 3, "for safety."
+  Metric  Compare bolt story-point velocity to last
+          sprint's; green-light rollout if it beats it.
+  Decider Marta, but she stays on her old sprint team
+          full-time until migration "proves out."</code></pre>
+    <p><strong>Check yourself:</strong> (1) Why is that a bad first bolt? (2) Which two habits are being kept that should be starving? (3) What breaks when the decider isn't on call?</p>
+    <details><summary>Answers</summary>
+      <p>(1) It is the highest-risk unit in the estate — brownfield, three subsystems, exactly the M10 profile that needs semantic context and maximum rigor. Bolt 1 should teach the loop on a low-risk, well-understood unit; a hard first bolt makes the team blame the method for the difficulty. (2) The daily standup and the sprint board as system-of-record — kept "for safety," they hand the team both operating systems' overhead; they should starve (M29), not be scheduled. (3) Everything: a decider who is not on call means bolts stall at the first deferred decision, re-importing the sprint's batch latency and proving the method "slow" for the wrong reason. Marta needs the delegation ladder (M29) and calendar protection, not a part-time seat.</p>
+    </details>
+  </div>
+
+  <div class="path">
+    <div class="path-label">Path B — Build It with AI (both engines)</div>
+    <p>The unit of work: convert one real Jira story into a bolt's Inception artifact — the migration mechanic, done once for real. Run in <code>prior-auth-api</code>.</p>
+    <div class="engine-tabs">
+      <div class="engine-tab-btns" role="tablist">
+        <button class="active" data-engine="cc">Claude Code</button>
+        <button data-engine="cx">Codex CLI</button>
+      </div>
+      <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+cd prior-auth-api
+claude
+&gt; Here is a Jira story: "As a provider I want to see why an
+&gt; auth is pending so I can act on it." Treat it as a bolt intent.
+&gt; Restate it in one line, then run Inception: slice it into 2-4
+&gt; units of work, and for each write testable, traceable
+&gt; acceptance criteria that name the rule they serve. Flag any
+&gt; dependency between units (one consuming another's output) and
+&gt; say whether you would serialise or stub it. Park any unknown
+&gt; with an owner. Write docs/M33-migration-inception.md. No code.</code></pre>
+        <p><strong>Verify:</strong> the story became an intent restatement plus 2-4 units of work; every acceptance clause names its rule; at least one dependency is flagged with a serialise-or-stub call; no code files.</p>
+      </div>
+      <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+cd prior-auth-api
+codex
+&gt; Here is a Jira story: "As a provider I want to see why an
+&gt; auth is pending so I can act on it." Treat it as a bolt intent.
+&gt; Restate it in one line, then run Inception: slice it into 2-4
+&gt; units of work, and for each write testable, traceable
+&gt; acceptance criteria that name the rule they serve. Flag any
+&gt; dependency between units (one consuming another's output) and
+&gt; say whether you would serialise or stub it. Park any unknown
+&gt; with an owner. Write docs/M33-migration-inception.md. No code.</code></pre>
+        <p><strong>Verify:</strong> same checks, steered by AGENTS.md. The slicing will differ from Claude Code's; the artifact's structure — intent, units of work, traceable criteria, a flagged dependency — must not.</p>
+      </div>
+    </div>
+    <p><strong>Done when</strong> <code>docs/M33-migration-inception.md</code> holds one sprint story converted to a bolt Inception — units of work, testable criteria, at least one flagged dependency — and you can point at how each piece would remap the Jira board.</p>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>Migration is an operating-system change, not a memo: run the first two or three bolts with training wheels, alongside the closing sprint, on a low-risk unit.</li>
+    <li>Remap the board, don't retire it: epic → bolt, story → unit of work, story criteria → M06 criteria, points → bolt lead time (M31); the tracker records what, the chain records why.</li>
+    <li>Sequence the first bolt for learning, not impact; protect the decider's calendar (M29) and sequence coupled units the M06/M18 way.</li>
+    <li>Ceremonies die by starvation, not decree — the half-migration that keeps both systems is the failure mode; migration is done when the old calendar comes down unread.</li>
+  </ul>
+  <span class="next">Next → M34 · Responsible AI in the Lifecycle</span>
+</section>
+`
+},
+{
+  id: "M34",
   track: 7,
   title: "Responsible AI in the Lifecycle",
   minutes: 30,
@@ -7136,7 +7282,7 @@ calendar unchanged.</code></pre>
 </table>
 
 <section class="lab">
-  <div class="lab-head">Lab M33 · 25 min</div>
+  <div class="lab-head">Lab M34 · 25 min</div>
   <h2>Answer the compliance officer</h2>
 
   <div class="path">
