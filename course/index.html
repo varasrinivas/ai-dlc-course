@@ -1472,7 +1472,8 @@ Tests:       4 passed, 4 total
 Snapshots:   0 total
 Time:        8.4 s</code></pre>
 <p>Read the test names, not just the green. They are the domain rules from M00 written as
-executable statements: at-or-above 0.85 auto-approves, below routes to the nurse queue, and an
+executable statements: at-or-above <code>AUTO_APPROVE_THRESHOLD (0.85)</code> auto-approves, below
+it routes to the nurse review queue, and an
 ineligible member is never auto-approved whatever the score. When an engine breaks one of these
 in a later bolt, this is the thing that notices.</p>
 <pre><code>npm run typecheck</code></pre>
