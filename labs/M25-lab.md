@@ -9,7 +9,7 @@
 **Artifact:** the adversarial review exchange and the negative-test list.
 
 ```text
-ARCH: Empty criteria set for a serviceCode — score is what?
+ARCH: Empty criteria set for a procedureCode — score is what?
 AI:   Undefined in the plan. My guess: skip scoring, route to
       review. Deferring — this is approval semantics.
 SME:  Score it 0.0 explicitly. Ignorance is not approval.
@@ -20,7 +20,7 @@ PO:   ≥ stands. Document it in the audit note.
 
 TESTS
 no_auto_approval_below_threshold   → the guardrail property
-approves_at_exact_threshold        → ≥ semantics, decided
+auto_approves_exactly_at_threshold → ≥ semantics, decided (D-001)
 empty_criteria_scores_zero         → ignorance ≠ approval
 score_log_immutable                → update attempt fails loudly
 persists_score_before_routing      → ordering is an AC
@@ -66,11 +66,15 @@ claude
 > Bolt 2 core. Read docs/M23-capstone-inception.md and
 > docs/M24-bolt1-close.md. Plan first, STOP for approval. Then:
 > ClinicalCriteria matcher (criteria-set fixtures per
-> serviceCode, per-criterion components), threshold path reading
-> config/threshold.json ONLY (no 0.85 literal anywhere else),
-> in-memory compliance-store port with immutability enforced,
-> score persisted before routing. Tests, exactly these names:
-> no_auto_approval_below_threshold, approves_at_exact_threshold,
+> procedureCode, per-criterion components), threshold path reading
+> config/threshold.json ONLY — migrate the existing
+> AUTO_APPROVE_THRESHOLD in src/domain/clinical-criteria.ts to
+> load from it and update the seeded spec, leaving no 0.85
+> literal under src/. Keep D-001's test name. In-memory
+> compliance-store port with immutability enforced, score
+> persisted before routing. Tests, exactly these names:
+> no_auto_approval_below_threshold,
+> auto_approves_exactly_at_threshold,
 > empty_criteria_scores_zero, score_log_immutable,
 > persists_score_before_routing. Assemble the PHI evidence-pack
 > stub per docs/M11-stage-phi-review.md. Run gates, show output.
@@ -79,8 +83,10 @@ claude
 
 **Expected artifact:** the matcher, threshold path, immutable compliance-store port,
 five named property tests green, the PHI evidence-pack stub, and the bolt close-out.
-**Verify:** a search for "0.85" hits only `config/threshold.json`; all five tests
-green; the close-out records the score-distribution learning hook for M31.
+**Verify:** no `0.85` literal remains under `src/` — the value loads from
+`config/threshold.json`, while `AGENTS.md` and `docs/decisions.md` still cite it, as
+records should; all five tests green; the close-out records the score-distribution
+learning hook for M31.
 
 ### Codex CLI variant
 
@@ -91,12 +97,15 @@ codex
 > Bolt 2 core. Read docs/M23-capstone-inception.md and
 > docs/M24-bolt1-close.md. Do NOT write yet — plan and stop for
 > approval. Then: ClinicalCriteria matcher (criteria-set fixtures
-> per serviceCode, per-criterion components), threshold path
-> reading config/threshold.json ONLY (no 0.85 literal anywhere
-> else), in-memory compliance-store port with immutability
-> enforced, score persisted before routing. Tests, exactly these
+> per procedureCode, per-criterion components), threshold path
+> reading config/threshold.json ONLY — migrate the existing
+> AUTO_APPROVE_THRESHOLD in src/domain/clinical-criteria.ts to
+> load from it and update the seeded spec, leaving no 0.85
+> literal under src/. Keep D-001's test name. In-memory
+> compliance-store port with immutability enforced, score
+> persisted before routing. Tests, exactly these
 > names: no_auto_approval_below_threshold,
-> approves_at_exact_threshold, empty_criteria_scores_zero,
+> auto_approves_exactly_at_threshold, empty_criteria_scores_zero,
 > score_log_immutable, persists_score_before_routing. Assemble
 > the PHI evidence-pack stub per docs/M11-stage-phi-review.md.
 > Run gates, show output. Close with docs/M25-bolt2-close.md.
@@ -112,8 +121,8 @@ mechanized on one engine only, your M22 policy already told you which seat to us
 
 ## Done when
 
-- [ ] All five property tests are green; the threshold literal exists only in the
-      gated config.
+- [ ] All five property tests are green; no threshold literal remains under `src/` —
+      it lives in the gated config, cited by the decision log.
 - [ ] The PHI evidence-pack stub is assembled per the M11 stage definition.
 - [ ] You personally walked every code path to AUTO_APPROVED, and
       `docs/M25-bolt2-close.md` is written.

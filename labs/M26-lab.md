@@ -9,38 +9,39 @@
 **Artifact:** the transition table and four event sequences.
 
 ```text
-TABLE  RECEIVED→SCORED · SCORED→AUTO_APPROVED ·
+TABLE  (intake)→RECEIVED · (intake)→REJECTED (terminal) ·
+       RECEIVED→SCORED · SCORED→AUTO_APPROVED ·
        SCORED→PENDING_REVIEW · PENDING_REVIEW→IN_REVIEW ·
        IN_REVIEW→REVIEWED · IN_REVIEW→PENDING_REVIEW (timeout)
        precedence: timeout beats simultaneous claim
 
-S1  RECEIVED→SCORED→PENDING_REVIEW→IN_REVIEW→REVIEWED
-S2  …→IN_REVIEW→(timeout)→PENDING_REVIEW→IN_REVIEW→REVIEWED
-S3  RECEIVED→IN_REVIEW  ("nurse grabbed it early")
-S4  claim arrives as timeout fires on the same item
+SEQ1  RECEIVED→SCORED→PENDING_REVIEW→IN_REVIEW→REVIEWED
+SEQ2  …→IN_REVIEW→(timeout)→PENDING_REVIEW→IN_REVIEW→REVIEWED
+SEQ3  RECEIVED→IN_REVIEW  ("nurse grabbed it early")
+SEQ4  claim arrives as timeout fires on the same item
 ```
 
 **Trace it:**
 1. Validate each sequence against the table (legal, illegal, or resolved-by-rule).
 2. Find where the below-threshold invariant is checked twice.
-3. For S3, name what the loud rejection protects.
+3. For SEQ3, name what the loud rejection protects.
 
 **Check yourself:**
-1. Validate S1–S4 against the table.
+1. Validate SEQ1–SEQ4 against the table.
 2. Where is the below-threshold invariant checked twice, and why isn't once enough?
-3. What does S3's loud rejection protect, concretely?
+3. What does SEQ3's loud rejection protect, concretely?
 
 <details><summary>Answers</summary>
 
-1. S1 legal (happy path); S2 legal (requeue loop, priority preserved); S3 illegal —
-   no edge exists, rejected with a correlation id; S4 resolved by precedence —
-   timeout wins, the item requeues, the claim retries against it: deterministic, not
-   racy.
+1. SEQ1 legal (happy path); SEQ2 legal (requeue loop, priority preserved); SEQ3
+   illegal — no edge exists, rejected with a correlation id; SEQ4 resolved by
+   precedence — timeout wins, the item requeues, the claim retries against it:
+   deterministic, not racy.
 2. At the blocking queue write (scoring time) and in the reconciliation sweep — once
    isn't enough because the write path can fail after scoring persists; the sweep
    catches exactly the gap the alarm watches.
 3. The audit trail: a request reviewed without ever being scored-and-queued is a
-   determination whose provenance can't be reconstructed — S3 is the triage bot's
+   determination whose provenance can't be reconstructed — SEQ3 is the triage bot's
    ghost, and the table exorcises it.
 
 </details>
@@ -65,15 +66,15 @@ claude
 > illegal transitions loudly (correlation id); the reconciliation
 > sweep. Tests, exactly: rejects_illegal_transition,
 > urgent_orders_first, requeues_on_claim_timeout,
-> one_owner_per_claimed_item,
+> one_owner_per_claimed_item, queues_within_60s_of_scoring,
 > below_threshold_always_queued_or_determined. Run gates, show
 > output. Close with docs/M26-bolt3-close.md.
 ```
 
 **Expected artifact:** the queue module, the data-driven transition guard, the
-reconciliation sweep, five named tests green, and the bolt close-out.
+reconciliation sweep, six named tests green, and the bolt close-out.
 **Verify:** the transition table is data an auditor could read in one screen (not
-scattered conditionals); all five tests green; the close-out hands B4 the REVIEWED
+scattered conditionals); all six tests green; the close-out hands B4 the REVIEWED
 contract.
 
 ### Codex CLI variant
@@ -92,6 +93,7 @@ codex
 > reconciliation sweep. Tests, exactly:
 > rejects_illegal_transition, urgent_orders_first,
 > requeues_on_claim_timeout, one_owner_per_claimed_item,
+> queues_within_60s_of_scoring,
 > below_threshold_always_queued_or_determined. Run gates, show
 > output. Close with docs/M26-bolt3-close.md.
 ```
@@ -107,7 +109,7 @@ about them again.
 
 ## Done when
 
-- [ ] The queue routes, claims, times out, and reconciles; all five named tests are
+- [ ] The queue routes, claims, times out, and reconciles; all six named tests are
       green.
 - [ ] The transition table reads as data in one screen; illegal transitions fail
       loudly with correlation ids.

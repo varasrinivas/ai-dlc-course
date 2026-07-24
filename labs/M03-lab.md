@@ -71,8 +71,8 @@ claude
 sizing-rule justification, both mob rituals placed with exit criteria, and a
 "Context memory at bolt close" section listing what bolt 2 will read. No code files.
 **Verify:** open the file and check each unit of work carries a justification;
-`Get-ChildItem -Recurse prior-auth-api` shows only the steering file and the docs files
-(M01 questions, M02 plan, M03 schedule).
+`Get-ChildItem -Recurse` from inside `prior-auth-api` shows only the steering file and the
+docs files (M01 questions, M02 plan, M03 schedule).
 
 ### Codex CLI variant
 

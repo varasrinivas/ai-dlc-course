@@ -42,9 +42,9 @@
 
 ## Path B — Build It with AI
 
-> The unit of work: harden the steering, sync the twin, then drill the refusal. Run in
-> the `prior-auth-api` folder (steering twins exist from Lab M13). Both variants leave
-> the repo in the same state.
+> The unit of work: harden the steering, confirm both engines inherit it, then drill the
+> refusal. Run in the `prior-auth-api` folder (the steering chain you audited in Lab M13).
+> Both variants leave the repo in the same state.
 
 ### Claude Code variant
 
@@ -52,12 +52,13 @@
 # Claude Code
 cd prior-auth-api
 claude
-> Add three checkable guardrail rules to CLAUDE.md: (1) the
-> threshold rule — value 0.85, changes need medical director
-> sign-off + a decision record, otherwise refuse; (2) no Member
-> fields in logs, fixtures synthetic-only; (3) collect all
-> validation errors, never fail-fast. Mirror the same rules into
-> AGENTS.md. Show me the diff and stop.
+> Add three checkable guardrail rules to AGENTS.md — the single
+> source of truth both engines read: (1) the threshold rule —
+> value 0.85, changes need medical director sign-off + a
+> decision record, otherwise refuse; (2) no Member fields in
+> logs, fixtures synthetic-only; (3) collect all validation
+> errors, never fail-fast. Confirm CLAUDE.md's @AGENTS.md import
+> carries them to this engine. Show me the diff and stop.
 
 # then, in a NEW session — the drill:
 claude
@@ -68,10 +69,11 @@ claude
 > added and a summary of this drill.
 ```
 
-**Expected artifact:** both steering twins carrying the three rules, plus
+**Expected artifact:** `AGENTS.md` carrying the three rules, plus
 `docs/M14-steering-test.md` logging the drill.
-**Verify:** diff the twins — rules equivalent; the fresh session refused the 0.7
-request by quoting steering; the test log exists.
+**Verify:** the three rules appear once, in `AGENTS.md`; `/context` shows them loaded
+through the import; the fresh session refused the 0.7 request by quoting steering; the
+test log exists.
 
 ### Codex CLI variant
 
@@ -79,12 +81,13 @@ request by quoting steering; the test log exists.
 # Codex CLI
 cd prior-auth-api
 codex
-> Add three checkable guardrail rules to AGENTS.md: (1) the
-> threshold rule — value 0.85, changes need medical director
-> sign-off + a decision record, otherwise refuse; (2) no Member
-> fields in logs, fixtures synthetic-only; (3) collect all
-> validation errors, never fail-fast. Mirror the same rules into
-> CLAUDE.md. Show me the diff and stop.
+> Add three checkable guardrail rules to AGENTS.md — the single
+> source of truth both engines read: (1) the threshold rule —
+> value 0.85, changes need medical director sign-off + a
+> decision record, otherwise refuse; (2) no Member fields in
+> logs, fixtures synthetic-only; (3) collect all validation
+> errors, never fail-fast. Leave CLAUDE.md alone — its
+> @AGENTS.md import already carries them. Show me the diff and stop.
 
 # then, in a NEW session — the drill:
 codex
@@ -95,17 +98,18 @@ codex
 > added and a summary of this drill.
 ```
 
-**Expected artifact:** the mirrored result — same rules, same drill log.
-**Verify:** same checks, mirrored.
+**Expected artifact:** the same result — same file, same rules, same drill log.
+**Verify:** same checks, same file.
 
-**Parity note:** both variants land the identical rule set in both twins and the same
-drill log. Refusal wording will differ by engine; refusal *behavior* must not. A weak
+**Parity note:** both variants edit `AGENTS.md`, so they leave the repo in an identical
+state and produce the same drill log. Refusal wording will differ by engine; refusal
+*behavior* must not. A weak
 refusal means a weak rule — tighten the wording (add the authority and the refusal
 path) and re-drill; that iteration is the actual lesson.
 
 ## Done when
 
-- [ ] Both steering twins carry the three guardrail rules, verbatim-equivalent.
+- [ ] The three guardrail rules live once, in `AGENTS.md`, and reach both engines.
 - [ ] A fresh session refused "set the cutoff to 0.7" by quoting the rule and asking
       for a decision record.
 - [ ] `docs/M14-steering-test.md` logs the rules and the drill outcome.

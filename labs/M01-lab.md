@@ -82,9 +82,9 @@ claude
 
 **Expected artifact:** `docs/M01-elaboration-questions.md` — ≥5 clarifying questions and ≥2
 explicitly deferred decisions; no code files created or modified.
-**Verify:** `Get-ChildItem -Recurse prior-auth-api` shows only the steering file and
-`docs/M01-elaboration-questions.md`; the questions touch Member eligibility, Provider network
-status, and the 0.85 threshold semantics.
+**Verify:** `Get-ChildItem -Recurse` from inside `prior-auth-api` shows only the steering file
+and `docs/M01-elaboration-questions.md`; the questions touch Member eligibility, Provider
+network status, and the 0.85 threshold semantics.
 
 ### Codex CLI variant
 

@@ -1,4 +1,4 @@
-# Lab M13 — Sort the memory, then twin the steering
+# Lab M13 — Sort the memory, then audit the steering chain
 
 > Module: M13 — Context Memory Across the Lifecycle
 > Audience: practitioner · Estimated time: 25 min
@@ -42,9 +42,10 @@ S5  "Guardrail-or-PHI changes always run the full pipeline."
 
 ## Path B — Build It with AI
 
-> The unit of work: make dual-engine memory physical. Whichever engine you run
-> generates the *other* engine's steering twin, then indexes the whole memory. Both
-> variants leave the repo in the same state. Run in the `prior-auth-api` folder.
+> The unit of work: audit dual-engine memory, then index it. Whichever engine you run
+> verifies the steering chain holds — one set of rules, imported, not duplicated — then
+> indexes the whole memory. Both variants leave the repo in the same state. Run in the
+> `prior-auth-api` folder.
 
 ### Claude Code variant
 
@@ -52,19 +53,23 @@ S5  "Guardrail-or-PHI changes always run the full pipeline."
 # Claude Code
 cd prior-auth-api
 claude
-> Read CLAUDE.md. Generate AGENTS.md with equivalent steering
-> content for Codex CLI — same rules, same guardrails, adapted
-> wording only where the engine name matters. Then write
-> docs/M13-memory-index.md: every context artifact in this repo
-> (steering files, decisions, semantic map, plans, close-outs)
-> listed with its layer (steering / knowledge / per-bolt) and
-> change cadence. Change no code.
+> Read CLAUDE.md and AGENTS.md. Verify the steering chain:
+> AGENTS.md holds the rules, CLAUDE.md imports it with
+> @AGENTS.md, and no domain rule is restated in both files.
+> Report any rule that is duplicated or has drifted. Then
+> write docs/M13-memory-index.md: every context artifact in
+> this repo (steering files, decisions, semantic map, plans,
+> close-outs) with its layer (steering / knowledge / per-bolt),
+> its change cadence, and whether it reaches the engine
+> mechanically (imported) or contractually (an instruction
+> asks for it). Change no code.
 ```
 
-**Expected artifact:** `AGENTS.md` (twin of CLAUDE.md) plus `docs/M13-memory-index.md`
-covering all three memory layers.
-**Verify:** diff the two steering files — every rule present in both; the index lists
-steering, knowledge, and per-bolt artifacts with cadences; no code touched.
+**Expected artifact:** `docs/M13-memory-index.md` covering all three memory layers, plus a
+report confirming each rule lives in exactly one file.
+**Verify:** every domain rule lives once, in `AGENTS.md`, and `CLAUDE.md` reaches it by
+import; the index lists steering, knowledge, and per-bolt artifacts with cadences and
+delivery mode; no code touched. Run `/context` to confirm the decision log really loaded.
 
 ### Codex CLI variant
 
@@ -72,28 +77,32 @@ steering, knowledge, and per-bolt artifacts with cadences; no code touched.
 # Codex CLI
 cd prior-auth-api
 codex
-> Read AGENTS.md. Generate CLAUDE.md with equivalent steering
-> content for Claude Code — same rules, same guardrails, adapted
-> wording only where the engine name matters. Then write
-> docs/M13-memory-index.md: every context artifact in this repo
-> (steering files, decisions, semantic map, plans, close-outs)
-> listed with its layer (steering / knowledge / per-bolt) and
-> change cadence. Change no code.
+> Read AGENTS.md and CLAUDE.md. Verify the steering chain:
+> AGENTS.md holds the rules, CLAUDE.md imports it with
+> @AGENTS.md, and no domain rule is restated in both files.
+> Report any rule that is duplicated or has drifted. Then
+> write docs/M13-memory-index.md: every context artifact in
+> this repo (steering files, decisions, semantic map, plans,
+> close-outs) with its layer (steering / knowledge / per-bolt),
+> its change cadence, and whether it reaches the engine
+> mechanically (imported) or contractually (an instruction
+> asks for it). Change no code.
 ```
 
-**Expected artifact:** the mirrored result — `CLAUDE.md` generated from `AGENTS.md`,
-plus the same memory index.
-**Verify:** same checks, mirrored.
+**Expected artifact:** the same `docs/M13-memory-index.md`, plus the same one-rule-one-file
+report.
+**Verify:** same checks — and one asymmetry to record honestly: Codex has no import
+mechanism, so `docs/decisions.md` reaches it only because `AGENTS.md` asks for it.
 
-**Parity note:** this lab *is* the parity: after either variant, the repo steers both
-engines identically — twin files, rule for rule. Any rule present in one and missing
-from the other is the bug this lab exists to prevent.
+**Parity note:** both variants produce the same index against the same steering chain. The
+engines differ in one recorded respect: the decision log arrives *mechanically* for Claude
+Code (via `@docs/decisions.md`) and *contractually* for Codex (via an instruction). Naming
+that difference in the index is part of the deliverable.
 
 ## Done when
 
-- [ ] Both steering twins exist and agree rule-for-rule (a diff shows only
-      engine-name wording).
-- [ ] `docs/M13-memory-index.md` names every context artifact with its layer and
-      cadence.
-- [ ] No code changed — and every remaining lab in this course now runs against a
-      dual-steered repo.
+- [ ] Each domain rule lives in exactly one file — `AGENTS.md` — with `CLAUDE.md`
+      reaching it by `@AGENTS.md` import; no rule restated in both.
+- [ ] `docs/M13-memory-index.md` names every context artifact with its layer, cadence,
+      and whether it arrives mechanically or contractually.
+- [ ] No code changed.

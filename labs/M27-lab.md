@@ -11,7 +11,7 @@
 ```text
 D-4417        REVIEWED path · denied · nurse R.Okafor ·
               rationale: criteria C-3, C-7 unmet
-QUEUE         PENDING_REVIEW 09:14 → IN_REVIEW 09:31 (claim
+QUEUE         PENDING_REVIEW 09:14:05 → IN_REVIEW 09:31 (claim
               R.Okafor) → REVIEWED 09:58
 SCORE         0.71 · components: C-1 ✓ C-3 ✕ C-7 ✕ · persisted
               09:14:02, immutable, compliance store
@@ -37,9 +37,9 @@ TRAP: could a record set ever show a notification with no
 
 <details><summary>Answers</summary>
 
-1. REQUEST: B1. SCORE: B2 (persisted-before-routing visible in the timestamps:
-   09:14:02 precedes the queue entry). QUEUE: B3's transition records. D-4417 +
-   NOTIFICATION: B4.
+1. REQUEST: B1. SCORE: B2 (persisted-before-routing visible in the timestamps: the
+   09:14:02 score write precedes the 09:14:05 queue entry). QUEUE: B3's transition
+   records. D-4417 + NOTIFICATION: B4.
 2. That the denial has a human behind it — and it does: below-threshold score, nurse
    claim, her identity and criteria-level rationale on the record; the walk holds
    with no gaps.

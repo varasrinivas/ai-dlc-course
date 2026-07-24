@@ -25,19 +25,19 @@ FLAGGED    F-1  E7 appears 14 times, always with manual-review
 ```
 
 **Trace it:**
-1. Find the line that closes Priya's parked staleness question from the bolt-1 close-out.
+1. Find the line that closes the unowned staleness question from the bolt-1 close-out.
 2. Separate the confirmed lines from the suspected ones, and note who confirmed what.
 3. For I-2, estimate what raw material it compresses (call sites, tribal knowledge).
 
 **Check yourself:**
-1. Which line closes Priya's parked staleness question?
+1. Which line closes the unowned staleness question?
 2. What does confirming I-3 actually require, and why is the deadline real?
 3. Roughly what compression does I-2 represent?
 
 <details><summary>Answers</summary>
 
-1. I-1 — and it converts M05's [data] question into a design constraint bolt 2 plans
-   around rather than a surprise it hits in production.
+1. I-1 — and it converts the [data] question M07's plan parked at step 4 into a design
+   constraint bolt 2 plans around rather than a surprise it hits in production.
 2. A human who knows the eligibility system verifying the convention and putting their
    name on it — before May, because after May the only holder of that knowledge is gone
    and "confirm" becomes "reverse-engineer."
@@ -62,10 +62,10 @@ claude
 > Treat this repo as brownfield and run a semantic survey. Write
 > docs/M12-semantic-map.md with four sections: entities, flows,
 > invariants, flagged unknowns. Every invariant must cite the
-> file that implies it (e.g. the collect-all-errors validation,
-> the OUTREACH_FLUSH_MS config). Include at least 2 flagged
-> unknowns phrased as CONFIRM questions a human must answer.
-> Keep the whole map under 2 pages. Change no code.
+> file that implies it (e.g. your collect-all-errors validation,
+> the >= threshold check in src/determination/). Include at
+> least 2 flagged unknowns phrased as CONFIRM questions a human
+> must answer. Keep the whole map under 2 pages. Change no code.
 ```
 
 **Expected artifact:** `docs/M12-semantic-map.md` — four sections, file-cited invariants,
@@ -82,10 +82,10 @@ codex
 > Treat this repo as brownfield and run a semantic survey. Write
 > docs/M12-semantic-map.md with four sections: entities, flows,
 > invariants, flagged unknowns. Every invariant must cite the
-> file that implies it (e.g. the collect-all-errors validation,
-> the OUTREACH_FLUSH_MS config). Include at least 2 flagged
-> unknowns phrased as CONFIRM questions a human must answer.
-> Keep the whole map under 2 pages. Change no code.
+> file that implies it (e.g. your collect-all-errors validation,
+> the >= threshold check in src/determination/). Include at
+> least 2 flagged unknowns phrased as CONFIRM questions a human
+> must answer. Keep the whole map under 2 pages. Change no code.
 ```
 
 **Expected artifact:** the same four-section map, steered by AGENTS.md.

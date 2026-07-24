@@ -10,10 +10,12 @@
 disagreement, one parked question.
 
 ```text
-AI:   Urgent requests — my guess: priority flag, same path. I
-      won't decide: this affects triage order, clinical territory.
-SME:  Flag is right. But urgent means STAT imaging too — 4 hours,
-      not 24. Add it to the criteria.
+AI:   Urgent requests use a priority flag on the same path
+      [decided M02]. Still open: what SLA does urgent carry? My
+      guess: 24 hours, same as standard. I won't decide — SLA is
+      clinical territory.
+SME:  Not 24 — urgent means STAT imaging too. 4 hours. Add it
+      to the criteria.
 AI:   Restating: priority flag, same path; urgent SLA is 4 hours
       including STAT imaging. Recording… done. Next.
 
@@ -27,8 +29,9 @@ AI:   Restating: no side channels; 4-hour SLA raises a queue
 
 AI:   R7's audit log — portal DB or the org compliance store?
 ARCH: Genuinely don't know. Compliance owns that answer.
-FAC:  Parked: owner Priya (architect), answer by Friday.
-      Blocks UW-1c routing handoff — bolt order may shift.
+FAC:  Parked: owner Priya (architect), answer by Friday. Blocks
+      R7's immutable score log in bolt 2's scoring engine, and
+      UW-1c's handoff into it — bolt order may shift.
 ```
 
 **Trace it:**
@@ -49,8 +52,9 @@ FAC:  Parked: owner Priya (architect), answer by Friday.
    ("Recording… done").
 2. Asked whose call it was — jurisdiction, not agreement; the PO owned routing policy, so
    the SME's preference informed but didn't decide.
-3. Owner (Priya), date (Friday), and the blocked unit of work (UW-1c) — which is what lets
-   it reorder the backlog instead of silently rotting.
+3. Owner (Priya), date (Friday), and the blocked work — R7's immutable score log in bolt 2's
+   scoring engine, plus UW-1c's handoff into it — which is what lets it reorder the backlog
+   instead of silently rotting.
 
 </details>
 

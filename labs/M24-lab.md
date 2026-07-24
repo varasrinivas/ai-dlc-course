@@ -9,7 +9,7 @@
 **Artifact:** B1's idempotency question loop and UW-1's AC-to-test trace table.
 
 ```text
-AI:  Duplicate submissions — same member+provider+serviceCode
+AI:  Duplicate submissions — same member+provider+procedureCode
      while a request is open. My guess: reject the second with
      409. Deferring: member-facing semantics, not my call.
 PO:  No 409 — provider offices double-click; don't punish them.

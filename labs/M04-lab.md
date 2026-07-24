@@ -61,7 +61,7 @@ be fact-checked.
 
 *Evidence slide:* "AWS reports its Bedrock re-architecture — estimated at 18 months for 30
 developers — was delivered by 6 engineers in 76 days. Amazon Stores reports 4.5x developer
-velocity under the same methodology. Blue Origin reports 95% sustained adoption. All
+velocity under the same methodology. Blue Origin reports 95% adoption. All
 figures are AWS-reported; we treat them as what conditions like ours can produce, not as
 promises."
 

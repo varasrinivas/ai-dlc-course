@@ -9,7 +9,7 @@
 **Artifact:** the Mob Construction transcript for UW-1a.
 
 ```text
-AI:    Two deviations from the approved plan. One: serviceCode
+AI:    Two deviations from the approved plan. One: procedureCode
        format check added — schema allowed strings the payer
        rejects downstream. Two: outreach log writes through a
        buffer — direct writes stalled intake by 40ms p95.
