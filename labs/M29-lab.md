@@ -69,6 +69,9 @@ ROSTER  Chen (sr FE eng, React) · Dee (jr FE eng) ·
 2. Draft the one-bolt ritual calendar including hotline terms.
 3. Script the role-shift conversation with Sam — reframe QA to gate designer with
    two concrete new responsibilities.
+4. Marta is pod 2's only decider across three lanes. Draft her decision-rights ladder —
+   what's pre-decided in the chain, what she delegates and to whom, what she reserves —
+   so three simultaneous questions don't queue on her.
 
 **Compare:** <details><summary>A worked answer</summary>
 
@@ -92,6 +95,17 @@ and the bolt-close audit of which gates rubber-stamp; and you own understanding
 verification — spot-explain sampling at every review. The suite the engines generate
 is your raw material, not your replacement."
 
+*Marta's ladder:* **Pre-decided** — provider-visibility copy standards, the
+notification status-plus-reference-id rule (D-003), and the determination-display
+fields live in the chain, so lane questions about them answer themselves.
+**Delegated** — Chen (senior FE) rules on component and interface shapes; Priya owns
+the API seams at 20%; Lena rules on provider-workflow UX by standing delegation, each
+recorded like any call. **Reserved** — anything that sets a provider's expectation the
+plan must honor (what a provider is told about a pending auth), plus any change
+touching determination semantics, stays Marta's, answered within the hour. Three
+lanes, but only the reserved rung ever converges on her — and it rarely fires twice in
+an afternoon.
+
 </details>
 
 ## Done when
@@ -101,3 +115,5 @@ is your raw material, not your replacement."
 - [ ] The ritual calendar covers one bolt with hotline terms and protected
       timeboxes.
 - [ ] Sam's conversation lands two concrete new responsibilities, not reassurance.
+- [ ] Marta's ladder sorts every recurring call into pre-decided, delegated, or
+      reserved, so three lanes don't serialize on one decider.

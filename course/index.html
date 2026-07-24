@@ -6509,6 +6509,11 @@ codex
 <p>Every role moves toward judgment. The <strong>PO</strong> stops grooming backlogs and becomes the decision-owner on call: jurisdiction explicit, latency measured, rationale recorded — the M24 idempotency call in four minutes is the job now. The <strong>architect</strong> stops writing documents that age and becomes the contract pinner and seam judge — M18's chalk, at street scale. <strong>QA</strong> stops authoring tests after code and becomes the gate designer and spot-explain auditor: owner of the gate stack's health, sampler of the room's actual understanding.</p>
 <p>And the <strong>leader</strong> trades velocity theater for checkpoint topology: the M17 bolt-close audit — which gates fired, which rubber-stamped, which caught something — becomes a standing leadership artifact. Across all four shifts, one scarce skill appreciates fastest: <em>deciding quickly, with a rationale someone can read later.</em> Hire for it, coach it, measure it.</p>
 
+<h2>Decision rights when one PO owns many lanes</h2>
+<p>The pod's bottleneck has a name, and it is usually the decider. In a sprint the PO batched a week of calls into one refinement; under AI-DLC five parallel lanes can each surface a blocking decision the same afternoon, and one owner answering them serially stalls four bolts. The fix is not a faster PO — it is deciding <em>which</em> calls ever reach the PO at all.</p>
+<p>Sort every recurring decision onto a three-rung ladder. <strong>Pre-decided:</strong> the answer already lives in the steering file or <code>decisions.md</code> — threshold semantics, the collect-all-errors rule, the PHI boundary. These reach no human; the chain answers them, which is the entire reason decisions get written down. <strong>Delegated:</strong> a named proxy holds bounded jurisdiction — a senior engineer on interface shapes, the architect on seams (M18) — and records the call like any other. <strong>Reserved:</strong> the irreversible and the regulated — a member-facing policy, a threshold change, anything an auditor will ask about — stay with the PO, who can now answer in minutes because the first two rungs cleared the queue.</p>
+<p>Two backstops keep it honest. Give the reserved rung a <strong>latency SLA</strong>: the decider on call answers within the hour on bolt days, or the pod escalates by a written rule, not a hallway ambush. And when even the reserved calls overflow one person, that is not a delegation failure — it is the signal to <strong>split the pod at the decision-domain seam</strong>: two deciders, two jurisdictions, the same rule that scales pods now scaling deciders.</p>
+
 <figure>
 <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A pod ring sized to its decision-owners beside the bolt ritual calendar, with the old ceremony strip crossed out">
   <g font-family="JetBrains Mono, monospace" text-anchor="middle">
@@ -6564,6 +6569,15 @@ codex
   </tbody>
 </table>
 
+<table class="bridge">
+  <thead><tr><th>Decision rung</th><th>Who answers</th><th>Prior Auth example</th></tr></thead>
+  <tbody>
+    <tr><td><b>Pre-decided</b></td><td>The chain — steering file / <code>decisions.md</code></td><td>0.85 threshold semantics · no Member fields in logs · collect-all-errors</td></tr>
+    <tr><td><b>Delegated</b></td><td>A named proxy, bounded jurisdiction</td><td>interface shapes → senior engineer · API seams → architect (M18)</td></tr>
+    <tr><td><b>Reserved</b></td><td>The PO, on call under a latency SLA</td><td>threshold change · member-facing policy · anything an auditor asks about</td></tr>
+  </tbody>
+</table>
+
 <section class="lab">
   <div class="lab-head">Lab M29 · 25 min</div>
   <h2>Audit a pod charter, then build the next pod</h2>
@@ -6603,11 +6617,13 @@ LEADER METRICS (this bolt)
       <li>Pick the five seats; name each jurisdiction (and what you do about SME coverage without double-booking Okafor).</li>
       <li>Draft the one-bolt ritual calendar including hotline terms.</li>
       <li>Script the role-shift conversation with Sam — reframe QA to gate designer with two concrete new responsibilities.</li>
+      <li>Marta is pod 2's only decider across three lanes. Draft her decision-rights ladder — what's pre-decided in the chain, what she delegates and to whom, what she reserves — so three simultaneous questions don't queue on her.</li>
     </ol>
     <details><summary>A worked answer</summary>
       <p><em>Seats:</em> Marta (decider — provider-facing semantics are her jurisdiction), Chen + Dee + Ibrahim (engineers — Ibrahim carries pod-1 context and the API seams), Sam (gate designer). Priya stays cross-pod at 20% as contract pinner for the API seam — a shared seam judge, not a pod member. Lena joins Mob Elaborations for UI epics by invitation (jurisdiction: provider workflow), not as a standing seat. SME coverage: provider-visibility decisions rarely need clinical jurisdiction — Okafor's hotline extends to pod 2 for the two UWs that touch determination display, documented in the charter rather than a sixth seat.</p>
       <p><em>Calendar:</em> bolt open Mob Elaboration (50 min, decision rule enforced); construction sessions one UW each; Mob Construction per increment with Sam sampling spot-explains; close writes to the chain. Hotline: Okafor answers within the hour on the two flagged UWs; Marta same-hour for provider semantics.</p>
       <p><em>Sam:</em> "Nobody automated judgment — we automated typing. Two things are now yours that didn't exist before: you own the gate stack — which checks run, in what order, and the bolt-close audit of which gates rubber-stamp; and you own understanding verification — spot-explain sampling at every review. The suite the engines generate is your raw material, not your replacement."</p>
+      <p><em>Marta's ladder:</em> <strong>Pre-decided</strong> — provider-visibility copy standards, the notification status-plus-reference-id rule (D-003), and the determination-display fields live in the chain, so lane questions about them answer themselves. <strong>Delegated</strong> — Chen (senior FE) rules on component and interface shapes; Priya owns the API seams at 20%; Lena rules on provider-workflow UX by standing delegation, each recorded like any call. <strong>Reserved</strong> — anything that sets a provider's expectation the plan must honor (what a provider is told about a pending auth), plus any change touching determination semantics, stays Marta's, answered within the hour. Three lanes, but only the reserved rung ever converges on her — and it rarely fires twice in an afternoon.</p>
     </details>
   </div>
 </section>
@@ -6618,6 +6634,7 @@ LEADER METRICS (this bolt)
     <li>Pods are sized by the room: every decision-owner reachable in minutes — the mob rituals' feasibility condition as an org rule; scale by splitting on decision-domain seams.</li>
     <li>The bolt calendar replaces the sprint calendar; status ceremonies aren't abolished, they're starved by the artifact chain.</li>
     <li>Roles shift toward judgment: PO to on-call decider, architect to seam judge, QA to gate designer — the scarce skill is deciding fast with recorded rationale.</li>
+    <li>One decider scales across parallel lanes by decision-rights delegation: pre-decide in the chain, delegate bounded calls to named proxies, reserve only the irreversible and regulated — and split the pod when even those overflow.</li>
     <li>Leaders own two numbers: decision latency and checkpoint integrity — everything else the chain reports for free.</li>
   </ul>
   <span class="next">Next → M30 · Governance, Risk &amp; Compliance Gates</span>
