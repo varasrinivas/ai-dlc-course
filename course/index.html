@@ -143,13 +143,15 @@ pre code{background:none;padding:0;overflow-wrap:normal}
 .copy-wrap.light .copy-btn.failed{color:var(--warn);border-color:var(--warn)}
 /* Touch has no hover, so the chip can never hide — and parked over the code it would
    permanently cover the right end of line 1, which on a phone is usually the longest
-   line in the block. Give it its own strip above the block, and a 44px tap target.
-   The .copy-target class (added in JS) outranks `.artifact pre`, whose own padding and
-   margins are declared further down the sheet. */
+   line in the block. Lift it into a strip above the block instead, flush against the
+   top edge as a tab: the same shape .engine-tab-btns already uses against its pane,
+   and no orphan chip floating in a gap. The .copy-target class (added in JS) outranks
+   `.artifact pre`, whose own padding and margins are declared further down the sheet. */
 @media (hover:none){
-  .copy-wrap{padding-top:46px}
+  .copy-wrap{padding-top:31px}
   .copy-wrap pre.copy-target{margin-top:0}
-  .copy-btn{top:5px;right:5px;opacity:1;padding:12px 14px;min-height:36px}
+  .copy-btn{top:3px;right:6px;opacity:1;padding:8px 12px;min-height:28px;
+    border-radius:6px 6px 0 0;border-bottom:none}
 }
 
 /* lab */
