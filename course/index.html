@@ -148,9 +148,12 @@ pre code{background:none;padding:0;overflow-wrap:normal}
    and no orphan chip floating in a gap. The .copy-target class (added in JS) outranks
    `.artifact pre`, whose own padding and margins are declared further down the sheet. */
 @media (hover:none){
-  .copy-wrap{padding-top:31px}
+  .copy-wrap{padding-top:47px}
   .copy-wrap pre.copy-target{margin-top:0}
-  .copy-btn{top:3px;right:6px;opacity:1;padding:8px 12px;min-height:28px;
+  /* 44px tap target, and the tab is that size for real rather than carrying an
+     invisible overlay: any hit area spilling over the block belongs to the wrapper,
+     not the <pre>, so a swipe starting there scrolls the page instead of the code. */
+  .copy-btn{top:3px;right:6px;opacity:1;padding:8px 14px;min-height:44px;
     border-radius:6px 6px 0 0;border-bottom:none}
 }
 
