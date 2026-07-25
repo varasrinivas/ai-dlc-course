@@ -12,6 +12,9 @@ validate loop. Never build multiple modules in one pass.
 - CSS custom variables only — never hard-code colors in module bodies; use `var(--t1)`…`var(--t7)`
   and the semantic tokens defined in `:root`.
 - Session-only progress (in-memory `Set`). **Never** use localStorage/sessionStorage.
+- The player wraps every `<pre>` in the module body with a copy button at render time
+  (`wireCopyButtons`). Author code blocks as plain `<pre>` / `<pre><code>` — never hand-roll a
+  copy control, and never put anything in a `<pre>` you don't want a student to paste verbatim.
 - Dual-audience course: every module object carries `audience: "leader" | "practitioner" | "both"`.
   The player has an audience filter — do not remove it.
 

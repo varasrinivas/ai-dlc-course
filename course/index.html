@@ -125,6 +125,25 @@ pre{background:var(--ink);color:#e6edf7;border-radius:var(--radius);padding:16px
 code{font-family:var(--font-mono);font-size:.85em;background:#e7ebf2;border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
 pre code{background:none;padding:0;overflow-wrap:normal}
 
+/* copy button — the player wraps every <pre> in a module body at render time so
+   lab prompts and commands are one click away instead of a drag-select */
+.copy-wrap{position:relative}
+.copy-btn{position:absolute;top:8px;right:8px;z-index:2;line-height:1;
+  font-family:var(--font-mono);font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 9px;border-radius:6px;background:#243040;color:#c3cede;border:1px solid #3a4a61;
+  opacity:0;transition:opacity .15s ease,color .15s ease,border-color .15s ease}
+.copy-wrap:hover .copy-btn,.copy-btn:focus-visible{opacity:1}
+.copy-btn:hover{color:#fff;border-color:var(--accent)}
+.copy-btn.copied{opacity:1;color:#5eead4;border-color:#5eead4}
+.copy-btn.failed{opacity:1;color:#fda4d4;border-color:#fda4d4}
+/* light code blocks (.artifact.doc) need the inverse chip */
+.copy-wrap.light .copy-btn{background:#eef1f6;color:var(--ink-soft);border-color:var(--line)}
+.copy-wrap.light .copy-btn:hover{color:var(--ink);border-color:var(--accent)}
+.copy-wrap.light .copy-btn.copied{color:var(--ok);border-color:var(--ok)}
+.copy-wrap.light .copy-btn.failed{color:var(--warn);border-color:var(--warn)}
+/* touch has no hover: keep it visible but quiet, and big enough to hit */
+@media (hover:none){.copy-btn{opacity:.8;padding:8px 11px}}
+
 /* lab */
 .lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;margin:40px 0 0}
 .lab-head{font-family:var(--font-mono);font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
@@ -7737,6 +7756,7 @@ function render() {
   wireEngineTabs();
   wireIntroSim();
   wireLabLink();
+  wireCopyButtons();
   wrapWideTables();
   buildNav();
   updateProgress();
@@ -7771,6 +7791,61 @@ function wrapWideTables() {
     tbl.parentNode.insertBefore(wrap, tbl);
     wrap.appendChild(tbl);
   });
+}
+
+/* labs are copy-paste driven: every code block in the body gets a copy button.
+   The wrapper doubles as the "already wired" marker, so this is safe to re-run. */
+function wireCopyButtons() {
+  $root.querySelectorAll("pre").forEach(pre => {
+    if (pre.parentElement.classList.contains("copy-wrap")) return;
+    const wrap = document.createElement("div");
+    wrap.className = "copy-wrap" + (pre.closest(".artifact.doc") ? " light" : "");
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy this code block");
+    /* the file is CRLF on disk, so textContent carries \r\n — a stray \r pasted
+       into a shell is at best noise, at worst a second Enter. Normalise. */
+    btn.addEventListener("click", () => copyBlock(pre.textContent.replace(/\r\n/g, "\n"), btn));
+    wrap.appendChild(btn);
+  });
+}
+
+/* navigator.clipboard needs a secure context; this file is often opened straight
+   off disk, so fall back to the old textarea + execCommand path when it is absent
+   or rejects (Safari/Firefox over file://). */
+function copyBlock(text, btn) {
+  const settle = ok => {
+    btn.textContent = ok ? "Copied ✓" : "Copy failed";
+    btn.classList.toggle("copied", ok);
+    btn.classList.toggle("failed", !ok);
+    clearTimeout(btn._resetT);
+    btn._resetT = setTimeout(() => {
+      btn.textContent = "Copy";
+      btn.classList.remove("copied", "failed");
+    }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => settle(true), () => settle(legacyCopy(text)));
+  } else {
+    settle(legacyCopy(text));
+  }
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.cssText = "position:fixed;top:0;left:-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
 }
 
 function wireEngineTabs() {
