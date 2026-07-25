@@ -141,8 +141,16 @@ pre code{background:none;padding:0;overflow-wrap:normal}
 .copy-wrap.light .copy-btn:hover{color:var(--ink);border-color:var(--accent)}
 .copy-wrap.light .copy-btn.copied{color:var(--ok);border-color:var(--ok)}
 .copy-wrap.light .copy-btn.failed{color:var(--warn);border-color:var(--warn)}
-/* touch has no hover: keep it visible but quiet, and big enough to hit */
-@media (hover:none){.copy-btn{opacity:.8;padding:8px 11px}}
+/* Touch has no hover, so the chip can never hide — and parked over the code it would
+   permanently cover the right end of line 1, which on a phone is usually the longest
+   line in the block. Give it its own strip above the block, and a 44px tap target.
+   The .copy-target class (added in JS) outranks `.artifact pre`, whose own padding and
+   margins are declared further down the sheet. */
+@media (hover:none){
+  .copy-wrap{padding-top:46px}
+  .copy-wrap pre.copy-target{margin-top:0}
+  .copy-btn{top:5px;right:5px;opacity:1;padding:12px 14px;min-height:36px}
+}
 
 /* lab */
 .lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;margin:40px 0 0}
@@ -7807,6 +7815,7 @@ function addCopyButton(pre) {
   wrap.className = "copy-wrap" + (pre.closest(".artifact.doc") ? " light" : "");
   pre.parentNode.insertBefore(wrap, pre);
   wrap.appendChild(pre);
+  pre.classList.add("copy-target");    // lets the touch rules outrank `.artifact pre`
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "copy-btn";
