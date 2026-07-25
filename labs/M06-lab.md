@@ -7,7 +7,7 @@
 ## Path A — Understand It (no tooling required)
 
 **Artifact:** a Mob Elaboration excerpt from the intake session — one clean loop, one
-disagreement, one parked question.
+disagreement, one parked question, one dependency.
 
 ```text
 AI:   Urgent requests use a priority flag on the same path
@@ -32,6 +32,13 @@ ARCH: Genuinely don't know. Compliance owns that answer.
 FAC:  Parked: owner Priya (architect), answer by Friday. Blocks
       R7's immutable score log in bolt 2's scoring engine, and
       UW-1c's handoff into it — bolt order may shift.
+
+AI:   One dependency, not a question: UW-1c routing hands the
+      flagged request to the review queue, which consumes the
+      score UW-2 produces. Serialise, or pin the interface and
+      stub it?
+ARCH: Pin it — ScoredRequest { authRequestId, score }. Recorded
+      as a dependency: producer UW-2, interface ScoredRequest.
 ```
 
 **Trace it:**
@@ -39,11 +46,15 @@ FAC:  Parked: owner Priya (architect), answer by Friday. Blocks
    named decision, restate, record).
 2. In the second exchange, identify the deciding authority and what the facilitator asked.
 3. Extract the parking-lot row: owner, date, blocked unit of work.
+4. In the fourth exchange, spot the dependency — what makes it different from a parked
+   question?
 
 **Check yourself:**
 1. In the first exchange, where are the five stages?
 2. In the second, what did the facilitator do that a consensus-seeker wouldn't?
 3. What three fields make the parked question a promise instead of a graveyard entry?
+4. The fourth exchange parks something that isn't a question — what is it, and how does
+   its row differ?
 
 <details><summary>Answers</summary>
 
@@ -55,6 +66,11 @@ FAC:  Parked: owner Priya (architect), answer by Friday. Blocks
 3. Owner (Priya), date (Friday), and the blocked work — R7's immutable score log in bolt 2's
    scoring engine, plus UW-1c's handoff into it — which is what lets it reorder the backlog
    instead of silently rotting.
+4. A cross-unit dependency: the review-queue unit consumes the score the scoring unit
+   produces. Its row names a producing unit and an interface (ScoredRequest) instead of an
+   owner and a date — because the resolution isn't an answer to wait for, it's a
+   Construction choice: serialise the units, or pin the interface and stub it to build in
+   parallel (M18).
 
 </details>
 
@@ -75,7 +91,8 @@ claude
 > questions ONE at a time: state your best guess and why you will
 > not decide alone, then wait for my answer. After each answer,
 > restate it as a constraint before the next question. When all
-> are answered or parked (owner + date), write
+> are answered or parked — owner + date, or for a cross-unit
+> dependency the producing unit + interface — write
 > docs/M06-elaboration-log.md: a question → decision → constraint
 > table, then acceptance criteria (3 testable clauses each, naming
 > their requirement) for two stories. Do NOT write code.
@@ -97,7 +114,8 @@ codex
 > questions ONE at a time: state your best guess and why you will
 > not decide alone, then wait for my answer. After each answer,
 > restate it as a constraint before the next question. When all
-> are answered or parked (owner + date), write
+> are answered or parked — owner + date, or for a cross-unit
+> dependency the producing unit + interface — write
 > docs/M06-elaboration-log.md: a question → decision → constraint
 > table, then acceptance criteria (3 testable clauses each, naming
 > their requirement) for two stories. Do NOT write code.

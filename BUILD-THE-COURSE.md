@@ -17,7 +17,15 @@ templates/
 scripts/validate-course.ps1  mechanical checks + node --check syntax gate
 plans/                       per-module plans land here (M01.plan.md, ...)
 labs/                        standalone copies of each lab
+SETUP.md                     standalone copy of P01 — how to run the companion repos
+prior-auth-api/              companion repo 1 — TypeScript + Jest (labs run here)
+prior-auth-web/              companion repo 2 — React + Vite + Vitest
 ```
+
+**Learners start at `SETUP.md` / page P01**: prerequisites, clone, install, and the verbatim
+expected output of `npm test`, `npm run typecheck`, and `npm run dev` in both companion repos.
+Those output blocks are transcripts of real runs — re-run the commands and update both copies
+whenever the repos change.
 
 ## Preview the course
 

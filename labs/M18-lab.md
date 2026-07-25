@@ -51,6 +51,39 @@ ORCH: Union: npx jest → 11 tests green (2 new seam tests).
 
 </details>
 
+**Now the coupled case.** B3's queue consumes the score B2 produces — producer/consumer,
+not disjoint. This log stub-decouples them so both build in parallel:
+
+```text
+ORCH: Contract pinned → docs/M18-scored.md:
+      ScoredRequest { authRequestId, score }
+ORCH: B2 (producer) builds to it. B3 (consumer) builds
+      against a STUB returning ScoredRequest fixtures —
+      runs before B2 exists.
+B3:   Done. 6 tests green against the stub.
+B2:   Done. persists the score as `score`, per the
+      Determination entity — the stub had guessed
+      `matchScore`.
+ORCH: SEAM TEST FAILS — stub said matchScore, producer
+      says score; B3 never met the real B2. Re-pin to
+      `score`, update B3's mapping.
+ORCH: Union: seam integration test green. One diff → review.
+```
+
+**Check yourself:** (4) B3 had six green tests against the stub and still shipped a bug.
+Why — and which test caught it?
+
+<details><summary>Answer</summary>
+
+Six green tests only proved B3 agrees with *its own stub* — and the stub was a guess
+about the producer (`matchScore`), not the producer (`score`, the field the
+`Determination` entity actually uses). A stub is a hypothesis, not the real thing. The
+one test that exercises consumer-against-*real*-producer is the seam integration test,
+so it is the only one positioned to catch a stub that lied. That is why stub-decouple
+always costs one real seam test: skip it and you have verified a fiction.
+
+</details>
+
 ## Path B — Build It with AI
 
 > The unit of work: build UW-N2 and UW-N3 in parallel against a pinned contract. Both

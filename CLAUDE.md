@@ -12,6 +12,9 @@ validate loop. Never build multiple modules in one pass.
 - CSS custom variables only — never hard-code colors in module bodies; use `var(--t1)`…`var(--t7)`
   and the semantic tokens defined in `:root`.
 - Session-only progress (in-memory `Set`). **Never** use localStorage/sessionStorage.
+- The player wraps every `<pre>` in the module body with a copy button at render time
+  (`wireCopyButtons`). Author code blocks as plain `<pre>` / `<pre><code>` — never hand-roll a
+  copy control, and never put anything in a `<pre>` you don't want a student to paste verbatim.
 - Dual-audience course: every module object carries `audience: "leader" | "practitioner" | "both"`.
   The player has an audience filter — do not remove it.
 
@@ -85,7 +88,10 @@ and Codex CLI** as interchangeable engines:
   - T6: the four-room finishing sequence, one room per bolt (mirrors the four capstone bolts)
   - T7: Meera and Ravi as developers of a whole street — permits, inspectors, budgets,
     and how you scale one good build into twelve (governance, metrics, rollout)
-  - T7 epilogue (M33): the warranty call — a year on, a crack in house nine is traced
+  - T7 migration beat (M33): the fourth crew comes off two-week jobs and is run on both
+    clocks for its first house — dual-tracking the first bolts — until the daily rhythm
+    takes and the old schedule starves, unread (sprint→bolt team migration)
+  - T7 epilogue (M34): the warranty call — a year on, a crack in house nine is traced
     through the build book in one page; the firm pays because the firm signed
     (provenance, audit trails, accountability stays human). The saga now ends here.
 
@@ -101,10 +107,18 @@ and Codex CLI** as interchangeable engines:
 See `templates/module.schema.json`. Required fields: `id`, `track`, `title`, `minutes`,
 `audience`, `body` (template-literal HTML string). Body sections in order:
 
-> **One deliberate exception:** `P00` ("Prelude: You're the Tech Lead Now") is a
-> pre-course overview and carries **no lab and no Lakeview beat** — the saga begins at
-> M00. It is the only entry in `MODS` exempt from the schema below. The lab-link wiring
-> (`wireLabLink`) skips it by design. Do not "fix" P00 by adding a lab.
+> **Two deliberate exceptions — the `P`-prefixed front matter.** `P00` ("Prelude: You're
+> the Tech Lead Now") is a pre-course overview and `P01` ("Setup: run the companion
+> repos") is a machine-setup reference. Both carry **no lab and no Lakeview beat** — the
+> saga begins at M00 — and both are exempt from the schema below. The lab-link wiring
+> (`wireLabLink`) skips any non-`M##` id by design; P01 links its standalone copy
+> (`SETUP.md`) with a hand-authored `.lab-gh` anchor instead. Do not "fix" either by
+> adding a lab or an analogy block. Every other entry in `MODS` follows the schema.
+>
+> `P01` is the one page whose content is checked against reality rather than the
+> standards: its expected-output blocks are transcripts of real runs. If the companion
+> repos' test counts, tool versions, or seeded gaps change, re-run the commands and
+> update **both** the P01 body and `SETUP.md`.
 
 1. `<p class="hook">` — the scenario
 2. Concept sections (`<h2>`) — 2–4 of them, each ≤ 300 words; exactly one

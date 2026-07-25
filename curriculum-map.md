@@ -4,7 +4,7 @@
 > **Audience:** Dual-track — Engineering Leaders **and** Hands-on Practitioners
 > **Engines:** Claude Code and OpenAI Codex CLI as the AI-DLC execution engines (methodology is AWS's; engines are tool-agnostic)
 > **Domain anchor:** Prior Auth Portal (healthcare Utilization Management — AuthRequest, Member, Provider, ClinicalCriteria, Determination, AuthStatus)
-> **Total modules:** 35 entries — the P00 prelude + M00 orientation + 33 content modules across 8 tracks
+> **Total modules:** 37 entries — the P00 prelude + P01 setup page + M00 orientation + 34 content modules across 8 tracks
 
 Every module carries an audience tag: `leader` | `practitioner` | `both`.
 Two suggested paths are rendered in M00:
@@ -18,6 +18,7 @@ Two suggested paths are rendered in M00:
 | ID  | Title | Audience | Key Concepts |
 |-----|-------|----------|--------------|
 | P00 | Prelude: You're the Tech Lead Now | both | The whole method in one sitting, before the vocabulary arrives. **Deliberate schema exception:** the prelude carries no lab and no Lakeview beat — the saga starts at M00. Skippable for anyone who has run a bolt. |
+| P01 | Setup: run the companion repos | both | Prerequisites, clone, `npm install`/`test`/`typecheck`/`dev` for `prior-auth-api` and `prior-auth-web`, verbatim expected output, the seeded gaps, troubleshooting. **Same schema exception as P00:** no lab, no Lakeview beat. Standalone copy: `SETUP.md`. |
 | M00 | Course Orientation: A New Lifecycle, Two Engines | both | Course structure, the two paths, Prior Auth Portal domain intro, environment setup (Claude Code + Codex CLI) |
 
 ## Track 1 — The Case for AI-DLC (color: #b45309)
@@ -86,7 +87,8 @@ Two suggested paths are rendered in M00:
 | M30 | Governance, Risk & Compliance Gates | leader | Human oversight as governance, regulated-industry gates (healthcare/PHI angle), accountability structures |
 | M31 | Measuring the Shift | leader | Velocity, adoption, quality signals; avoiding vanity metrics; the supporting infrastructure (CI/CD, test fidelity) |
 | M32 | The Rollout Playbook | leader | Pilot → scale → sustain, enablement program design, change management for engineers |
-| M33 | Responsible AI in the Lifecycle | both | Responsible AI dimensions mapped to AI-DLC checkpoints; fairness & bias in clinical criteria matching; PHI-safe prompting and context hygiene; transparency & audit trails for AI-authored code; human accountability as the load-bearing control |
+| M33 | Migrating a Sprint Team | both | Staged sprint→bolt transition (training-wheels first bolts, dual-tracking); remapping the Jira/Rally board (epic→bolt, story→unit of work, points→bolt lead time); sequencing the first bolt for learning; ceremonies dying by starvation not decree |
+| M34 | Responsible AI in the Lifecycle | both | Responsible AI dimensions mapped to AI-DLC checkpoints; fairness & bias in clinical criteria matching; PHI-safe prompting and context hygiene; transparency & audit trails for AI-authored code; human accountability as the load-bearing control |
 
 ---
 

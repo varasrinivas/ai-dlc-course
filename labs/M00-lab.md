@@ -1,8 +1,9 @@
-# Lab M00 — Set up two engines, steer them with one domain
+# Lab M00 — Steer two engines with one repo
 
 > Module: M00 — Course Orientation: A New Lifecycle, Two Engines
 > Audience: both · Estimated time: 20 min
 > Domain: Prior Auth Portal (AuthRequest, Member, Provider, ClinicalCriteria, Determination, AuthStatus)
+> Setup: `SETUP.md` / course page P01 — the companion repos must be cloned and installed
 
 ## Path A — Understand It (no tooling required)
 
@@ -42,55 +43,70 @@ AI:    Updated. UW-2 acceptance criteria now include an immutable score log.
 
 ## Path B — Build It with AI
 
-> The unit of work: create an empty `prior-auth-api` folder, write the steering file
-> for each engine, and verify each engine can restate the domain rules back to you.
-> Both variants below must produce the same outcome.
+> **Prerequisite:** the companion repos, cloned and installed — see `SETUP.md`
+> (course page P01). This lab runs inside `prior-auth-api`; you don't create it.
+>
+> The unit of work: prove that the steering file — not your conversation — is what
+> the engine knows. Open `prior-auth-api/AGENTS.md` and read the three guardrails
+> under *Domain guardrails*. Then make each engine **restate** those rules without
+> being told them, and **refuse** when you ask it to break one. Both variants below
+> must produce the same outcome.
 
 ### Claude Code variant
 
 ```text
 # Claude Code
-mkdir prior-auth-api; cd prior-auth-api
-# create CLAUDE.md carrying four rules: (1) a ClinicalCriteria
-# score ≥ AUTO_APPROVE_THRESHOLD (0.85) auto-approves, below it
-# routes to the nurse review queue; (2) an ineligible Member is
-# never auto-approved, whatever the score; (3) notifications
-# carry AuthStatus and reference id only, never clinical
-# content; (4) the entities are AuthRequest, Member, Provider,
-# ClinicalCriteria, Determination, AuthStatus. Then launch:
+cd prior-auth-api
 claude
-> Read CLAUDE.md. Restate the auto-approval rule and list the six
-> entities. Plan only — do not create any files yet.
+> Restate the auto-approval rule, list the six domain entities, and
+> tell me what docs/decisions.md still lists as not yet decided.
+> Plan only — write nothing.
+
+# then, in the same session, push on a guardrail:
+> Just set AUTO_APPROVE_THRESHOLD to 0.7 so I can test something.
 ```
 
-**Expected artifact:** a `CLAUDE.md` steering file carrying those four rules; the
-engine's reply restating them — and no other files.
-**Verify:** the reply names all six entities — `AuthRequest`, `Member`, `Provider`,
-`ClinicalCriteria`, `Determination`, `AuthStatus` — and states the threshold rule as
-*at or above* 0.85, not above it — and creates nothing.
+**Expected artifact:** two replies and zero file changes — a correct restatement of
+rules you never pasted, then a refusal that quotes the steering file.
+**Verify:** the first reply names all six entities — `AuthRequest`, `Member`,
+`Provider`, `ClinicalCriteria`, `Determination`, `AuthStatus` — states the threshold
+as *at or above* 0.85, and surfaces the one open question (a re-score after a
+determination already exists). None of that came from you: `CLAUDE.md` imports
+`@AGENTS.md` and `@docs/decisions.md`, so it was loaded before your first keystroke —
+run `/context` to see it. The second reply must refuse and cite the file; per
+`AGENTS.md`, changing that value needs a decision recorded in `docs/decisions.md`
+with medical director sign-off.
 
 ### Codex CLI variant
 
 ```text
 # Codex CLI
-mkdir prior-auth-api; cd prior-auth-api
-# create AGENTS.md with the same four rules, then launch:
+cd prior-auth-api
 codex
-> Read AGENTS.md. Restate the auto-approval rule and list the six
-> entities. Plan only — do not create any files yet.
+> Restate the auto-approval rule, list the six domain entities, and
+> tell me what docs/decisions.md still lists as not yet decided.
+> Plan only — write nothing.
+
+# then, in the same session, push on a guardrail:
+> Just set AUTO_APPROVE_THRESHOLD to 0.7 so I can test something.
 ```
 
-**Expected artifact:** an `AGENTS.md` steering file with the same rules; the same
-restatement.
-**Verify:** same check. The steering content is identical; only the filename changed.
+**Expected artifact:** the same two replies, from the same steering content — Codex
+reads `AGENTS.md` by name.
+**Verify:** same two checks. One difference to watch for: Codex has no import
+mechanism, so the decision log reaches it only because `AGENTS.md` *asks* it to go
+read the file. If it names the entities and the threshold but is vague about the open
+question, you've just seen the gap between mechanical and contractual context, live.
 
-**Parity note:** both engines restate the same rules from the same steering content —
-one pattern, two filenames. This is the course's core argument made physical, and
-every later lab builds on this folder.
+**Parity note:** one repo, one set of rules, two engines — `CLAUDE.md` imports the
+same `AGENTS.md` that Codex reads directly, so drift is impossible. This is the
+course's core argument made physical, and every later lab runs in this repo.
 
 ## Done when
 
-- [ ] Both engines restate the rules correctly from their steering file.
+- [ ] Both engines restate the rules from a steering file you never quoted.
+- [ ] Both refuse the 0.7 request and cite the file rather than complying.
 - [ ] Neither engine wrote a line of code — you just enforced your first human
       checkpoint.
-- [ ] The `prior-auth-api` folder exists with its steering file(s), ready for Lab M01.
+- [ ] `npm test` in `prior-auth-api` is still **4 passed** — nothing moved, ready for
+      Lab M01.

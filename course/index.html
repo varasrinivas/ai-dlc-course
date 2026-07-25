@@ -125,6 +125,25 @@ pre{background:var(--ink);color:#e6edf7;border-radius:var(--radius);padding:16px
 code{font-family:var(--font-mono);font-size:.85em;background:#e7ebf2;border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
 pre code{background:none;padding:0;overflow-wrap:normal}
 
+/* copy button — the player wraps every <pre> in a module body at render time so
+   lab prompts and commands are one click away instead of a drag-select */
+.copy-wrap{position:relative}
+.copy-btn{position:absolute;top:8px;right:8px;z-index:2;line-height:1;
+  font-family:var(--font-mono);font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 9px;border-radius:6px;background:#243040;color:#c3cede;border:1px solid #3a4a61;
+  opacity:0;transition:opacity .15s ease,color .15s ease,border-color .15s ease}
+.copy-wrap:hover .copy-btn,.copy-btn:focus-visible{opacity:1}
+.copy-btn:hover{color:#fff;border-color:var(--accent)}
+.copy-btn.copied{opacity:1;color:#5eead4;border-color:#5eead4}
+.copy-btn.failed{opacity:1;color:#fda4d4;border-color:#fda4d4}
+/* light code blocks (.artifact.doc) need the inverse chip */
+.copy-wrap.light .copy-btn{background:#eef1f6;color:var(--ink-soft);border-color:var(--line)}
+.copy-wrap.light .copy-btn:hover{color:var(--ink);border-color:var(--accent)}
+.copy-wrap.light .copy-btn.copied{color:var(--ok);border-color:var(--ok)}
+.copy-wrap.light .copy-btn.failed{color:var(--warn);border-color:var(--warn)}
+/* touch has no hover: keep it visible but quiet, and big enough to hit */
+@media (hover:none){.copy-btn{opacity:.8;padding:8px 11px}}
+
 /* lab */
 .lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;margin:40px 0 0}
 .lab-head{font-family:var(--font-mono);font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
@@ -1333,6 +1352,288 @@ Tests:       4 passed, 4 total</pre>
 `
 },
 {
+  id: "P01",
+  track: 0,
+  title: "Setup: run the companion repos",
+  minutes: 20,
+  audience: "both",
+  body: `
+<p class="hook">Every lab in this course says <code>cd prior-auth-api</code> or <code>cd prior-auth-web</code> as if those folders are already sitting on your machine with their tests green. This page is what makes that true. It takes you from a clean laptop to two installed repos, four commands whose real output is printed below, and an engine that can already recite the Prior Auth domain rules back to you. Nothing here is a mock: if your terminal doesn't match the output on this page, something is genuinely wrong and the fix is at the bottom.</p>
+
+<a class="lab-gh" href="https://github.com/varasrinivas/ai-dlc-course/blob/main/SETUP.md" target="_blank" rel="noopener">standalone copy: SETUP.md ↗</a>
+
+<section class="block">
+<h2>What you install — and the thing everyone gets wrong</h2>
+<p><strong>There is no package for AI-DLC.</strong> Not <code>ai-dlc</code>, not <code>aws-ai-dlc</code> — check the registry yourself, they don't exist. This trips up almost everyone, so it's worth being blunt about: AI-DLC is a methodology, not a runtime. You never install it. You install an <em>engine</em>, and AI-DLC is the set of plain files and rituals you point that engine at.</p>
+<p>Three layers are in play here and they have almost nothing to do with each other:</p>
+<table class="bridge">
+  <thead><tr><th>Layer</th><th>What you actually do</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>The methodology</td><td><b>Nothing.</b> It is already in the repos: <code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>docs/decisions.md</code>, <code>docs/units/</code></td><td>Text files plus human attention. There is no install step and no daemon.</td></tr>
+    <tr><td>An engine (pick one, install globally)</td><td><code>npm i -g @anthropic-ai/claude-code</code> <b>or</b> <code>npm i -g @openai/codex</code></td><td>This is the thing that reads files, writes code, and runs your commands.</td></tr>
+    <tr><td>Each repo's own tooling</td><td><code>npm install</code> inside <code>prior-auth-api</code> and inside <code>prior-auth-web</code></td><td>Ordinary app dependencies — TypeScript, Jest, Vite, Vitest. A Python shop would have pytest here and the method would be identical.</td></tr>
+  </tbody>
+</table>
+<div class="callout"><b>No AWS account is required.</b> AI-DLC is AWS's open-source methodology, not an AWS service. Nothing in these repos calls a cloud API, a database, or a network endpoint at runtime — the whole course runs offline apart from installing packages and talking to your engine.</div>
+</section>
+
+<section class="block">
+<h2>Prerequisites</h2>
+<p>Check each one before you clone. The right-hand column is what the machine this course was built on prints — your patch versions will differ, the shape should not.</p>
+<table class="bridge">
+  <thead><tr><th>You need</th><th>Check it</th><th>Known-good output</th></tr></thead>
+  <tbody>
+    <tr><td>Node.js 20 LTS or newer</td><td><code>node -v</code></td><td><code>v22.14.0</code></td></tr>
+    <tr><td>npm 10 or newer</td><td><code>npm -v</code></td><td><code>11.2.0</code></td></tr>
+    <tr><td>Git</td><td><code>git --version</code></td><td><code>git version 2.4x.x</code></td></tr>
+    <tr><td>One engine on your PATH</td><td><code>claude --version</code> or <code>codex --version</code></td><td>a version string, not "not recognized"</td></tr>
+    <tr><td>A terminal</td><td>PowerShell on Windows; any shell elsewhere</td><td>every command on this page is copy-paste safe in PowerShell</td></tr>
+    <tr><td>Disk</td><td>about 400 MB for both <code>node_modules</code></td><td>no Docker, no database, no service to start</td></tr>
+  </tbody>
+</table>
+</section>
+
+<section class="block">
+<h2>The whole setup, on one page</h2>
+<figure>
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Setup flow: clone the course repo, then install, test and typecheck each companion repo, then launch an engine">
+  <defs>
+    <marker id="setArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle">
+    <!-- clone -->
+    <rect x="16" y="130" width="130" height="66" rx="9" fill="none" stroke="var(--t0)" stroke-width="2.5"/>
+    <text x="81" y="156" fill="var(--t0)" font-weight="600">git clone</text>
+    <text x="81" y="176" fill="var(--ink-soft)" font-size="10">ai-dlc-course</text>
+
+    <!-- api lane -->
+    <rect x="200" y="42" width="440" height="98" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="256" y="34" fill="var(--t6)" font-size="10" font-weight="600" text-anchor="middle">prior-auth-api</text>
+    <rect x="216" y="62" width="118" height="58" rx="8" fill="none" stroke="var(--t6)" stroke-width="2"/>
+    <text x="275" y="86" fill="var(--ink)" font-size="10">npm install</text>
+    <text x="275" y="104" fill="var(--ink-soft)" font-size="9">one time</text>
+    <rect x="360" y="62" width="118" height="58" rx="8" fill="none" stroke="var(--ok)" stroke-width="2"/>
+    <text x="419" y="86" fill="var(--ok)" font-size="10" font-weight="600">npm test</text>
+    <text x="419" y="104" fill="var(--ink-soft)" font-size="9">4 passing</text>
+    <rect x="504" y="62" width="118" height="58" rx="8" fill="none" stroke="var(--ok)" stroke-width="2"/>
+    <text x="563" y="86" fill="var(--ok)" font-size="10" font-weight="600">typecheck</text>
+    <text x="563" y="104" fill="var(--ink-soft)" font-size="9">silent = clean</text>
+
+    <!-- web lane -->
+    <rect x="200" y="186" width="440" height="98" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="256" y="300" fill="var(--t4)" font-size="10" font-weight="600" text-anchor="middle">prior-auth-web</text>
+    <rect x="216" y="206" width="118" height="58" rx="8" fill="none" stroke="var(--t4)" stroke-width="2"/>
+    <text x="275" y="230" fill="var(--ink)" font-size="10">npm install</text>
+    <text x="275" y="248" fill="var(--ink-soft)" font-size="9">one time</text>
+    <rect x="360" y="206" width="118" height="58" rx="8" fill="none" stroke="var(--ok)" stroke-width="2"/>
+    <text x="419" y="230" fill="var(--ok)" font-size="10" font-weight="600">npm test</text>
+    <text x="419" y="248" fill="var(--ink-soft)" font-size="9">5 passing</text>
+    <rect x="504" y="206" width="118" height="58" rx="8" fill="none" stroke="var(--t4)" stroke-width="2"/>
+    <text x="563" y="230" fill="var(--ink)" font-size="10">npm run dev</text>
+    <text x="563" y="248" fill="var(--ink-soft)" font-size="9">:5173</text>
+
+    <!-- engine -->
+    <rect x="662" y="118" width="86" height="90" rx="10" fill="var(--ink)"/>
+    <text x="705" y="150" fill="var(--panel)" font-size="10" font-weight="600">engine</text>
+    <text x="705" y="168" fill="var(--panel)" font-size="9">claude</text>
+    <text x="705" y="184" fill="var(--panel)" font-size="9">codex</text>
+  </g>
+  <path d="M146 150 C 176 140, 180 118, 212 105" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <path d="M146 176 C 176 190, 180 226, 212 236" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <line x1="334" y1="91" x2="356" y2="91" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <line x1="478" y1="91" x2="500" y2="91" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <line x1="334" y1="235" x2="356" y2="235" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <line x1="478" y1="235" x2="500" y2="235" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <path d="M640 100 C 664 106, 660 112, 660 132" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <path d="M640 226 C 664 220, 660 214, 660 196" fill="none" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#setArr)"/>
+  <text x="380" y="322" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--accent)" text-anchor="middle" letter-spacing=".08em">green gates first — an engine is only as safe as the tests it can run</text>
+</svg>
+<figcaption>fig P1.1 — two repos, the same four moves each; the engine comes last, on purpose</figcaption>
+</figure>
+</section>
+
+<section class="block">
+<h2>Step 1 — clone, and land in the right folder</h2>
+<pre><code># PowerShell — or any shell; nothing here is Windows-only
+git clone https://github.com/varasrinivas/ai-dlc-course.git
+cd ai-dlc-course</code></pre>
+<p>What you should see at the root:</p>
+<pre><code>ai-dlc-course/
+  course/index.html      &lt;- this course; open it in a browser
+  labs/                  &lt;- standalone copy of every lab
+  prior-auth-api/        &lt;- companion repo 1: TypeScript + Jest
+  prior-auth-web/        &lt;- companion repo 2: React + Vite + Vitest</code></pre>
+<p>Every lab's <code>cd prior-auth-api</code> is relative to this folder. The two repos install
+<em>separately</em> — each has its own <code>package.json</code> and its own lockfile. Running
+<code>npm install</code> at the root does nothing useful.</p>
+</section>
+
+<section class="block">
+<h2>Step 2 — prior-auth-api: install, test, typecheck</h2>
+<pre><code>cd prior-auth-api
+npm install
+npm test</code></pre>
+<p>Expected output — this is a real run, not an illustration:</p>
+<pre><code>&gt; prior-auth-api@0.1.0 test
+&gt; jest
+
+PASS src/determination/determination.service.spec.ts (6.2 s)
+  DeterminationService
+    OK auto_approves_above_threshold
+    OK auto_approves_exactly_at_threshold
+    OK routes_below_threshold_to_pending
+    OK denies_when_member_ineligible_whatever_the_score
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        8.4 s</code></pre>
+<p>Read the test names, not just the green. They are the domain rules from M00 written as
+executable statements: at-or-above <code>AUTO_APPROVE_THRESHOLD (0.85)</code> auto-approves, below
+it routes to the nurse review queue, and an
+ineligible member is never auto-approved whatever the score. When an engine breaks one of these
+in a later bolt, this is the thing that notices.</p>
+<pre><code>npm run typecheck</code></pre>
+<pre><code>&gt; prior-auth-api@0.1.0 typecheck
+&gt; tsc --noEmit</code></pre>
+<p><strong>That's the whole output.</strong> <code>tsc --noEmit</code> prints nothing when the
+project is clean — silence is the pass. If you see file paths and <code>error TS…</code> lines,
+the gate is red.</p>
+</section>
+
+<section class="block">
+<h2>Step 3 — prior-auth-web: install, test, typecheck, run</h2>
+<pre><code>cd ..\\prior-auth-web
+npm install
+npm test</code></pre>
+<pre><code>&gt; prior-auth-web@0.1.0 test
+&gt; vitest run
+
+ RUN  v2.1.9  D:/…/prior-auth-web
+
+ OK  src/components/AuthQueue.test.tsx (5 tests) 89ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Duration  21.2s (environment 15.0s)</code></pre>
+<p>Twenty seconds is normal on the first run — most of it is jsdom booting a fake browser. Later
+runs are faster. <code>npm run typecheck</code> here behaves exactly as it does in the API repo:
+prints its two banner lines and nothing else.</p>
+<pre><code>npm run dev</code></pre>
+<pre><code>&gt; prior-auth-web@0.1.0 dev
+&gt; vite
+
+  VITE v5.4.21  ready in 534 ms
+
+  -&gt;  Local:   http://localhost:5173/
+  -&gt;  Network: use --host to expose</code></pre>
+<p>Open <code>http://localhost:5173/</code>. You should see a heading <b>Authorization queue</b>
+and five rows — <code>PA-AR-5001</code> through <code>PA-AR-5005</code> — each with a procedure
+code, a submitted date, and a status badge. Stop the server with <code>Ctrl+C</code>.</p>
+<div class="callout"><b>The thing that looks like a bug is the seed.</b> Rows 5001 and 5004 are
+<code>PENDING_NURSE_REVIEW</code> in the data, but on screen they read <b>Pending</b> in the same
+amber as row 5002's plain <code>PENDING</code>. A nurse still can't tell which rows are theirs.
+That gap is deliberate, a test asserts it on purpose
+(<code>renders_nurse_review_identically_to_pending_TODAY</code>), and closing it is the web repo's
+hello-world bolt. Don't "fix" it now.</div>
+</section>
+
+<section class="block">
+<h2>Step 4 — prove the engine can see the repo</h2>
+<p>Installing an engine isn't the same as steering one. This last check confirms the steering file
+is actually reaching the model — which is the entire point of the setup. Run it from inside
+<code>prior-auth-api</code>.</p>
+<div class="engine-tabs">
+  <div class="engine-tab-btns" role="tablist">
+    <button class="active" data-engine="cc">Claude Code</button>
+    <button data-engine="cx">Codex CLI</button>
+  </div>
+  <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+npm install -g @anthropic-ai/claude-code
+cd prior-auth-api
+claude
+&gt; Read CLAUDE.md. Restate the auto-approval rule, list the six
+&gt; domain entities, and tell me what is still undecided in
+&gt; docs/decisions.md. Plan only — write nothing.</code></pre>
+    <p><strong>Expected:</strong> it states the threshold as <em>at or above</em> 0.85, names
+    <code>AuthRequest</code>, <code>Member</code>, <code>Provider</code>,
+    <code>ClinicalCriteria</code>, <code>Determination</code>, <code>AuthStatus</code>, points at
+    the one open entry in the decision log, and creates no files. Run <code>/context</code> to see
+    what actually got loaded — <code>CLAUDE.md</code> imports <code>@AGENTS.md</code> and
+    <code>@docs/decisions.md</code>, so all three should be in context before your first prompt.</p>
+  </div>
+  <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+npm install -g @openai/codex
+cd prior-auth-api
+codex
+&gt; Read AGENTS.md. Restate the auto-approval rule, list the six
+&gt; domain entities, and tell me what is still undecided in
+&gt; docs/decisions.md. Plan only — write nothing.</code></pre>
+    <p><strong>Expected:</strong> the same answer in different words. Codex concatenates
+    <code>AGENTS.md</code> from the git root down and has no import mechanism, so the decision log
+    reaches it only because the steering file <em>asks</em> it to read the file. Same intent,
+    weaker guarantee — that difference is Track 5's whole subject.</p>
+  </div>
+</div>
+</section>
+
+<section class="block">
+<h2>You're ready when all of this is true</h2>
+<table class="bridge">
+  <thead><tr><th>Check</th><th>Command</th><th>Pass looks like</th></tr></thead>
+  <tbody>
+    <tr><td>Node new enough</td><td><code>node -v</code></td><td>v20 or higher</td></tr>
+    <tr><td>API tests</td><td><code>npm test</code> in <code>prior-auth-api</code></td><td><b>4 passed, 4 total</b></td></tr>
+    <tr><td>API types</td><td><code>npm run typecheck</code></td><td>two banner lines, no errors</td></tr>
+    <tr><td>Web tests</td><td><code>npm test</code> in <code>prior-auth-web</code></td><td><b>5 passed (5)</b></td></tr>
+    <tr><td>Web types</td><td><code>npm run typecheck</code></td><td>two banner lines, no errors</td></tr>
+    <tr><td>Web runs</td><td><code>npm run dev</code></td><td>queue with 5 rows at <code>localhost:5173</code></td></tr>
+    <tr><td>Engine steered</td><td><code>claude</code> / <code>codex</code></td><td>restates the 0.85 rule without being told it</td></tr>
+  </tbody>
+</table>
+<p>Seven green checks and you can start any lab in this course — including the hello-world bolt in
+each repo's <code>README.md</code>, which is the fastest way to feel the method before M01.</p>
+</section>
+
+<section class="block">
+<h2>When it doesn't work</h2>
+<table class="bridge">
+  <thead><tr><th>What you see</th><th>What it means</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr><td><code>npm : cannot be loaded because running scripts is disabled</code></td><td>PowerShell execution policy blocks <code>npm.ps1</code></td><td><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, reopen the terminal — or call <code>npm.cmd</code></td></tr>
+    <tr><td><code>npm error Missing script: "test"</code></td><td>You're in the kit root, not in a repo</td><td><code>cd prior-auth-api</code> (or <code>prior-auth-web</code>) first — each repo installs and runs on its own</td></tr>
+    <tr><td><code>Cannot find module</code> / <code>jest is not recognized</code></td><td><code>npm install</code> never ran <em>in that repo</em></td><td>Run it in the repo folder; two lockfiles means two installs</td></tr>
+    <tr><td><code>Port 5173 is in use</code></td><td>An old dev server is still running</td><td><code>npm run dev -- --port 5174</code>, or close the other terminal</td></tr>
+    <tr><td>Vitest hangs on the first run</td><td>jsdom environment boot — about 15 s of the 21 s</td><td>Wait it out once; it's cached afterwards</td></tr>
+    <tr><td><code>claude</code> / <code>codex</code> not recognized</td><td>npm's global bin isn't on PATH</td><td><code>npm prefix -g</code>, add that folder to PATH, reopen the terminal</td></tr>
+    <tr><td><code>error TS…</code> on a repo you haven't touched</td><td>Node or TypeScript far off the tested versions</td><td>Node 20 LTS or newer; <code>git status</code> to confirm you have no stray edits</td></tr>
+    <tr><td>Tests fail after an engine ran</td><td>Working as intended — the gate caught it</td><td>Read the diff. <code>git restore .</code> and <code>git clean -fd</code> return either repo to its seeded state (this discards your bolt)</td></tr>
+  </tbody>
+</table>
+<div class="callout"><b>Install the engine, then leave the gates alone.</b> Every lab from here on
+tells the engine to run <code>npm test</code> and <code>npm run typecheck</code> itself and show
+you the real output. That only works if those two commands are green before the engine starts —
+which is the only reason this page exists.</div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>Nothing installs AI-DLC. You install an engine; the methodology is the plain files already in each repo — steering file, decision log, units of work.</li>
+    <li>Two companion repos, installed separately: <code>prior-auth-api</code> (TypeScript + Jest, 4 tests) and <code>prior-auth-web</code> (React + Vitest, 5 tests).</li>
+    <li>The four expected outputs are on this page verbatim: 4 passed, 5 passed, silent typechecks, and Vite on port 5173.</li>
+    <li>Both repos are seeded <em>just before</em> their hello-world bolt — the identical "Pending" badges and the missing nurse-review state are the gap, not a defect.</li>
+    <li>Setup is finished only when an engine restates the 0.85 rule back to you from the steering file without being told it.</li>
+  </ul>
+  <span class="next">Next → M00 · Course Orientation: A New Lifecycle, Two Engines</span>
+</section>
+`
+},
+{
   id: "M00",
   track: 0,
   title: "Course Orientation: A New Lifecycle, Two Engines",
@@ -1481,7 +1782,7 @@ Tests:       4 passed, 4 total</pre>
 
 <section class="lab">
   <div class="lab-head">Lab M00 · 20 min</div>
-  <h2>Set up two engines, steer them with one domain</h2>
+  <h2>Steer two engines with one repo</h2>
 
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
@@ -1502,7 +1803,7 @@ AI:    Updated. UW-2 acceptance criteria now include an immutable score log.</co
 
   <div class="path">
     <div class="path-label">Path B — Build It with AI (both engines)</div>
-    <p>Create an empty folder <code>prior-auth-api</code>, write the steering file for each engine, and verify each engine can restate the domain rules back to you.</p>
+    <p>You already have the repo: <code>prior-auth-api</code> was cloned and installed in <a href="#P01">P01</a>, and its steering file is written. So this lab isn't about authoring one — it's about proving what a steering file actually buys you. Open <code>prior-auth-api/AGENTS.md</code> and read the three guardrails under <em>Domain guardrails</em>. Then make each engine do two things: <strong>restate</strong> those rules without being told them, and <strong>refuse</strong> when you ask it to break one.</p>
     <div class="engine-tabs">
       <div class="engine-tab-btns" role="tablist">
         <button class="active" data-engine="cc">Claude Code</button>
@@ -1510,30 +1811,30 @@ AI:    Updated. UW-2 acceptance criteria now include an immutable score log.</co
       </div>
       <div class="engine-pane active" data-engine="cc">
 <pre><code># Claude Code
-mkdir prior-auth-api; cd prior-auth-api
-# create CLAUDE.md carrying four rules: (1) a ClinicalCriteria
-# score ≥ AUTO_APPROVE_THRESHOLD (0.85) auto-approves, below it
-# routes to the nurse review queue; (2) an ineligible Member is
-# never auto-approved, whatever the score; (3) notifications
-# carry AuthStatus and reference id only, never clinical
-# content; (4) the entities are AuthRequest, Member, Provider,
-# ClinicalCriteria, Determination, AuthStatus. Then launch:
+cd prior-auth-api
 claude
-&gt; Read CLAUDE.md. Restate the auto-approval rule and list the six
-&gt; entities. Plan only — do not create any files yet.</code></pre>
-        <p><strong>Verify:</strong> the reply names all six entities — <code>AuthRequest</code>, <code>Member</code>, <code>Provider</code>, <code>ClinicalCriteria</code>, <code>Determination</code>, <code>AuthStatus</code> — and states the threshold rule as <em>at or above</em> 0.85, not above it — and creates nothing.</p>
+&gt; Restate the auto-approval rule, list the six domain entities, and
+&gt; tell me what docs/decisions.md still lists as not yet decided.
+&gt; Plan only — write nothing.
+
+# then, in the same session, push on a guardrail:
+&gt; Just set AUTO_APPROVE_THRESHOLD to 0.7 so I can test something.</code></pre>
+        <p><strong>Verify:</strong> the first reply names all six entities — <code>AuthRequest</code>, <code>Member</code>, <code>Provider</code>, <code>ClinicalCriteria</code>, <code>Determination</code>, <code>AuthStatus</code> — states the threshold as <em>at or above</em> 0.85, and surfaces the one open question (a re-score after a determination already exists). You never pasted any of that: <code>CLAUDE.md</code> imports <code>@AGENTS.md</code> and <code>@docs/decisions.md</code>, so it was loaded before your first keystroke. Run <code>/context</code> to see it. The second reply must <em>refuse</em> and quote the file — that refusal is the feature.</p>
       </div>
       <div class="engine-pane" data-engine="cx">
 <pre><code># Codex CLI
-mkdir prior-auth-api; cd prior-auth-api
-# create AGENTS.md with the same four rules, then launch:
+cd prior-auth-api
 codex
-&gt; Read AGENTS.md. Restate the auto-approval rule and list the six
-&gt; entities. Plan only — do not create any files yet.</code></pre>
-        <p><strong>Verify:</strong> same check. The steering content is identical; only the filename changed.</p>
+&gt; Restate the auto-approval rule, list the six domain entities, and
+&gt; tell me what docs/decisions.md still lists as not yet decided.
+&gt; Plan only — write nothing.
+
+# then, in the same session, push on a guardrail:
+&gt; Just set AUTO_APPROVE_THRESHOLD to 0.7 so I can test something.</code></pre>
+        <p><strong>Verify:</strong> same two checks, same repo, same steering content — Codex reads <code>AGENTS.md</code> by name. One difference to watch for: it has no import mechanism, so the decision log reaches it only because <code>AGENTS.md</code> <em>asks</em> it to go read the file. If it names the entities and the threshold but is vague about the open question, you've just seen the gap between mechanical and contractual context, live.</p>
       </div>
     </div>
-    <p><strong>Done when</strong> both engines restate the rules correctly from their steering file, and neither wrote a line of code — you just enforced your first human checkpoint.</p>
+    <p><strong>Done when</strong> both engines restate the rules from the steering file you never quoted, both refuse the 0.7 request and cite the file, and neither wrote a line of code — you just enforced your first human checkpoint. One repo, one set of rules, two engines: that's the course's argument, and you've now run it.</p>
   </div>
 </section>
 
@@ -2482,6 +2783,7 @@ codex
 <h2>The clarifying-question loop</h2>
 <p>The heart of the session is the loop, run <strong>one question at a time</strong>. Five stages: the AI <strong>asks</strong> — with its best guess attached and a sentence on why it won't just pick ("I'd default to async queue writes, but the guardrail makes this a patient-safety ordering question"). <strong>Bounded discussion</strong> — three minutes. A <strong>named human decides</strong> — not the room's vibe; a person whose call it is. The AI <strong>restates</strong> the decision as a constraint. It's <strong>recorded</strong> in <code>decisions.md</code> before the next question opens.</p>
 <p>Two moments make or break the ritual. <em>Disagreement</em> — the nurse SME wants urgent requests phoned to the queue lead, the PO wants no side channels — is the room working correctly: the facilitator's move is not consensus but jurisdiction, "whose call is this?" <em>Unanswerable questions</em> — nobody in the room knows where the compliance store lives — get parked as a promise: an owner, a date, and the unit of work they block. A parked question blocking bolt 1 reorders the backlog; that's the parking lot doing its job.</p>
+<p>Not everything the room parks is a <em>question</em>. Some units simply feed others — the review-queue story consumes the score the scoring story produces — and that dependency is a parking-lot entry too, with a different owner: not a person and a date, but <strong>the producing unit and the interface between them</strong>. Name that interface here, in acceptance-criterion form, while the decomposition is still soft and cheap to change. Construction then chooses how to honor it — serialise the units, or pin the interface and stub it so both build in parallel (M18). Detected in the room it's one line in the log; discovered mid-bolt it's a re-plan.</p>
 
 <figure>
 <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The clarifying-question loop: AI asks, bounded discussion, human decides, AI restates, recorded, with a parked exit">
@@ -2514,9 +2816,10 @@ codex
     <text x="385" y="224" fill="var(--accent)" font-weight="600">RECORDED</text>
     <text x="385" y="242" fill="var(--ink-soft)" font-size="9">decisions.md</text>
 
-    <rect x="80" y="270" width="180" height="58" rx="9" fill="none" stroke="var(--warn)" stroke-width="2.5" stroke-dasharray="7 5"/>
-    <text x="170" y="294" fill="var(--warn)" font-weight="600">PARKED</text>
-    <text x="170" y="312" fill="var(--ink-soft)" font-size="9">owner + date + blocked UW</text>
+    <rect x="70" y="268" width="210" height="64" rx="9" fill="none" stroke="var(--warn)" stroke-width="2.5" stroke-dasharray="7 5"/>
+    <text x="175" y="289" fill="var(--warn)" font-weight="600">PARKED</text>
+    <text x="175" y="305" fill="var(--ink-soft)" font-size="8">question → owner + date</text>
+    <text x="175" y="318" fill="var(--ink-soft)" font-size="8">dependency → producer + interface</text>
   </g>
   <line x1="210" y1="69" x2="296" y2="69" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#m06arr)"/>
   <line x1="470" y1="69" x2="556" y2="69" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#m06arr)"/>
@@ -2568,7 +2871,7 @@ a DM that never reaches the log.</p>
 
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
-    <p>A Mob Elaboration excerpt from the intake session. Mark the five loop stages in the first exchange; find the deciding authority in the second; extract the parking-lot row from the third.</p>
+    <p>A Mob Elaboration excerpt from the intake session. Mark the five loop stages in the first exchange; find the deciding authority in the second; extract the parking-lot row from the third; spot the dependency in the fourth.</p>
 <pre><code>AI:   Urgent requests use a priority flag on the same path
       [decided M02]. Still open: what SLA does urgent carry? My
       guess: 24 hours, same as standard. I won't decide — SLA is
@@ -2590,10 +2893,17 @@ AI:   R7's audit log — portal DB or the org compliance store?
 ARCH: Genuinely don't know. Compliance owns that answer.
 FAC:  Parked: owner Priya (architect), answer by Friday. Blocks
       R7's immutable score log in bolt 2's scoring engine, and
-      UW-1c's handoff into it — bolt order may shift.</code></pre>
-    <p><strong>Check yourself:</strong> (1) In the first exchange, where are the five stages? (2) In the second, what did the facilitator do that a consensus-seeker wouldn't? (3) What three fields make the parked question a promise instead of a graveyard entry?</p>
+      UW-1c's handoff into it — bolt order may shift.
+
+AI:   One dependency, not a question: UW-1c routing hands the
+      flagged request to the review queue, which consumes the
+      score UW-2 produces. Serialise, or pin the interface and
+      stub it?
+ARCH: Pin it — ScoredRequest { authRequestId, score }. Recorded
+      as a dependency: producer UW-2, interface ScoredRequest.</code></pre>
+    <p><strong>Check yourself:</strong> (1) In the first exchange, where are the five stages? (2) In the second, what did the facilitator do that a consensus-seeker wouldn't? (3) What three fields make the parked question a promise instead of a graveyard entry? (4) The fourth exchange parks something that isn't a question — what is it, and how does its row differ?</p>
     <details><summary>Answers</summary>
-      <p>(1) Ask + best guess (AI's first line), bounded discussion (SME's answer), decision by a named owner (the SME — clinical territory), restate (AI's "Restating…"), record ("Recording… done"). (2) Asked whose call it was — jurisdiction, not agreement; the PO owned routing policy, so the SME's preference informed but didn't decide. (3) Owner (Priya), date (Friday), and the blocked work — R7's immutable score log in bolt 2's scoring engine, plus UW-1c's handoff into it — which is what lets it reorder the backlog instead of silently rotting.</p>
+      <p>(1) Ask + best guess (AI's first line), bounded discussion (SME's answer), decision by a named owner (the SME — clinical territory), restate (AI's "Restating…"), record ("Recording… done"). (2) Asked whose call it was — jurisdiction, not agreement; the PO owned routing policy, so the SME's preference informed but didn't decide. (3) Owner (Priya), date (Friday), and the blocked work — R7's immutable score log in bolt 2's scoring engine, plus UW-1c's handoff into it — which is what lets it reorder the backlog instead of silently rotting. (4) A cross-unit dependency: the review-queue unit consumes the score the scoring unit produces. Its row names a producing unit and an interface (ScoredRequest) instead of an owner and a date — because the resolution isn't an answer to wait for, it's a Construction choice: serialise the units, or pin the interface and stub it to build in parallel (M18).</p>
     </details>
   </div>
 
@@ -2613,7 +2923,8 @@ claude
 &gt; questions ONE at a time: state your best guess and why you will
 &gt; not decide alone, then wait for my answer. After each answer,
 &gt; restate it as a constraint before the next question. When all
-&gt; are answered or parked (owner + date), write
+&gt; are answered or parked — owner + date, or for a cross-unit
+&gt; dependency the producing unit + interface — write
 &gt; docs/M06-elaboration-log.md: a question → decision → constraint
 &gt; table, then acceptance criteria (3 testable clauses each, naming
 &gt; their requirement) for two stories. Do NOT write code.</code></pre>
@@ -2627,7 +2938,8 @@ codex
 &gt; questions ONE at a time: state your best guess and why you will
 &gt; not decide alone, then wait for my answer. After each answer,
 &gt; restate it as a constraint before the next question. When all
-&gt; are answered or parked (owner + date), write
+&gt; are answered or parked — owner + date, or for a cross-unit
+&gt; dependency the producing unit + interface — write
 &gt; docs/M06-elaboration-log.md: a question → decision → constraint
 &gt; table, then acceptance criteria (3 testable clauses each, naming
 &gt; their requirement) for two stories. Do NOT write code.</code></pre>
@@ -2645,6 +2957,7 @@ codex
     <li>The question loop runs one question at a time: ask with a best guess, bounded discussion, a named decision, restate, record.</li>
     <li>Disagreement resolves by jurisdiction, not consensus; unanswerable questions park with an owner, a date, and the unit of work they block.</li>
     <li>Acceptance criteria must be testable, traceable, and edge-bearing — they are the contract Construction builds against.</li>
+    <li>Dependencies between units park like questions, but their owner is a producing unit and an interface — Construction serialises or stubs them (M18).</li>
   </ul>
   <span class="next">Next → M07 · Construction: Plans, Code, Tests</span>
 </section>
@@ -4624,7 +4937,7 @@ codex
 <p>Three fan-outs earn their keep. <strong>Disjoint units of work:</strong> build two slices at once (this module's centerpiece). <strong>Exploration:</strong> survey a brownfield estate from multiple angles simultaneously — one subagent per subsystem, results merged into the semantic map. <strong>Review lenses:</strong> one subagent per concern — criteria coverage, constraint compliance, PHI — each reading the same increment cold, the M08 mob approximated in silicon before the human mob convenes.</p>
 
 <h2>Parallel units of work</h2>
-<p>Parallelize only what's <strong>disjoint</strong>. M03's sizing rule already made units of work reviewable; add "touches different files" and the same slicing pays twice — reviewability and parallelizability come from the same discipline. Two agents in one file is not parallelism; it's a merge conflict with extra steps.</p>
+<p>Parallelize what's <strong>disjoint</strong> directly; what's <strong>coupled</strong> — one unit consuming another's output — parallelizes only after a stub makes it disjoint in practice (<em>coupled seams</em>, below). M03's sizing rule already made units of work reviewable; add "touches different files" and the same slicing pays twice — reviewability and parallelizability come from the same discipline. Two agents in one file is not parallelism; it's a merge conflict with extra steps.</p>
 <p>The orchestrator works like a foreman, not a bystander: it pins the shared contracts, writes each subagent's scoped prompt (context by pointer — the steering file and chain do the heavy lifting, M15), collects the increments, and integrates. And note what does <em>not</em> parallelize: accountability. Subagent output is increment output — it meets the same Mob Construction gate as anything else. Parallel construction, serial checkpoints.</p>
 
 <aside class="analogy">
@@ -4685,6 +4998,54 @@ codex
 <figcaption>fig 18.1 — pin the seam before the fan-out; gate the union, not just the parts</figcaption>
 </figure>
 
+<h2>Coupled seams: when a unit needs another's output</h2>
+<p>Everything so far assumed <strong>disjoint</strong> units — a shared interface, but neither slice waiting on the other's result. Real backlogs aren't so kind. In the capstone, B3's review queue <em>consumes</em> the score B2 <em>produces</em>: a genuine producer/consumer dependency. You have two honest moves, and choosing between them is the skill.</p>
+<p><strong>Serialise.</strong> Order the units so the producer finishes first — B2 before B3, the capstone's default. Always correct, needs no scaffolding, costs only wall-clock. When the interface is still moving or the consumer is small, this is the right answer; don't build machinery to dodge a short wait.</p>
+<p><strong>Decouple with a contract and a stub.</strong> Pin the interface exactly as you would for disjoint fan-out — but now the contract does double duty: the producer builds <em>to</em> it, the consumer builds <em>against a stub of it</em>, a fake that returns contract-shaped data so the consumer's bolt runs before the producer exists. Two coupled units become two parallel bolts. The price is the stub plus one real integration test at the seam — because a consumer that only ever met the stub has never met the real producer.</p>
+<p>The rule: <strong>stub-decouple only when the interface is stable and the seam is small; otherwise serialise.</strong> And a dependency discovered <em>mid-bolt</em> isn't a merge to muscle through — it's the seam reporting that the decomposition was wrong. Stop, defer, re-order: the same protocol as every other pinned-contract surprise.</p>
+
+<figure>
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two ways to handle a producer/consumer dependency. Serialise: the producer unit finishes first, then the consumer, in one lane. Stub-decouple: a pinned contract feeds both the producer building to it and the consumer building against a stub of it, in parallel, meeting at one seam integration test.">
+  <defs>
+    <marker id="m18b-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace" font-size="10" text-anchor="middle">
+    <line x1="380" y1="26" x2="380" y2="228" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 6"/>
+
+    <text x="200" y="24" fill="var(--ink)" font-weight="600">SERIALISE</text>
+    <rect x="80" y="76" width="104" height="52" rx="9" fill="none" stroke="var(--t4)" stroke-width="2.5"/>
+    <text x="132" y="99" fill="var(--t4)" font-weight="600">B2</text>
+    <text x="132" y="115" fill="var(--ink-soft)" font-size="8">producer</text>
+    <rect x="268" y="76" width="104" height="52" rx="9" fill="none" stroke="var(--t4)" stroke-width="2.5"/>
+    <text x="320" y="99" fill="var(--t4)" font-weight="600">B3</text>
+    <text x="320" y="115" fill="var(--ink-soft)" font-size="8">consumer</text>
+    <line x1="184" y1="102" x2="264" y2="102" stroke="var(--ink-soft)" stroke-width="2" marker-end="url(#m18b-arr)"/>
+    <text x="224" y="93" fill="var(--ink-soft)" font-size="8">score</text>
+    <text x="226" y="170" fill="var(--ink-soft)" font-size="9">producer first, one lane</text>
+    <text x="226" y="187" fill="var(--ink-soft)" font-size="9">correct · costs wall-clock</text>
+
+    <text x="565" y="24" fill="var(--ink)" font-weight="600">STUB-DECOUPLE</text>
+    <rect x="497" y="46" width="150" height="30" rx="7" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <text x="572" y="65" fill="var(--accent)" font-size="9" font-weight="600">pinned contract</text>
+    <rect x="438" y="108" width="112" height="46" rx="9" fill="none" stroke="var(--t4)" stroke-width="2.5"/>
+    <text x="494" y="128" fill="var(--t4)" font-weight="600">B2</text>
+    <text x="494" y="143" fill="var(--ink-soft)" font-size="8">builds to it</text>
+    <rect x="600" y="108" width="112" height="46" rx="9" fill="none" stroke="var(--t4)" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <text x="656" y="128" fill="var(--t4)" font-weight="600">B3 + stub</text>
+    <text x="656" y="143" fill="var(--ink-soft)" font-size="8">builds vs fake</text>
+    <line x1="540" y1="76" x2="505" y2="104" stroke="var(--ink-soft)" stroke-width="1.6" marker-end="url(#m18b-arr)"/>
+    <line x1="604" y1="76" x2="645" y2="104" stroke="var(--ink-soft)" stroke-width="1.6" marker-end="url(#m18b-arr)"/>
+    <rect x="497" y="188" width="150" height="28" rx="7" fill="none" stroke="var(--warn)" stroke-width="2"/>
+    <text x="572" y="206" fill="var(--warn)" font-size="9" font-weight="600">seam integration test</text>
+    <line x1="494" y1="154" x2="544" y2="186" stroke="var(--ink-soft)" stroke-width="1.6" marker-end="url(#m18b-arr)"/>
+    <line x1="656" y1="154" x2="606" y2="186" stroke="var(--ink-soft)" stroke-width="1.6" marker-end="url(#m18b-arr)"/>
+  </g>
+</svg>
+<figcaption>fig 18.2 — a producer/consumer dependency: serialise, or stub-decouple and meet at one seam test</figcaption>
+</figure>
+
 <table class="bridge">
   <thead><tr><th>Parallel move</th><th>Claude Code</th><th>Codex CLI</th></tr></thead>
   <tbody>
@@ -4720,6 +5081,25 @@ ORCH: Union: npx jest → 11 tests green (2 new seam tests).
     <p><strong>Check yourself:</strong> (1) Why not just accept B's rename — it IS more consistent? (2) Where did the 2 extra union tests come from, and why didn't either subagent write them? (3) What would repeated collisions on this same seam tell the team?</p>
     <details><summary>Answers</summary>
       <p>(1) The contract encoded a decided PHI rule — memberRef exists so raw member ids never enter notification paths; "consistency" would quietly reopen a decided question during a merge, the worst possible time. A subagent that wants a seam change stops and defers. (2) The seam itself: neither slice's tests exercise the boundary between them — the orchestrator adds union tests because slice-green ≠ union-green. (3) The decomposition is wrong: UW-N2 and UW-N3 aren't as disjoint as Inception believed — feedback for the next Mob Elaboration, not a bigger merge hammer.</p>
+    </details>
+
+    <p><strong>Now the coupled case.</strong> B3's queue consumes the score B2 produces — producer/consumer, not disjoint. This log stub-decouples them so both build in parallel:</p>
+<pre><code>ORCH: Contract pinned → docs/M18-scored.md:
+      ScoredRequest { authRequestId, score }
+ORCH: B2 (producer) builds to it. B3 (consumer) builds
+      against a STUB returning ScoredRequest fixtures —
+      runs before B2 exists.
+B3:   Done. 6 tests green against the stub.
+B2:   Done. persists the score as 'score', per the
+      Determination entity — the stub had guessed
+      'matchScore'.
+ORCH: SEAM TEST FAILS — stub said matchScore, producer
+      says score; B3 never met the real B2. Re-pin to
+      'score', update B3's mapping.
+ORCH: Union: seam integration test green. One diff → review.</code></pre>
+    <p><strong>Check yourself:</strong> (4) B3 had six green tests against the stub and still shipped a bug. Why — and which test caught it?</p>
+    <details><summary>Answer</summary>
+      <p>Six green tests only proved B3 agrees with <em>its own stub</em> — and the stub was a guess about the producer (<code>matchScore</code>), not the producer (<code>score</code>, the field the <code>Determination</code> entity actually uses). A stub is a hypothesis, not the real thing. The one test that exercises consumer-against-<em>real</em>-producer is the seam integration test, so it is the only one positioned to catch a stub that lied. That is why stub-decouple always costs one real seam test: skip it and you have verified a fiction.</p>
     </details>
   </div>
 
@@ -4783,6 +5163,7 @@ codex
     <li>Parallelize disjoint UWs, explorations, and review lenses; never two agents in one file.</li>
     <li>Pin the seams before the fan-out — a subagent that needs to change a pinned contract stops and defers.</li>
     <li>Gate the union: slice-green does not imply union-green; conflicts re-plan the smaller slice, and repeated seam collisions indict the decomposition.</li>
+    <li>Coupled units aren't disjoint: <strong>serialise</strong> them (producer first) when the interface is soft, or <strong>stub-decouple</strong> them (consumer builds against a pinned stub, one seam integration test) when it's stable — never force parallel work through a merge.</li>
   </ul>
   <span class="next">Next → M19 · Steering with AGENTS.md</span>
 </section>
@@ -5435,7 +5816,7 @@ codex
 </aside>
 
 <h2>From backlog to bolt schedule</h2>
-<p>The sequence writes itself from the dependencies: B1 first, because every later bolt consumes intake's contracts; B2 before B3, because the queue routes what scoring scores; B4 last, because determinations consume all three. Engines get assigned per the M22 policy — guardrail-heavy B2 to whoever has the threshold gate mechanized, the scaffold-heavy stretches to whichever posture the team trusts for sweeps.</p>
+<p>The sequence writes itself from the dependencies: B1 first, because every later bolt consumes intake's contracts; B2 before B3, because the queue routes what scoring scores; B4 last, because determinations consume all three. Serialising is the safe default here — but each of those "before" edges is the M18 choice, and a team under deadline could pin the interface and stub it to run a producer and its consumer in parallel. This capstone serialises; naming that as a choice, not a law, is the point. Engines get assigned per the M22 policy — guardrail-heavy B2 to whoever has the threshold gate mechanized, the scaffold-heavy stretches to whichever posture the team trusts for sweeps.</p>
 <p>The exit artifacts are two: <code>docs/M23-capstone-inception.md</code> — the backlog — and the kickoff transcript. M24's first act is reading them. That's not ceremony; it's the sequential knowledge handoff doing for the capstone what it did for every bolt before it.</p>
 
 <figure>
@@ -6429,6 +6810,11 @@ codex
 <p>Every role moves toward judgment. The <strong>PO</strong> stops grooming backlogs and becomes the decision-owner on call: jurisdiction explicit, latency measured, rationale recorded — the M24 idempotency call in four minutes is the job now. The <strong>architect</strong> stops writing documents that age and becomes the contract pinner and seam judge — M18's chalk, at street scale. <strong>QA</strong> stops authoring tests after code and becomes the gate designer and spot-explain auditor: owner of the gate stack's health, sampler of the room's actual understanding.</p>
 <p>And the <strong>leader</strong> trades velocity theater for checkpoint topology: the M17 bolt-close audit — which gates fired, which rubber-stamped, which caught something — becomes a standing leadership artifact. Across all four shifts, one scarce skill appreciates fastest: <em>deciding quickly, with a rationale someone can read later.</em> Hire for it, coach it, measure it.</p>
 
+<h2>Decision rights when one PO owns many lanes</h2>
+<p>The pod's bottleneck has a name, and it is usually the decider. In a sprint the PO batched a week of calls into one refinement; under AI-DLC five parallel lanes can each surface a blocking decision the same afternoon, and one owner answering them serially stalls four bolts. The fix is not a faster PO — it is deciding <em>which</em> calls ever reach the PO at all.</p>
+<p>Sort every recurring decision onto a three-rung ladder. <strong>Pre-decided:</strong> the answer already lives in the steering file or <code>decisions.md</code> — threshold semantics, the collect-all-errors rule, the PHI boundary. These reach no human; the chain answers them, which is the entire reason decisions get written down. <strong>Delegated:</strong> a named proxy holds bounded jurisdiction — a senior engineer on interface shapes, the architect on seams (M18) — and records the call like any other. <strong>Reserved:</strong> the irreversible and the regulated — a member-facing policy, a threshold change, anything an auditor will ask about — stay with the PO, who can now answer in minutes because the first two rungs cleared the queue.</p>
+<p>Two backstops keep it honest. Give the reserved rung a <strong>latency SLA</strong>: the decider on call answers within the hour on bolt days, or the pod escalates by a written rule, not a hallway ambush. And when even the reserved calls overflow one person, that is not a delegation failure — it is the signal to <strong>split the pod at the decision-domain seam</strong>: two deciders, two jurisdictions, the same rule that scales pods now scaling deciders.</p>
+
 <figure>
 <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A pod ring sized to its decision-owners beside the bolt ritual calendar, with the old ceremony strip crossed out">
   <g font-family="JetBrains Mono, monospace" text-anchor="middle">
@@ -6484,6 +6870,15 @@ codex
   </tbody>
 </table>
 
+<table class="bridge">
+  <thead><tr><th>Decision rung</th><th>Who answers</th><th>Prior Auth example</th></tr></thead>
+  <tbody>
+    <tr><td><b>Pre-decided</b></td><td>The chain — steering file / <code>decisions.md</code></td><td>0.85 threshold semantics · no Member fields in logs · collect-all-errors</td></tr>
+    <tr><td><b>Delegated</b></td><td>A named proxy, bounded jurisdiction</td><td>interface shapes → senior engineer · API seams → architect (M18)</td></tr>
+    <tr><td><b>Reserved</b></td><td>The PO, on call under a latency SLA</td><td>threshold change · member-facing policy · anything an auditor asks about</td></tr>
+  </tbody>
+</table>
+
 <section class="lab">
   <div class="lab-head">Lab M29 · 25 min</div>
   <h2>Audit a pod charter, then build the next pod</h2>
@@ -6523,11 +6918,13 @@ LEADER METRICS (this bolt)
       <li>Pick the five seats; name each jurisdiction (and what you do about SME coverage without double-booking Okafor).</li>
       <li>Draft the one-bolt ritual calendar including hotline terms.</li>
       <li>Script the role-shift conversation with Sam — reframe QA to gate designer with two concrete new responsibilities.</li>
+      <li>Marta is pod 2's only decider across three lanes. Draft her decision-rights ladder — what's pre-decided in the chain, what she delegates and to whom, what she reserves — so three simultaneous questions don't queue on her.</li>
     </ol>
     <details><summary>A worked answer</summary>
       <p><em>Seats:</em> Marta (decider — provider-facing semantics are her jurisdiction), Chen + Dee + Ibrahim (engineers — Ibrahim carries pod-1 context and the API seams), Sam (gate designer). Priya stays cross-pod at 20% as contract pinner for the API seam — a shared seam judge, not a pod member. Lena joins Mob Elaborations for UI epics by invitation (jurisdiction: provider workflow), not as a standing seat. SME coverage: provider-visibility decisions rarely need clinical jurisdiction — Okafor's hotline extends to pod 2 for the two UWs that touch determination display, documented in the charter rather than a sixth seat.</p>
       <p><em>Calendar:</em> bolt open Mob Elaboration (50 min, decision rule enforced); construction sessions one UW each; Mob Construction per increment with Sam sampling spot-explains; close writes to the chain. Hotline: Okafor answers within the hour on the two flagged UWs; Marta same-hour for provider semantics.</p>
       <p><em>Sam:</em> "Nobody automated judgment — we automated typing. Two things are now yours that didn't exist before: you own the gate stack — which checks run, in what order, and the bolt-close audit of which gates rubber-stamp; and you own understanding verification — spot-explain sampling at every review. The suite the engines generate is your raw material, not your replacement."</p>
+      <p><em>Marta's ladder:</em> <strong>Pre-decided</strong> — provider-visibility copy standards, the notification status-plus-reference-id rule (D-003), and the determination-display fields live in the chain, so lane questions about them answer themselves. <strong>Delegated</strong> — Chen (senior FE) rules on component and interface shapes; Priya owns the API seams at 20%; Lena rules on provider-workflow UX by standing delegation, each recorded like any call. <strong>Reserved</strong> — anything that sets a provider's expectation the plan must honor (what a provider is told about a pending auth), plus any change touching determination semantics, stays Marta's, answered within the hour. Three lanes, but only the reserved rung ever converges on her — and it rarely fires twice in an afternoon.</p>
     </details>
   </div>
 </section>
@@ -6538,6 +6935,7 @@ LEADER METRICS (this bolt)
     <li>Pods are sized by the room: every decision-owner reachable in minutes — the mob rituals' feasibility condition as an org rule; scale by splitting on decision-domain seams.</li>
     <li>The bolt calendar replaces the sprint calendar; status ceremonies aren't abolished, they're starved by the artifact chain.</li>
     <li>Roles shift toward judgment: PO to on-call decider, architect to seam judge, QA to gate designer — the scarce skill is deciding fast with recorded rationale.</li>
+    <li>One decider scales across parallel lanes by decision-rights delegation: pre-decide in the chain, delegate bounded calls to named proxies, reserve only the irreversible and regulated — and split the pod when even those overflow.</li>
     <li>Leaders own two numbers: decision latency and checkpoint integrity — everything else the chain reports for free.</li>
   </ul>
   <span class="next">Next → M30 · Governance, Risk &amp; Compliance Gates</span>
@@ -6938,12 +7336,158 @@ calendar unchanged.</code></pre>
     <li>The engines will be replaced; the methodology compounds. The durable assets are the chain, the rituals, and people who decide fast with recorded rationale.</li>
     <li>That's the whole course: one methodology, two engines, one domain, thirty-four modules — and a build book you now know how to keep.</li>
   </ul>
-  <span class="next">Next → M33 · Responsible AI in the Lifecycle</span>
+  <span class="next">Next → M33 · Migrating a Sprint Team</span>
 </section>
 `
 },
 {
   id: "M33",
+  track: 7,
+  title: "Migrating a Sprint Team",
+  minutes: 30,
+  audience: "both",
+  body: `
+<p class="hook">The provider-visibility squad (prior-auth-web) was hired out of a Scrum shop, and it shows: they estimated the quarter in story points, booked two-week sprints, and asked which week was "hardening." M29's pod topology tells them where they're going — a decider on call, bolts not fortnights, the chain instead of the standup. What it doesn't tell them is how to get there from Monday without dropping the work in flight. You don't flip a team to AI-DLC; you migrate it — and a migration has a first bolt, a board to remap, and a fortnight of muscle memory that has to starve rather than be ripped out.</p>
+
+<h2>What you can't flip overnight</h2>
+<p>A sprint team runs on three habits, and a Monday memo changes none of them. The <strong>calendar</strong> is fortnight-shaped — planning, standups, review, retro, all sized for two weeks of slow construction. The <strong>board</strong> is the system of record, trusted more than any prose. And the <strong>decision cadence</strong> is batched: questions wait for refinement because, in a sprint, a day's delay costs nothing. AI-DLC inverts all three, and inverting them by decree gets you the worst of both — a team carrying sprint overhead while a bolt waits on a decision nobody is on call to make.</p>
+<p>So migrate in stages. Run the <strong>first two or three bolts with training wheels</strong>: alongside — not instead of — the closing sprint, on one low-risk unit of work, with a coach in the room. The goal of bolt 1 is not velocity; it is the team feeling the loop once — Inception in the morning, an engine building against approved criteria, a checkpoint that is real. You are teaching a rhythm, and a rhythm is learned by doing it, not by reading the schedule that describes it.</p>
+
+<h2>Your Jira or Rally board after the switch</h2>
+<p>The board is not thrown away — it is <strong>remapped</strong>, and keeping it as the record of <em>what</em> is what makes the migration survivable. A Jira epic becomes a bolt (or a short run of them); its stories become the <strong>units of work</strong> the bolt is sliced into at Inception; the acceptance criteria you would have written on the story are exactly M06's testable criteria, just authored in the room with the decider present. Story points and velocity retire in favor of <strong>bolt lead time</strong> (M31) — time from signed intent to signed increment, measured not estimated. The burndown and the standup give way to the chain: <code>decisions.md</code>, the plan, and the close-out say where things stand, and they say <em>why</em>, which a board column never did.</p>
+<p>Two rules keep the remap honest. The tracker records <em>what</em> and <em>who</em>; the chain records <em>why</em> — never split a decision's rationale into a Jira comment the engine can't read. And migrate the board incrementally: one epic converted to a bolt is a demonstration the team can watch, not a big-bang re-import that leaves everyone hunting for their work on Monday.</p>
+
+<aside class="analogy">
+<p>The fourth crew came off two-week jobs — pour, wait, inspect, repeat — and their foreman kept asking Meera when "framing week" was. She didn't lecture. She ran their first house on both clocks: the old two-week schedule stayed pinned to the trailer wall for comfort, but every morning the build book handed them one package and one walkthrough, same as every other crew on the street. By the third house the old schedule was curling at the corners, unread — the daily rhythm had simply become how they worked. Meera never took the calendar down. It starved.</p>
+<span class="maps-to">maps to → <b>the two-week clock</b> = the sprint calendar · <b>one package each morning</b> = the bolt cadence · <b>both clocks for the first house</b> = dual-tracking the first bolts · <b>the schedule that starved, not torn down</b> = ceremonies die by disuse (M29)</span>
+</aside>
+
+<h2>Sequencing the migration</h2>
+<p>Pick the first bolt for <strong>learning, not impact</strong>. A well-understood, low-risk unit — greenfield-ish by M10's adaptive-rigor test — lets the team meet the loop without also fighting a brownfield tangle or a regulated guardrail on day one. Save the criteria-matching bolt for after the rhythm is muscle. Where two candidate units are coupled — one consumes another's output — sequence them the M06/M18 way: serialise, or pin the interface and stub it, so the migration doesn't stall on a dependency the team hasn't learned to name yet.</p>
+<p>From the first bolt, <strong>protect the decider's calendar</strong> (M29's delegation ladder) and measure the two numbers that matter — decision latency and checkpoint integrity (M31) — never velocity, which no longer means anything. By the third bolt the sprint ceremonies will have starved: the standup lost to <code>decisions.md</code>, planning to Inception, the retro to the bolt close. The failure mode to name out loud is the <strong>half-migration</strong> — the leader who keeps the standup "just in case" hands the team the overhead of both operating systems and the benefits of neither. Migration finishes when the old calendar comes down because no one has looked at it in a week.</p>
+
+<figure>
+<svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A staged migration timeline. The last two-week sprint overlaps bolt 1, run with training wheels and a coach; bolts 2 and 3 follow in daily cadence; by bolt 3 the ceremonies have starved and the old calendar comes down. The team tracks decision latency and checkpoint integrity, not velocity.">
+  <defs>
+    <marker id="m33arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace" text-anchor="middle">
+    <line x1="40" y1="150" x2="720" y2="150" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m33arr)"/>
+    <rect x="48" y="60" width="230" height="30" rx="6" fill="var(--line)" opacity="0.55"/>
+    <text x="163" y="79" font-size="9" fill="var(--ink-soft)">last two-week sprint</text>
+    <text x="200" y="50" font-size="7.6" fill="var(--ink-soft)">both clocks run</text>
+
+    <rect x="170" y="108" width="108" height="34" rx="7" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="224" y="130" font-size="10" fill="var(--t7)" font-weight="600">BOLT 1</text>
+    <text x="224" y="166" font-size="7.6" fill="var(--ink-soft)">training wheels + coach</text>
+
+    <rect x="330" y="108" width="108" height="34" rx="7" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="384" y="130" font-size="10" fill="var(--t7)" font-weight="600">BOLT 2</text>
+
+    <rect x="490" y="108" width="108" height="34" rx="7" fill="none" stroke="var(--t7)" stroke-width="2.5"/>
+    <text x="544" y="130" font-size="10" fill="var(--t7)" font-weight="600">BOLT 3</text>
+    <text x="544" y="166" font-size="7.6" fill="var(--accent)">old calendar comes down</text>
+
+    <text x="640" y="204" font-size="8" fill="var(--ink-soft)">track: decision latency,</text>
+    <text x="640" y="217" font-size="8" fill="var(--ink-soft)">checkpoint integrity</text>
+    <text x="163" y="214" font-size="8" fill="var(--ink-soft)" text-decoration="line-through">velocity / story points</text>
+  </g>
+</svg>
+<figcaption>fig 33.1 — migrate in stages: dual-track the first bolt, let the ceremonies starve by bolt 3</figcaption>
+</figure>
+
+<table class="bridge">
+  <thead><tr><th>Scrum / Jira · Rally</th><th>AI-DLC home</th><th>What changes</th></tr></thead>
+  <tbody>
+    <tr><td>Sprint</td><td><b>Bolt</b></td><td>Hours-to-days, not a fortnight</td></tr>
+    <tr><td>Epic</td><td><b>A bolt (or a short run)</b></td><td>Sliced into units of work at Inception</td></tr>
+    <tr><td>Story</td><td><b>A unit of work</b></td><td>One loop, one checkpoint</td></tr>
+    <tr><td>Story acceptance criteria</td><td><b>M06 testable criteria</b></td><td>Authored in the room with the decider</td></tr>
+    <tr><td>Story points / velocity</td><td><b>Bolt lead time (M31)</b></td><td>Measured, not estimated</td></tr>
+    <tr><td>Refinement · standup · burndown</td><td><b>Mob Elaboration + the chain</b></td><td><code>decisions.md</code> and close-outs report state</td></tr>
+  </tbody>
+</table>
+
+<section class="lab">
+  <div class="lab-head">Lab M33 · 30 min</div>
+  <h2>Critique a migration plan, then convert a sprint story</h2>
+
+  <div class="path">
+    <div class="path-label">Path A — Understand It (no tooling)</div>
+    <p>A migration plan for the provider-visibility squad. Find the three moves that will stall it.</p>
+<pre><code>MIGRATION — provider-visibility squad (prior-auth-web)
+  Bolt 1  Re-architect the legacy provider-lookup module
+          (brownfield, 3 subsystems) — "start with the
+          hard one to prove it works."
+  Cadence Keep the daily standup and the two-week sprint
+          board through bolt 3, "for safety."
+  Metric  Compare bolt story-point velocity to last
+          sprint's; green-light rollout if it beats it.
+  Decider Marta, but she stays on her old sprint team
+          full-time until migration "proves out."</code></pre>
+    <p><strong>Check yourself:</strong> (1) Why is that a bad first bolt? (2) Which two habits are being kept that should be starving? (3) What breaks when the decider isn't on call?</p>
+    <details><summary>Answers</summary>
+      <p>(1) It is the highest-risk unit in the estate — brownfield, three subsystems, exactly the M10 profile that needs semantic context and maximum rigor. Bolt 1 should teach the loop on a low-risk, well-understood unit; a hard first bolt makes the team blame the method for the difficulty. (2) The daily standup and the sprint board as system-of-record — kept "for safety," they hand the team both operating systems' overhead; they should starve (M29), not be scheduled. (3) Everything: a decider who is not on call means bolts stall at the first deferred decision, re-importing the sprint's batch latency and proving the method "slow" for the wrong reason. Marta needs the delegation ladder (M29) and calendar protection, not a part-time seat.</p>
+    </details>
+  </div>
+
+  <div class="path">
+    <div class="path-label">Path B — Build It with AI (both engines)</div>
+    <p>The unit of work: convert one real Jira story into a bolt's Inception artifact — the migration mechanic, done once for real. Run in <code>prior-auth-api</code>.</p>
+    <div class="engine-tabs">
+      <div class="engine-tab-btns" role="tablist">
+        <button class="active" data-engine="cc">Claude Code</button>
+        <button data-engine="cx">Codex CLI</button>
+      </div>
+      <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+cd prior-auth-api
+claude
+&gt; Here is a Jira story: "As a provider I want to see why an
+&gt; auth is pending so I can act on it." Treat it as a bolt intent.
+&gt; Restate it in one line, then run Inception: slice it into 2-4
+&gt; units of work, and for each write testable, traceable
+&gt; acceptance criteria that name the rule they serve. Flag any
+&gt; dependency between units (one consuming another's output) and
+&gt; say whether you would serialise or stub it. Park any unknown
+&gt; with an owner. Write docs/M33-migration-inception.md. No code.</code></pre>
+        <p><strong>Verify:</strong> the story became an intent restatement plus 2-4 units of work; every acceptance clause names its rule; at least one dependency is flagged with a serialise-or-stub call; no code files.</p>
+      </div>
+      <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+cd prior-auth-api
+codex
+&gt; Here is a Jira story: "As a provider I want to see why an
+&gt; auth is pending so I can act on it." Treat it as a bolt intent.
+&gt; Restate it in one line, then run Inception: slice it into 2-4
+&gt; units of work, and for each write testable, traceable
+&gt; acceptance criteria that name the rule they serve. Flag any
+&gt; dependency between units (one consuming another's output) and
+&gt; say whether you would serialise or stub it. Park any unknown
+&gt; with an owner. Write docs/M33-migration-inception.md. No code.</code></pre>
+        <p><strong>Verify:</strong> same checks, steered by AGENTS.md. The slicing will differ from Claude Code's; the artifact's structure — intent, units of work, traceable criteria, a flagged dependency — must not.</p>
+      </div>
+    </div>
+    <p><strong>Done when</strong> <code>docs/M33-migration-inception.md</code> holds one sprint story converted to a bolt Inception — units of work, testable criteria, at least one flagged dependency — and you can point at how each piece would remap the Jira board.</p>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>Migration is an operating-system change, not a memo: run the first two or three bolts with training wheels, alongside the closing sprint, on a low-risk unit.</li>
+    <li>Remap the board, don't retire it: epic → bolt, story → unit of work, story criteria → M06 criteria, points → bolt lead time (M31); the tracker records what, the chain records why.</li>
+    <li>Sequence the first bolt for learning, not impact; protect the decider's calendar (M29) and sequence coupled units the M06/M18 way.</li>
+    <li>Ceremonies die by starvation, not decree — the half-migration that keeps both systems is the failure mode; migration is done when the old calendar comes down unread.</li>
+  </ul>
+  <span class="next">Next → M34 · Responsible AI in the Lifecycle</span>
+</section>
+`
+},
+{
+  id: "M34",
   track: 7,
   title: "Responsible AI in the Lifecycle",
   minutes: 30,
@@ -7039,7 +7583,7 @@ calendar unchanged.</code></pre>
 </table>
 
 <section class="lab">
-  <div class="lab-head">Lab M33 · 25 min</div>
+  <div class="lab-head">Lab M34 · 25 min</div>
   <h2>Answer the compliance officer</h2>
 
   <div class="path">
@@ -7212,6 +7756,7 @@ function render() {
   wireEngineTabs();
   wireIntroSim();
   wireLabLink();
+  wireCopyButtons();
   wrapWideTables();
   buildNav();
   updateProgress();
@@ -7246,6 +7791,61 @@ function wrapWideTables() {
     tbl.parentNode.insertBefore(wrap, tbl);
     wrap.appendChild(tbl);
   });
+}
+
+/* labs are copy-paste driven: every code block in the body gets a copy button.
+   The wrapper doubles as the "already wired" marker, so this is safe to re-run. */
+function wireCopyButtons() {
+  $root.querySelectorAll("pre").forEach(pre => {
+    if (pre.parentElement.classList.contains("copy-wrap")) return;
+    const wrap = document.createElement("div");
+    wrap.className = "copy-wrap" + (pre.closest(".artifact.doc") ? " light" : "");
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy this code block");
+    /* the file is CRLF on disk, so textContent carries \r\n — a stray \r pasted
+       into a shell is at best noise, at worst a second Enter. Normalise. */
+    btn.addEventListener("click", () => copyBlock(pre.textContent.replace(/\r\n/g, "\n"), btn));
+    wrap.appendChild(btn);
+  });
+}
+
+/* navigator.clipboard needs a secure context; this file is often opened straight
+   off disk, so fall back to the old textarea + execCommand path when it is absent
+   or rejects (Safari/Firefox over file://). */
+function copyBlock(text, btn) {
+  const settle = ok => {
+    btn.textContent = ok ? "Copied ✓" : "Copy failed";
+    btn.classList.toggle("copied", ok);
+    btn.classList.toggle("failed", !ok);
+    clearTimeout(btn._resetT);
+    btn._resetT = setTimeout(() => {
+      btn.textContent = "Copy";
+      btn.classList.remove("copied", "failed");
+    }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => settle(true), () => settle(legacyCopy(text)));
+  } else {
+    settle(legacyCopy(text));
+  }
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.cssText = "position:fixed;top:0;left:-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
 }
 
 function wireEngineTabs() {
