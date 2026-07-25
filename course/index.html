@@ -7796,22 +7796,26 @@ function wrapWideTables() {
 /* labs are copy-paste driven: every code block in the body gets a copy button.
    The wrapper doubles as the "already wired" marker, so this is safe to re-run. */
 function wireCopyButtons() {
-  $root.querySelectorAll("pre").forEach(pre => {
-    if (pre.parentElement.classList.contains("copy-wrap")) return;
-    const wrap = document.createElement("div");
-    wrap.className = "copy-wrap" + (pre.closest(".artifact.doc") ? " light" : "");
-    pre.parentNode.insertBefore(wrap, pre);
-    wrap.appendChild(pre);
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "copy-btn";
-    btn.textContent = "Copy";
-    btn.setAttribute("aria-label", "Copy this code block");
-    /* the file is CRLF on disk, so textContent carries \r\n — a stray \r pasted
-       into a shell is at best noise, at worst a second Enter. Normalise. */
-    btn.addEventListener("click", () => copyBlock(pre.textContent.replace(/\r\n/g, "\n"), btn));
-    wrap.appendChild(btn);
-  });
+  $root.querySelectorAll("pre").forEach(addCopyButton);
+}
+
+/* wraps one <pre> and pins a copy chip to it. Shared by the module bodies and by
+   the prelude simulator, which builds its artifact blocks as the bolt plays. */
+function addCopyButton(pre) {
+  if (pre.parentElement.classList.contains("copy-wrap")) return;
+  const wrap = document.createElement("div");
+  wrap.className = "copy-wrap" + (pre.closest(".artifact.doc") ? " light" : "");
+  pre.parentNode.insertBefore(wrap, pre);
+  wrap.appendChild(pre);
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "copy-btn";
+  btn.textContent = "Copy";
+  btn.setAttribute("aria-label", "Copy this code block");
+  /* the file is CRLF on disk, so textContent carries \r\n — a stray \r pasted
+     into a shell is at best noise, at worst a second Enter. Normalise. */
+  btn.addEventListener("click", () => copyBlock(pre.textContent.replace(/\r\n/g, "\n"), btn));
+  wrap.appendChild(btn);
 }
 
 /* navigator.clipboard needs a secure context; this file is often opened straight
@@ -8078,6 +8082,7 @@ function addLine(l) {
     const pre = document.createElement("pre");
     pre.textContent = l.code;          // never parsed as HTML
     box.appendChild(pre);
+    addCopyButton(pre);                // the file the bolt just produced is copyable
     const wrap = el("div", "txt");
     wrap.appendChild(box);
     node.appendChild(wrap);

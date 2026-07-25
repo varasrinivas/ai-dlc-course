@@ -12,9 +12,12 @@ validate loop. Never build multiple modules in one pass.
 - CSS custom variables only — never hard-code colors in module bodies; use `var(--t1)`…`var(--t7)`
   and the semantic tokens defined in `:root`.
 - Session-only progress (in-memory `Set`). **Never** use localStorage/sessionStorage.
-- The player wraps every `<pre>` in the module body with a copy button at render time
-  (`wireCopyButtons`). Author code blocks as plain `<pre>` / `<pre><code>` — never hand-roll a
-  copy control, and never put anything in a `<pre>` you don't want a student to paste verbatim.
+- The player wraps every `<pre>` with a copy button — `wireCopyButtons` sweeps the module body
+  at render time, and `addCopyButton` (the shared helper) is called directly by the P00
+  simulator for the artifacts it generates mid-playback. Author code blocks as plain `<pre>` /
+  `<pre><code>` — never hand-roll a copy control, and never put anything in a `<pre>` you don't
+  want a student to paste verbatim. Any new component that builds a `<pre>` at runtime should
+  call `addCopyButton` on it.
 - Dual-audience course: every module object carries `audience: "leader" | "practitioner" | "both"`.
   The player has an audience filter — do not remove it.
 
