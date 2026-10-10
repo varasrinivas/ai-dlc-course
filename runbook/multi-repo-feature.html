@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-repo feature runbook</title>
+<meta name="description" content="Run one Prior Auth feature across three repos with AWS AI-DLC v2, from intent to Rally to architecture to generated code, and see where every Markdown file lands.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23b45309'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='19' font-weight='700' fill='white' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Tokens copied from course/index.html so the runbook reads as part of the course. */
+:root{
+  --paper:#f3f5f8; --panel:#ffffff; --ink:#16202e; --ink-soft:#4b5a6e; --line:#dde3ec;
+  --accent:#b45309;
+  --ok:#0d9488; --warn:#be185d;
+  --t0:#6366f1; --t1:#b45309; --t2:#0d9488; --t3:#7c3aed;
+  --t4:#c2410c; --t5:#1d4ed8; --t6:#be185d; --t7:#4d7c0f;
+  /* phase colours: one per AI-DLC v2 phase */
+  --ph0:var(--t0); --ph1:var(--t3); --ph2:var(--t2); --ph3:var(--t4); --ph4:var(--t7);
+  --rally:var(--t5);
+  --tint:#fafbfd; --tint2:#eef1f6;
+  --radius:10px;
+  --font-display:"Fraunces",serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.65;font-size:16px}
+a{color:var(--t5)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- header ---------- */
+.top{background:var(--ink);color:#e8edf5;padding:34px 16px 30px}
+.top-in{max-width:1180px;margin:0 auto}
+.kicker{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#f0b35e}
+.top h1{font-family:var(--font-display);font-weight:700;font-size:clamp(1.7rem,4.4vw,2.6rem);line-height:1.15;margin:10px 0 12px;color:#fff;text-wrap:balance}
+.top p{max-width:760px;color:#c3cede}
+.top a{color:#9ec5ff}
+.facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.fact{border:1px solid #33435a;border-radius:8px;padding:8px 12px;min-width:0}
+.fact b{display:block;font-family:var(--font-display);font-size:1.25rem;color:#fff;line-height:1.2}
+.fact span{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:#9fb0c6}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:36px}
+.toc{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:26px 0 30px}
+.toc-h{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+.toc ol{list-style:none}
+.toc a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink-soft);font-size:.84rem;padding:5px 8px;border-radius:6px;border-left:3px solid transparent}
+.toc a:hover{background:var(--tint2);color:var(--ink)}
+.toc a.on{color:var(--ink);background:var(--panel);border-left-color:var(--accent)}
+.toc .n{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-soft);min-width:20px}
+.toc .sep{height:1px;background:var(--line);margin:8px 0}
+.main{min-width:0;padding:26px 0 80px}
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  .toc{position:static;max-height:none;padding:16px 0 0}
+  .toc ol{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+  .toc li{flex:0 0 auto}
+  .toc a{border-left:none;border:1px solid var(--line);background:var(--panel);white-space:nowrap}
+  .toc .sep{display:none}
+}
+
+/* ---------- typography ---------- */
+h2{font-family:var(--font-display);font-weight:600;font-size:1.5rem;line-height:1.25;margin:0 0 10px;text-wrap:balance}
+h3{font-family:var(--font-display);font-weight:600;font-size:1.1rem;margin:22px 0 8px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px 22px}
+li{margin:3px 0}
+pre{background:var(--ink);color:#e6edf7;border-radius:var(--radius);padding:16px 18px;overflow-x:auto;font-family:var(--font-mono);font-size:.8rem;line-height:1.6;margin:12px 0}
+code{font-family:var(--font-mono);font-size:.85em;background:#e7ebf2;border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre code{background:none;padding:0;overflow-wrap:normal}
+.lede{font-size:1.04rem;color:var(--ink-soft);max-width:780px}
+.block{margin:0 0 46px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+@media (max-width:600px){.panel{padding:18px 16px}}
+
+/* source badges: every claim says whose it is */
+.src{display:inline-block;font-family:var(--font-mono);font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:2px 8px;border:1px solid;vertical-align:middle;text-decoration:none;max-width:100%;overflow-wrap:anywhere}
+.src.aws{color:var(--ok);border-color:var(--ok);background:#ecfbf8}
+.src.conv{color:var(--accent);border-color:var(--accent);background:#fff7ed}
+.src.team{color:var(--warn);border-color:var(--warn);background:#fdf2f8}
+.src.reg{color:var(--t3);border-color:var(--t3);background:#f5f3ff}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.84rem;color:var(--ink-soft);margin:12px 0 0}
+.legend span{display:flex;gap:6px;align-items:center}
+
+/* ---------- figures ---------- */
+figure{margin:18px 0}
+figcaption{font-size:.82rem;color:var(--ink-soft);margin-top:8px}
+.fig-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:10px}
+.fig-scroll svg{display:block;min-width:860px;width:100%;height:auto}
+.fig-fit svg{display:block;width:100%;height:auto;max-width:760px}
+svg text{font-family:var(--font-body)}
+svg .mono{font-family:var(--font-mono)}
+.scroll-hint{display:none;font-family:var(--font-mono);font-size:.62rem;color:var(--ink-soft);letter-spacing:.06em;margin-top:6px}
+@media (max-width:900px){.scroll-hint{display:block}}
+
+/* ---------- homes (where markdown lives) ---------- */
+.homes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0}
+@media (max-width:820px){.homes{grid-template-columns:minmax(0,1fr)}}
+.home{background:var(--panel);border:1px solid var(--line);border-top:4px solid;border-radius:var(--radius);padding:16px 18px}
+.home.hub{border-top-color:var(--ph2)} .home.repo{border-top-color:var(--ph3)} .home.rally{border-top-color:var(--rally)}
+.home h3{margin:2px 0 6px}
+.home .tag{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.home p,.home li{font-size:.88rem}
+.home ul{margin-bottom:0}
+
+/* ---------- folder tree (HTML, so it stays readable on a phone) ---------- */
+.tree{font-family:var(--font-mono);font-size:.78rem;line-height:1.75;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;overflow-x:auto;white-space:pre}
+.tree .h{color:var(--ph2);font-weight:600} .tree .r{color:var(--ph3);font-weight:600} .tree .k{color:var(--rally);font-weight:600}
+.tree .g{color:#8a97a8} .tree .c{color:var(--ink-soft);font-family:var(--font-body);font-style:italic}
+
+/* ---------- step cards ---------- */
+.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);margin:0 0 34px;overflow:hidden;scroll-margin-top:12px}
+.step-head{display:flex;gap:16px;align-items:flex-start;padding:20px 24px 16px;border-bottom:1px solid var(--line);border-left:6px solid var(--phc,var(--accent))}
+.step-no{font-family:var(--font-display);font-weight:700;font-size:2rem;line-height:1;color:var(--phc,var(--accent));min-width:44px}
+.step-phase{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--phc,var(--accent));margin-bottom:4px}
+.step-head h2{margin:0;font-size:1.35rem}
+.step-body{padding:18px 24px 22px}
+@media (max-width:600px){.step-head{padding:16px 16px 14px;gap:12px}.step-no{font-size:1.5rem;min-width:30px}.step-body{padding:16px}}
+.step[data-ph="0"]{--phc:var(--ph0)} .step[data-ph="1"]{--phc:var(--ph1)} .step[data-ph="2"]{--phc:var(--ph2)}
+.step[data-ph="3"]{--phc:var(--ph3)} .step[data-ph="4"]{--phc:var(--ph4)} .step[data-ph="s"]{--phc:var(--ink-soft)}
+
+.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 16px}
+@media (max-width:820px){.meta{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:420px){.meta{grid-template-columns:minmax(0,1fr)}}
+.meta div{background:var(--tint);border:1px solid var(--line);border-radius:8px;padding:9px 11px;min-width:0}
+.meta dt{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.meta dd{font-size:.84rem;line-height:1.45;margin-top:2px}
+.meta .gate dd::before{content:"◆ ";color:var(--warn)}
+.meta .rally dd::before{content:"▣ ";color:var(--rally)}
+
+.files{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+.files-label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-right:4px}
+.chip{font-family:var(--font-mono);font-size:.7rem;border:1px solid var(--line);background:var(--tint);color:var(--ink);border-radius:6px;padding:4px 8px;text-align:left;overflow-wrap:anywhere;max-width:100%}
+.chip:hover{border-color:var(--accent)}
+.chip[data-home="repo"]{border-left:3px solid var(--ph3)} .chip[data-home="hub"]{border-left:3px solid var(--ph2)}
+.chip[data-home="track"]{border-left:3px solid var(--rally)} .chip[data-home="local"]{border-left:3px solid #9aa6b5}
+
+.callout{border-left:4px solid var(--accent);background:#fff7ed;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:.92rem}
+.callout.info{border-left-color:var(--t5);background:#eff5ff}
+.callout.risk{border-left-color:var(--warn);background:#fdf2f8}
+.callout b:first-child{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:2px}
+
+.artifact{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:14px 0;background:var(--panel)}
+.artifact-name{display:flex;gap:10px;align-items:baseline;font-family:var(--font-mono);font-size:.66rem;letter-spacing:.04em;color:var(--ink-soft);background:var(--tint2);padding:7px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.artifact-name b{color:var(--ink);font-weight:600;overflow-wrap:anywhere}
+.artifact-name .eng{margin-left:auto;color:var(--t4);font-weight:600}
+.artifact pre{margin:0;border-radius:0}
+.artifact.doc pre{background:var(--tint);color:var(--ink)}
+
+/* tables */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:.86rem;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--tint2);font-family:var(--font-mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+td code{font-size:.78rem}
+.table-scroll table{min-width:640px}
+
+/* engine tabs — same component as the course player */
+.engine-tabs{margin:14px 0}
+.engine-tab-btns{display:flex;gap:6px;margin-bottom:-1px;position:relative;z-index:1}
+.engine-tab-btns button{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.06em;padding:7px 16px;border:1px solid var(--line);border-bottom:none;background:#e9edf3;color:var(--ink-soft);border-radius:8px 8px 0 0}
+.engine-tab-btns button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.engine-pane{display:none;border:1px solid var(--line);border-radius:0 var(--radius) var(--radius) var(--radius);padding:12px 14px;background:var(--tint)}
+.engine-pane.active{display:block}
+.engine-pane pre{margin:8px 0}
+.engine-pane p{font-size:.88rem}
+
+/* copy button — same component as the course player */
+.copy-wrap{position:relative}
+.copy-btn{position:absolute;top:8px;right:8px;z-index:2;line-height:1;
+  font-family:var(--font-mono);font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 9px;border-radius:6px;background:#243040;color:#c3cede;border:1px solid #3a4a61;
+  opacity:0;transition:opacity .15s ease,color .15s ease,border-color .15s ease}
+.copy-wrap:hover .copy-btn,.copy-btn:focus-visible{opacity:1}
+.copy-btn:hover{color:#fff;border-color:var(--accent)}
+.copy-btn.copied{opacity:1;color:#5eead4;border-color:#5eead4}
+.copy-btn.failed{opacity:1;color:#fda4d4;border-color:#fda4d4}
+.copy-wrap.light .copy-btn{background:#eef1f6;color:var(--ink-soft);border-color:var(--line)}
+.copy-wrap.light .copy-btn:hover{color:var(--ink);border-color:var(--accent)}
+.copy-wrap.light .copy-btn.copied{color:var(--ok);border-color:var(--ok)}
+.copy-wrap.light .copy-btn.failed{color:var(--warn);border-color:var(--warn)}
+@media (hover:none){
+  .copy-wrap{padding-top:47px}
+  .copy-wrap pre.copy-target{margin-top:0}
+  .copy-btn{top:3px;right:6px;opacity:1;padding:8px 14px;min-height:44px;border-radius:6px 6px 0 0;border-bottom:none}
+}
+
+/* ---------- explorer ---------- */
+.explorer{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.explorer{grid-template-columns:minmax(0,1fr)}}
+.x-tree{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 10px;max-height:640px;overflow:auto;font-family:var(--font-mono);font-size:.74rem}
+.x-tree ul{list-style:none;margin:0 0 0 14px;padding:0}
+.x-tree>ul{margin-left:0}
+.x-tree li{margin:0}
+.x-tree summary{list-style:none;padding:3px 6px;border-radius:5px;font-weight:600;color:var(--ink);display:flex;gap:6px;align-items:baseline}
+.x-tree summary::-webkit-details-marker{display:none}
+.x-tree summary::before{content:"▸";color:var(--ink-soft);font-size:.7rem;width:10px}
+.x-tree details[open]>summary::before{content:"▾"}
+.x-tree details{margin:0}
+.x-tree .note{font-family:var(--font-body);font-weight:400;font-style:italic;color:var(--ink-soft);font-size:.72rem}
+.x-file{display:block;width:100%;text-align:left;border:none;background:none;font-family:var(--font-mono);font-size:.74rem;color:var(--ink);padding:3px 6px 3px 22px;border-radius:5px;overflow-wrap:anywhere;position:relative}
+.x-file::before{content:"";position:absolute;left:8px;top:.72em;width:7px;height:7px;border-radius:2px;background:var(--dot,#9aa6b5)}
+.x-file[data-home="hub"]{--dot:var(--ph2)} .x-file[data-home="repo"]{--dot:var(--ph3)} .x-file[data-home="track"]{--dot:var(--rally)}
+.x-file:hover{background:var(--tint2)}
+.x-file.sel{background:var(--ink);color:#fff}
+.x-file[data-home="local"]{color:#8a97a8}
+.x-detail{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;position:sticky;top:12px}
+@media (max-width:900px){.x-detail{position:static}}
+.x-detail .path{font-family:var(--font-mono);font-size:.8rem;font-weight:600;overflow-wrap:anywhere;margin-bottom:10px}
+.x-detail dl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:7px 12px;font-size:.86rem}
+.x-detail dt{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);padding-top:3px}
+.x-detail .empty{color:var(--ink-soft);font-size:.9rem}
+.x-filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.x-filter button{font-family:var(--font-mono);font-size:.66rem;border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:999px;padding:5px 11px}
+.x-filter button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ---------- checklist ---------- */
+.checklist{list-style:none;margin:0;counter-reset:g}
+.checklist li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+.checklist input{width:18px;height:18px;margin-top:3px;accent-color:var(--accent)}
+.checklist .who{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.06em;color:var(--ink-soft);display:block}
+.checklist .st{font-family:var(--font-mono);font-size:.66rem;color:var(--phc,var(--ink-soft));font-weight:600}
+.btn{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.06em;border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:7px;padding:8px 14px}
+.btn.ghost{background:var(--panel);color:var(--ink)}
+.progress{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);margin-left:10px}
+
+.foot{border-top:1px solid var(--line);margin-top:30px;padding-top:18px;font-size:.84rem;color:var(--ink-soft)}
+.foot li{overflow-wrap:anywhere}
+
+@media print{
+  .top,.toc,.copy-btn,.engine-tab-btns,.x-filter,.btn{display:none!important}
+  body{background:#fff}
+  .wrap{display:block}
+  .step,.panel{break-inside:avoid;border-color:#bbb}
+  .engine-pane{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="kicker">AI-DLC course · companion runbook · <a href="../course/index.html">back to the course</a></div>
+    <h1>One feature, three repos: the AI-DLC runbook</h1>
+    <p>A step-by-step run of a real Prior Auth feature through AWS AI-DLC v2, from the first
+    sentence of intent to Rally stories, architecture, generated code in three repositories,
+    and deployment. Every step shows who acts, which stage runs, the command for
+    Claude Code or Codex CLI, the human gate, the Rally move, and the exact files written.</p>
+    <div class="facts">
+      <div class="fact"><b>1</b><span>intent</span></div>
+      <div class="fact"><b>3</b><span>repos</span></div>
+      <div class="fact"><b>3</b><span>units of work</span></div>
+      <div class="fact"><b>2</b><span>bolts</span></div>
+      <div class="fact"><b>5</b><span>phases</span></div>
+      <div class="fact"><b>v2.11.0</b><span>AI-DLC release</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Runbook steps">
+    <div class="toc-h">Runbook</div>
+    <ol>
+      <li><a href="#feature"><span class="n">··</span>The feature</a></li>
+      <li><a href="#homes"><span class="n">··</span>Where Markdown lives</a></li>
+      <li><a href="#map"><span class="n">00</span>One-page map</a></li>
+      <li class="sep" aria-hidden="true"></li>
+      <li><a href="#s1"><span class="n">01</span>Workspace setup</a></li>
+      <li><a href="#s2"><span class="n">02</span>Intent and scope</a></li>
+      <li><a href="#s3"><span class="n">03</span>Read the repos</a></li>
+      <li><a href="#s4"><span class="n">04</span>Requirements</a></li>
+      <li><a href="#s5"><span class="n">05</span>Stories → Rally</a></li>
+      <li><a href="#s6"><span class="n">06</span>Design, units, contract</a></li>
+      <li><a href="#s7"><span class="n">07</span>Bolt plan</a></li>
+      <li><a href="#s8"><span class="n">08</span>Construction</a></li>
+      <li><a href="#s9"><span class="n">09</span>Build and test</a></li>
+      <li><a href="#s10"><span class="n">10</span>Operate and close</a></li>
+      <li class="sep" aria-hidden="true"></li>
+      <li><a href="#explorer"><span class="n">··</span>File explorer</a></li>
+      <li><a href="#gates"><span class="n">··</span>Gate checklist</a></li>
+      <li><a href="#parity"><span class="n">··</span>Claude Code ↔ Codex</a></li>
+      <li><a href="#v1"><span class="n">··</span>On v1 rules?</a></li>
+      <li><a href="#sources"><span class="n">··</span>Sources</a></li>
+    </ol>
+  </nav>
+
+  <main class="main">
+
+    <!-- ============ FEATURE ============ -->
+    <section class="block" id="feature">
+      <h2>The feature: urgent requests get a 72-hour clock</h2>
+      <p class="lede">The utilization management director wants urgent prior auth requests decided inside
+      72 hours, with nurses seeing those requests first and providers notified the moment a
+      determination exists. Three repos have to change together, and one of them doesn't exist yet.</p>
+
+      <div class="callout info"><b>Regulatory context</b>
+      For Medicare Advantage, Medicaid and CHIP, and exchange plans, the CMS Interoperability and
+      Prior Authorization rule (CMS-0057-F) sets 72 hours for expedited and 7 calendar days for
+      standard decisions from January 1, 2026. Your compliance team owns the exact reading,
+      including when the clock starts. <span class="src reg">regulation · confirm with compliance</span></div>
+
+      <div class="table-scroll"><table>
+        <thead><tr><th>Repo</th><th>What changes</th><th>Starting point</th><th>Unit of work</th></tr></thead>
+        <tbody>
+          <tr><td><code>prior-auth-api</code><br><small>TypeScript + Jest</small></td>
+            <td><code>AuthRequest.urgency</code> (<code>STANDARD | URGENT</code>), <code>decisionDueAt</code>;
+            urgent requests go to the front of the nurse review queue; emits <code>determination.issued</code> and
+            <code>sla.at-risk</code>; publishes the contract. The auto-approve rule stays as is: score ≥
+            <code>AUTO_APPROVE_THRESHOLD (0.85)</code>.</td>
+            <td>Brownfield</td><td><code>api-urgency-clock</code></td></tr>
+          <tr><td><code>prior-auth-web</code><br><small>React + Vitest</small></td>
+            <td>Urgency badge and countdown in <code>AuthQueue</code>; URGENT first, then by due time.</td>
+            <td>Brownfield</td><td><code>web-urgent-queue</code></td></tr>
+          <tr><td><code>prior-auth-notify</code><br><small>new · TypeScript</small></td>
+            <td>Consumes the two events; sends provider and member notices with status and
+            <code>referenceId</code> only (decision D-003: no clinical content).</td>
+            <td>Greenfield</td><td><code>notify-service</code></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ============ HOMES ============ -->
+    <section class="block" id="homes">
+      <h2>Where Markdown lives: three homes, one rule each</h2>
+      <p class="lede">The most common multi-repo mistake is putting the feature record inside one of the
+      service repos. The other repos can't see it and it outlives the feature. AI-DLC v2 avoids this
+      with a workspace: a folder that holds the AI-DLC record, with each code repo cloned beside it.</p>
+
+      <div class="homes">
+        <div class="home hub">
+          <div class="tag">Home 1 · the hub</div>
+          <h3><code>prior-auth-workspace/aidlc/</code></h3>
+          <p><b>Rule:</b> everything about the <em>feature</em>. Its own git repo.</p>
+          <ul>
+            <li>The intent record: state, audit, every stage artifact</li>
+            <li>Per-repo code knowledge (<code>codekb/&lt;repo&gt;/</code>)</li>
+            <li>Team method (<code>memory/</code>) and standards (<code>knowledge/</code>)</li>
+          </ul>
+          <p style="margin-top:8px"><span class="src aws">AWS v2 layout</span></p>
+        </div>
+        <div class="home repo">
+          <div class="tag">Home 2 · each code repo</div>
+          <h3><code>prior-auth-*/</code></h3>
+          <p><b>Rule:</b> everything that must outlive the feature.</p>
+          <ul>
+            <li>Code and tests (generated into the repo, never the hub)</li>
+            <li>Steering: <code>AGENTS.md</code>, with <code>CLAUDE.md</code> importing it</li>
+            <li><code>docs/decisions.md</code>: durable domain decisions, copied over from the hub's ADR log at close-out</li>
+          </ul>
+          <p style="margin-top:8px"><span class="src aws">code in sibling repos</span> <span class="src conv">ADR copy-over</span></p>
+        </div>
+        <div class="home rally">
+          <div class="tag">Home 3 · Rally</div>
+          <h3><code>tracking/rally/</code> → Rally</h3>
+          <p><b>Rule:</b> a mirror for reporting, never the source of truth.</p>
+          <ul>
+            <li>The AI drafts an import file; a human imports it</li>
+            <li>Rally IDs come back into one map file</li>
+            <li>State moves at human gates, not on AI activity</li>
+          </ul>
+          <p style="margin-top:8px"><span class="src conv">course convention · AWS ships no Rally/Jira integration</span></p>
+        </div>
+      </div>
+      <div class="legend">
+        <span><span class="src aws">AWS</span> stated in AWS AI-DLC v2.11.0 docs</span>
+        <span><span class="src conv">convention</span> this course's recommendation on top</span>
+        <span><span class="src team">team decision</span> yours to make</span>
+        <span><span class="src reg">regulation</span> external rule</span>
+      </div>
+    </section>
+
+    <!-- ============ MAP ============ -->
+    <section class="block" id="map">
+      <h2>00 · The whole run on one page</h2>
+      <p>Columns are the five v2 phases. Rows are who acts and where the output lands. Diamonds are
+      human approval gates. In v2 every stage the scope runs ends with one, so the diamonds here
+      mark the gates that matter most for a multi-repo feature.</p>
+      <figure>
+        <div class="fig-scroll">
+        <svg viewBox="0 0 1100 560" role="img" aria-labelledby="mapT mapD">
+          <title id="mapT">Swimlane map of the multi-repo AI-DLC run</title>
+          <desc id="mapD">Five phase columns: Initialization, Ideation, Inception, Construction, Operation. Rows: humans with gates, AI engine stages, hub artifacts, the three repos, and Rally. Code is written only into the repo rows during Construction; Rally is updated at gates.</desc>
+          <defs>
+            <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+          </defs>
+          <!-- phase header bands -->
+          <g font-size="13" font-weight="600">
+            <rect x="160" y="12" width="120" height="34" rx="6" fill="var(--ph0)" opacity=".14"/><text x="220" y="34" text-anchor="middle" fill="var(--ph0)">0 Initialization</text>
+            <rect x="284" y="12" width="176" height="34" rx="6" fill="var(--ph1)" opacity=".14"/><text x="372" y="34" text-anchor="middle" fill="var(--ph1)">1 Ideation</text>
+            <rect x="464" y="12" width="276" height="34" rx="6" fill="var(--ph2)" opacity=".14"/><text x="602" y="34" text-anchor="middle" fill="var(--ph2)">2 Inception</text>
+            <rect x="744" y="12" width="210" height="34" rx="6" fill="var(--ph3)" opacity=".14"/><text x="849" y="34" text-anchor="middle" fill="var(--ph3)">3 Construction</text>
+            <rect x="958" y="12" width="132" height="34" rx="6" fill="var(--ph4)" opacity=".14"/><text x="1024" y="34" text-anchor="middle" fill="var(--ph4)">4 Operation</text>
+          </g>
+          <!-- lanes -->
+          <g font-size="12" fill="var(--ink)">
+            <g stroke="var(--line)"><line x1="10" y1="56" x2="1090" y2="56"/><line x1="10" y1="124" x2="1090" y2="124"/><line x1="10" y1="192" x2="1090" y2="192"/><line x1="10" y1="260" x2="1090" y2="260"/><line x1="10" y1="324" x2="1090" y2="324"/><line x1="10" y1="388" x2="1090" y2="388"/><line x1="10" y1="452" x2="1090" y2="452"/><line x1="10" y1="540" x2="1090" y2="540"/></g>
+            <g stroke="var(--line)" stroke-dasharray="3 4"><line x1="282" y1="56" x2="282" y2="540"/><line x1="462" y1="56" x2="462" y2="540"/><line x1="742" y1="56" x2="742" y2="540"/><line x1="956" y1="56" x2="956" y2="540"/></g>
+            <text x="16" y="86" font-weight="600">Humans</text><text x="16" y="103" fill="var(--ink-soft)" font-size="11">decide at gates</text>
+            <text x="16" y="154" font-weight="600">AI engine</text><text x="16" y="171" fill="var(--ink-soft)" font-size="11">Claude Code / Codex</text>
+            <text x="16" y="222" font-weight="600" fill="var(--ph2)">Hub aidlc/</text><text x="16" y="239" fill="var(--ink-soft)" font-size="11">feature record</text>
+            <text x="16" y="290" font-weight="600" fill="var(--ph3)" class="mono" font-size="11.5">prior-auth-api</text><text x="16" y="306" fill="var(--ink-soft)" font-size="11">brownfield</text>
+            <text x="16" y="354" font-weight="600" fill="var(--ph3)" class="mono" font-size="11.5">prior-auth-web</text><text x="16" y="370" fill="var(--ink-soft)" font-size="11">brownfield</text>
+            <text x="16" y="418" font-weight="600" fill="var(--ph3)" class="mono" font-size="11.5">prior-auth-notify</text><text x="16" y="434" fill="var(--ink-soft)" font-size="11">greenfield</text>
+            <text x="16" y="490" font-weight="600" fill="var(--rally)">Rally</text><text x="16" y="507" fill="var(--ink-soft)" font-size="11">human-imported mirror</text>
+          </g>
+          <!-- gates (humans row) -->
+          <g font-size="10.5" fill="var(--ink-soft)" text-anchor="middle">
+            <g fill="var(--warn)">
+              <path d="M372 72 l9 9 -9 9 -9 -9z"/><path d="M520 72 l9 9 -9 9 -9 -9z"/><path d="M602 72 l9 9 -9 9 -9 -9z"/><path d="M684 72 l9 9 -9 9 -9 -9z"/>
+              <path d="M790 72 l9 9 -9 9 -9 -9z"/><path d="M890 72 l9 9 -9 9 -9 -9z"/><path d="M1024 72 l9 9 -9 9 -9 -9z"/>
+            </g>
+            <text x="372" y="106">brief approved</text>
+            <text x="520" y="106">requirements</text><text x="602" y="106">units</text><text x="684" y="106">bolt plan</text>
+            <text x="790" y="106">code plan</text><text x="890" y="106">unit checkpoint</text>
+            <text x="1024" y="106">deploy</text>
+            <text x="220" y="94" fill="var(--ink-soft)">no gates</text>
+          </g>
+          <!-- AI row pills -->
+          <g font-size="11" fill="var(--ink)">
+            <rect x="170" y="136" width="102" height="44" rx="8" fill="var(--panel)" stroke="var(--ph0)"/><text x="221" y="154" text-anchor="middle">scaffold</text><text x="221" y="170" text-anchor="middle">detect · init</text>
+            <rect x="292" y="136" width="160" height="44" rx="8" fill="var(--panel)" stroke="var(--ph1)"/><text x="372" y="154" text-anchor="middle">intent · feasibility</text><text x="372" y="170" text-anchor="middle">scope · brief</text>
+            <rect x="472" y="136" width="260" height="44" rx="8" fill="var(--panel)" stroke="var(--ph2)"/><text x="602" y="154" text-anchor="middle">reverse eng. ×2 · requirements · stories</text><text x="602" y="170" text-anchor="middle">domain · units · contract · bolt plan</text>
+            <rect x="752" y="136" width="194" height="44" rx="8" fill="var(--panel)" stroke="var(--ph3)"/><text x="849" y="154" text-anchor="middle">per unit: design → plan</text><text x="849" y="170" text-anchor="middle">→ code → build &amp; test</text>
+            <rect x="966" y="136" width="116" height="44" rx="8" fill="var(--panel)" stroke="var(--ph4)"/><text x="1024" y="154" text-anchor="middle">deploy · observe</text><text x="1024" y="170" text-anchor="middle">feedback</text>
+          </g>
+          <!-- hub row -->
+          <g font-size="10.5" class="mono" fill="var(--ph2)">
+            <text x="221" y="222" text-anchor="middle">intents.json</text><text x="221" y="238" text-anchor="middle">aidlc-state.md</text>
+            <text x="372" y="222" text-anchor="middle">intent-statement.md</text><text x="372" y="238" text-anchor="middle">initiative-brief.md</text>
+            <text x="602" y="214" text-anchor="middle">codekb/api · codekb/web</text><text x="602" y="230" text-anchor="middle">requirements.md · stories.md</text><text x="602" y="246" text-anchor="middle">contract-summary.md · bolt-plan.md</text>
+            <text x="849" y="222" text-anchor="middle">construction/&lt;unit&gt;/…</text><text x="849" y="238" text-anchor="middle">build-and-test/</text>
+            <text x="1024" y="222" text-anchor="middle">operation/…</text><text x="1024" y="238" text-anchor="middle">slo-config.md</text>
+          </g>
+          <!-- reverse engineering reads -->
+          <g color="var(--ph2)" stroke="currentColor" fill="none" stroke-width="1.3">
+            <path d="M520 284 C520 262 520 262 520 252" marker-end="url(#arr)"/>
+            <path d="M540 348 C540 290 540 290 540 252" marker-end="url(#arr)" stroke-dasharray="4 3"/>
+          </g>
+          <g font-size="10.5" fill="var(--ink-soft)">
+            <text x="528" y="292">scanned → codekb</text>
+            <text x="548" y="356">scanned → codekb</text>
+            <text x="480" y="420">nothing to scan yet</text>
+          </g>
+          <!-- construction bars -->
+          <g font-size="11" font-weight="600">
+            <rect x="752" y="274" width="120" height="34" rx="6" fill="var(--ph3)" opacity=".18"/><rect x="752" y="274" width="120" height="34" rx="6" fill="none" stroke="var(--ph3)"/>
+            <text x="812" y="295" text-anchor="middle" fill="var(--ph3)">U1 · bolt 1</text>
+            <rect x="830" y="338" width="116" height="34" rx="6" fill="var(--ph3)" opacity=".18"/><rect x="830" y="338" width="116" height="34" rx="6" fill="none" stroke="var(--ph3)"/>
+            <text x="888" y="359" text-anchor="middle" fill="var(--ph3)">U3 · bolt 2</text>
+            <rect x="830" y="402" width="116" height="34" rx="6" fill="var(--ph3)" opacity=".18"/><rect x="830" y="402" width="116" height="34" rx="6" fill="none" stroke="var(--ph3)"/>
+            <text x="888" y="423" text-anchor="middle" fill="var(--ph3)">U2 · bolt 2</text>
+          </g>
+          <g color="var(--ink-soft)" stroke="currentColor" fill="none" stroke-width="1.2" stroke-dasharray="4 3">
+            <path d="M780 180 L780 272" marker-end="url(#arr)"/>
+            <path d="M872 300 C 880 300 884 318 884 336" marker-end="url(#arr)"/>
+            <path d="M872 300 C 905 300 912 380 912 400" marker-end="url(#arr)"/>
+          </g>
+          <text x="786" y="252" font-size="10" class="mono" fill="var(--ink-soft)">--repo</text>
+          <!-- deploy order -->
+          <g font-size="11" fill="var(--ph4)" font-weight="600" text-anchor="middle">
+            <circle cx="1024" cy="291" r="13" fill="none" stroke="var(--ph4)"/><text x="1024" y="295">1</text>
+            <circle cx="1024" cy="419" r="13" fill="none" stroke="var(--ph4)"/><text x="1024" y="423">2</text>
+            <circle cx="1024" cy="355" r="13" fill="none" stroke="var(--ph4)"/><text x="1024" y="359">3</text>
+          </g>
+          <!-- rally row -->
+          <g font-size="11" fill="var(--rally)">
+            <rect x="300" y="470" width="144" height="40" rx="6" fill="none" stroke="var(--rally)"/><text x="372" y="487" text-anchor="middle" font-weight="600">Feature created</text><text x="372" y="502" text-anchor="middle" font-size="10">from initiative-brief</text>
+            <rect x="530" y="470" width="196" height="40" rx="6" fill="none" stroke="var(--rally)"/><text x="628" y="487" text-anchor="middle" font-weight="600">3 User Stories · Defined</text><text x="628" y="502" text-anchor="middle" font-size="10">one per unit, tagged by repo</text>
+            <rect x="752" y="470" width="194" height="40" rx="6" fill="none" stroke="var(--rally)"/><text x="849" y="487" text-anchor="middle" font-weight="600">In-Progress → Completed</text><text x="849" y="502" text-anchor="middle" font-size="10">moved at plan / checkpoint gates</text>
+            <rect x="966" y="470" width="116" height="40" rx="6" fill="none" stroke="var(--rally)"/><text x="1024" y="494" text-anchor="middle" font-weight="600">Accepted</text>
+          </g>
+          <g color="var(--rally)" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" fill="none">
+            <path d="M372 92 L372 468" marker-end="url(#arr)"/><path d="M684 92 L684 468" marker-end="url(#arr)"/>
+          </g>
+        </svg>
+        </div>
+        <div class="scroll-hint">← scroll the map sideways →</div>
+        <figcaption>Code reaches a repo only during Construction, and only through the engine's per-repo
+        anchor (<code>--repo</code>). Rally changes only after a human gate.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ============ STEP 1 ============ -->
+    <section class="step" id="s1" data-ph="s">
+      <header class="step-head"><span class="step-no">01</span><div>
+        <div class="step-phase">Before the lifecycle · one-time per workspace</div>
+        <h2>Set up the hub workspace and its three sibling repos</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>Tech lead, once</dd></div>
+          <div><dt>AI-DLC</dt><dd>Install, then <code>aidlc config</code></dd></div>
+          <div class="gate"><dt>Gate</dt><dd>None. <code>aidlc doctor</code> is green</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>Nothing yet</dd></div>
+        </dl>
+        <p>In v2 the workspace root holds <code>aidlc/</code>, and each code repo sits beside it as an immediate
+        child with its own <code>.git</code>. When an intent is created, the engine auto-discovers those
+        siblings and records them in the intent's registry row. An optional <code>repos.json</code> lists the
+        expected repos, so a teammate can rebuild the whole workspace with one command.
+        <span class="src aws">AWS v2</span></p>
+
+        <div class="tree" aria-label="Workspace folder tree"><span class="h">prior-auth-workspace/</span>            <span class="c">hub repo (its own git)</span>
+├── repos.json                     <span class="c">expected sibling repos</span>
+├── .gitignore                     <span class="c">managed block: /prior-auth-api/ …</span>
+├── aidlc.code-workspace           <span class="c">multi-root VS Code file</span>
+├── .claude/  .codex/              <span class="c">engine dirs, one per engine</span>
+├── AGENTS.md                      <span class="c">shared AI-DLC onboarding block</span>
+├── <span class="h">aidlc/spaces/default/</span>
+│   ├── memory/  knowledge/        <span class="c">team method + standards</span>
+│   ├── codekb/&lt;repo&gt;/             <span class="c">what each repo is</span>
+│   └── intents/261012-urgent-auth-72h/   <span class="c">this feature's record</span>
+├── <span class="k">tracking/rally/</span>                <span class="c">import drafts + ID map</span>
+├── <span class="r">prior-auth-api/</span>      <span class="g">.git</span>      <span class="c">AGENTS.md · CLAUDE.md · docs/decisions.md</span>
+├── <span class="r">prior-auth-web/</span>      <span class="g">.git</span>
+└── <span class="r">prior-auth-notify/</span>   <span class="g">.git</span>      <span class="c">new: created empty with one commit</span></div>
+
+        <div class="engine-tabs">
+          <div class="engine-tab-btns" role="tablist">
+            <button class="active" data-engine="cc">Claude Code</button>
+            <button data-engine="cx">Codex CLI</button>
+          </div>
+          <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code — Windows PowerShell, one-time machine install
+irm https://github.com/awslabs/aidlc-workflows/releases/latest/download/install.ps1 | iex
+
+# the hub
+mkdir prior-auth-workspace; cd prior-auth-workspace; git init
+# write repos.json (below), then clone the declared siblings
+aidlc system workspace-sync
+aidlc config --harness claude
+aidlc doctor
+claude</code></pre>
+          </div>
+          <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI — Windows PowerShell, one-time machine install
+irm https://github.com/awslabs/aidlc-workflows/releases/latest/download/install.ps1 | iex
+
+mkdir prior-auth-workspace; cd prior-auth-workspace; git init
+aidlc system workspace-sync
+aidlc config --harness codex
+aidlc doctor
+codex
+# inside Codex, once: type /hooks and trust the AI-DLC hooks</code></pre>
+            <p>Codex finds project hooks only in a Git repository, which is one more reason the hub is its own repo.
+            Both engines can be configured in the same hub because each gets its own engine directory.</p>
+          </div>
+        </div>
+
+        <div class="artifact doc">
+          <div class="artifact-name"><b>repos.json</b><span class="eng">hub root</span></div>
+<pre><code>{
+  "org": "your-github-org",
+  "repos": [
+    { "name": "prior-auth-api",    "branch": "main" },
+    { "name": "prior-auth-web",    "branch": "main" },
+    { "name": "prior-auth-notify", "branch": "main" }
+  ]
+}</code></pre>
+        </div>
+
+        <h3>The steering-file question</h3>
+        <p>You start the engine from the hub, but each repo's rules live in that repo's
+        <code>AGENTS.md</code> and <code>docs/decisions.md</code>. Nothing guarantees an engine running from
+        the hub reads a nested repo's steering file before editing that repo. Say it explicitly, once, in the
+        space's method file. Every stage of every intent loads it. <span class="src conv">course convention</span></p>
+        <div class="artifact doc">
+          <div class="artifact-name"><b>aidlc/spaces/default/memory/project.md</b><span class="eng">add this section</span></div>
+<pre><code>## Repo steering (multi-repo)
+Before planning or changing code in a sibling repo, read that repo's
+AGENTS.md and docs/decisions.md. They outrank anything in this file
+for that repo. Never change a rule recorded in docs/decisions.md
+(e.g. D-001: score &gt;= 0.85 auto-approves) — raise it as a question.
+One unit of work = one repo. Cross-repo coordination goes through
+the contract in prior-auth-api/contracts/, never shared source.</code></pre>
+        </div>
+
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="repos.json">repos.json</button>
+          <button class="chip" data-file=".claude/CLAUDE.md">.claude/CLAUDE.md</button>
+          <button class="chip" data-file=".codex/onboarding.md">.codex/onboarding.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/memory/project.md">memory/project.md</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 2 ============ -->
+    <section class="step" id="s2" data-ph="1">
+      <header class="step-head"><span class="step-no">02</span><div>
+        <div class="step-phase">Phases 0–1 · Initialization + Ideation · stages 0.1–1.7</div>
+        <h2>State the intent, pick the scope, get the brief approved</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>Product owner, UM director, tech lead</dd></div>
+          <div><dt>AI-DLC</dt><dd>Auto intent creation, then 1.1 Intent Capture → 1.7 Approval &amp; Handoff</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Approve each stage; 1.7 brief is the go/no-go</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>Create the Feature after 1.7</dd></div>
+        </dl>
+        <p>You don't create an intent by hand. Describing the work creates one. Initialization (0.1–0.3)
+        runs with no gates: it makes the record folder, scans the workspace, writes
+        <code>aidlc-state.md</code>, and records all three repos in <code>intents.json</code>. Ideation then
+        asks its questions in a file, not in chat. <span class="src aws">AWS v2</span></p>
+
+        <div class="engine-tabs">
+          <div class="engine-tab-btns" role="tablist">
+            <button class="active" data-engine="cc">Claude Code</button>
+            <button data-engine="cx">Codex CLI</button>
+          </div>
+          <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code — from the hub root
+/aidlc --scope enterprise "Urgent prior auth requests get a 72-hour determination clock: urgent requests jump the nurse review queue, providers and members are notified when a determination exists, and an at-risk alert fires before the clock runs out. Spans prior-auth-api, prior-auth-web and a new prior-auth-notify service."</code></pre>
+          </div>
+          <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI — from the hub root
+$aidlc --scope enterprise "Urgent prior auth requests get a 72-hour determination clock: urgent requests jump the nurse review queue, providers and members are notified when a determination exists, and an at-risk alert fires before the clock runs out. Spans prior-auth-api, prior-auth-web and a new prior-auth-notify service."</code></pre>
+          </div>
+        </div>
+
+        <h3>Why <code>enterprise</code> and not <code>feature</code> or <code>classic</code></h3>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Scope</th><th>Stages</th><th>Fit for this feature</th></tr></thead>
+          <tbody>
+            <tr><td><b>enterprise</b></td><td>33, comprehensive depth, strict Guard Policy</td><td>Chosen: PHI, a regulatory deadline, three deployables, and Operation stages you'll need (SLO, alarms, rollback).</td></tr>
+            <tr><td>feature</td><td>33, standard depth</td><td>Fine if compliance doesn't need comprehensive artifacts.</td></tr>
+            <tr><td>classic</td><td>18, v1-style; no Ideation, no Operation</td><td>Loses the deploy and observe stages that this feature's SLA depends on.</td></tr>
+          </tbody>
+        </table></div>
+        <p>Choosing the scope is <span class="src team">team decision</span>. The stage counts are
+        <span class="src aws">AWS v2</span>. You can change scope mid-run with <code>/aidlc --scope &lt;name&gt;</code>.</p>
+
+        <div class="callout"><b>Mob moment</b>
+        Run 1.1 Intent Capture with the UM director, a nurse lead, and the provider-relations owner in the room.
+        Choose the <em>I'll Edit the File</em> answer mode and project <code>intent-capture-questions.md</code> on
+        screen. The AI asks; the room answers; nobody types a decision into chat.</div>
+
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/intents/intents.json">intents.json</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/aidlc-state.md">aidlc-state.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/ideation/intent-capture/intent-statement.md">intent-statement.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/ideation/market-research/build-vs-buy.md">build-vs-buy.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/ideation/feasibility/raid-log.md">raid-log.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/ideation/scope-definition/scope-document.md">scope-document.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/ideation/approval-handoff/initiative-brief.md">initiative-brief.md</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 3 ============ -->
+    <section class="step" id="s3" data-ph="2">
+      <header class="step-head"><span class="step-no">03</span><div>
+        <div class="step-phase">Phase 2 · Inception · stages 2.1–2.2</div>
+        <h2>Read every brownfield repo before anyone designs</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>Repo leads review their own repo's scan</dd></div>
+          <div><dt>AI-DLC</dt><dd>2.1 Reverse Engineering, 2.2 Practices Discovery</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Approve the codekb and promoted practices</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>No change</dd></div>
+        </dl>
+        <p>Reverse Engineering runs as a two-step pipeline: a developer agent scans the code, then an architect
+        agent writes nine files. For a multi-repo intent, <b>each repo needs its own complete scan before
+        approval</b>. The output goes to a space-level store per repo, not the intent folder, so the next
+        feature reuses it if the store is still current. <span class="src aws">AWS v2</span></p>
+        <figure class="fig-fit">
+          <svg viewBox="0 0 760 210" role="img" aria-labelledby="reT">
+            <title id="reT">Reverse engineering: one pipeline per repo into per-repo codekb stores</title>
+            <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+            <g font-size="12">
+              <rect x="10" y="20" width="150" height="44" rx="8" fill="var(--panel)" stroke="var(--ph3)"/><text x="85" y="47" text-anchor="middle" class="mono" font-size="11.5" fill="var(--ph3)">prior-auth-api</text>
+              <rect x="10" y="84" width="150" height="44" rx="8" fill="var(--panel)" stroke="var(--ph3)"/><text x="85" y="111" text-anchor="middle" class="mono" font-size="11.5" fill="var(--ph3)">prior-auth-web</text>
+              <rect x="10" y="148" width="150" height="44" rx="8" fill="var(--panel)" stroke="var(--line)" stroke-dasharray="4 3"/><text x="85" y="175" text-anchor="middle" class="mono" font-size="11.5" fill="var(--ink-soft)">prior-auth-notify</text>
+              <rect x="210" y="20" width="140" height="44" rx="8" fill="var(--tint2)" stroke="var(--line)"/><text x="280" y="40" text-anchor="middle">developer agent</text><text x="280" y="56" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">code scan</text>
+              <rect x="210" y="84" width="140" height="44" rx="8" fill="var(--tint2)" stroke="var(--line)"/><text x="280" y="104" text-anchor="middle">developer agent</text><text x="280" y="120" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">code scan</text>
+              <rect x="390" y="20" width="140" height="44" rx="8" fill="var(--tint2)" stroke="var(--line)"/><text x="460" y="40" text-anchor="middle">architect agent</text><text x="460" y="56" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">writes 9 files</text>
+              <rect x="390" y="84" width="140" height="44" rx="8" fill="var(--tint2)" stroke="var(--line)"/><text x="460" y="104" text-anchor="middle">architect agent</text><text x="460" y="120" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">writes 9 files</text>
+              <rect x="570" y="20" width="180" height="44" rx="8" fill="var(--panel)" stroke="var(--ph2)"/><text x="660" y="47" text-anchor="middle" class="mono" font-size="11" fill="var(--ph2)">codekb/prior-auth-api/</text>
+              <rect x="570" y="84" width="180" height="44" rx="8" fill="var(--panel)" stroke="var(--ph2)"/><text x="660" y="111" text-anchor="middle" class="mono" font-size="11" fill="var(--ph2)">codekb/prior-auth-web/</text>
+              <text x="210" y="175" font-size="11" fill="var(--ink-soft)">greenfield: no code to scan; its practices come from the space memory and the contract</text>
+            </g>
+            <g color="var(--ink-soft)" stroke="currentColor" stroke-width="1.3" fill="none">
+              <path d="M160 42 H206" marker-end="url(#arr2)"/><path d="M350 42 H386" marker-end="url(#arr2)"/><path d="M530 42 H566" marker-end="url(#arr2)"/>
+              <path d="M160 106 H206" marker-end="url(#arr2)"/><path d="M350 106 H386" marker-end="url(#arr2)"/><path d="M530 106 H566" marker-end="url(#arr2)"/>
+            </g>
+          </svg>
+          <figcaption>The nine codekb files per repo: business-overview, architecture, code-structure,
+          api-documentation, component-inventory, technology-stack, dependencies, code-quality-assessment,
+          reverse-engineering-timestamp.</figcaption>
+        </figure>
+        <p>2.2 Practices Discovery drafts the team's practices. A quality inspector, a developer inspector, and
+        a devsecops inspector each review the draft without seeing the others' notes. After approval the
+        practices are promoted to <code>memory/team.md</code> and <code>project.md</code>. This is where the
+        repo-steering rule from step 01 gets confirmed. <span class="src aws">AWS v2</span></p>
+        <div class="callout risk"><b>Review tip</b>
+        Have the web lead check that <code>codekb/prior-auth-web/api-documentation.md</code> describes the API the web
+        app <em>actually calls</em>, not the API's own docs. Contract drift between repos shows up here first.</div>
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/codekb/prior-auth-api/architecture.md">codekb/prior-auth-api/*</button>
+          <button class="chip" data-file="aidlc/spaces/default/codekb/prior-auth-web/api-documentation.md">codekb/prior-auth-web/*</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/practices-discovery/team-practices.md">team-practices.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/memory/team.md">memory/team.md</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 4 ============ -->
+    <section class="step" id="s4" data-ph="2">
+      <header class="step-head"><span class="step-no">04</span><div>
+        <div class="step-phase">Phase 2 · Inception · stage 2.3 · Mob Elaboration</div>
+        <h2>Turn the intent into requirements, one answered question at a time</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>The mob: PO, UM director, nurse lead, 3 repo leads, compliance</dd></div>
+          <div><dt>AI-DLC</dt><dd>2.3 Requirements Analysis (always runs)</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Every <code>[Answer]:</code> filled, then Approve</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>No change</dd></div>
+        </dl>
+        <p>Questions go in <code>requirements-analysis-questions.md</code> as lettered options with a
+        mandatory <em>Other</em>, each with an <code>[Answer]:</code> tag. You can answer by
+        <em>Guide Me</em> (up to four at a time), <em>I'll Edit the File</em>, or <em>Chat</em>. Whichever you
+        choose, the file stays the source of truth, and every answer is recorded in the audit trail.
+        <span class="src aws">AWS v2</span></p>
+        <div class="artifact doc">
+          <div class="artifact-name"><b>inception/requirements-analysis/requirements-analysis-questions.md</b><span class="eng">excerpt · answered in the room</span></div>
+<pre><code>## Question 3
+When does the 72-hour clock start for an URGENT request?
+
+A. When the provider submits the request
+B. When the request is complete (all required documentation received)
+C. When a nurse first opens it
+X. Other (please specify)
+
+[Answer]: B. A request missing documentation shows "clock not started"
+and the provider is told what is missing. Decided by: UM director,
+confirmed by compliance.
+
+## Question 4
+Which repo owns the clock calculation?
+
+A. prior-auth-api computes decisionDueAt; consumers only display it
+B. Each consumer computes it from submittedAt
+X. Other (please specify)
+
+[Answer]: A. One clock, one owner. web and notify read decisionDueAt.</code></pre>
+        </div>
+        <div class="callout"><b>Cross-repo questions belong here</b>
+        Settle every question about ownership between repos (who computes, who stores, who emits) in
+        Requirements, not in Construction. Once Units Generation is approved, the repo set and unit boundaries
+        are fixed. A question that surfaces later costs a revision loop on an approved stage.</div>
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/requirements-analysis/requirements-analysis-questions.md">requirements-analysis-questions.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/requirements-analysis/requirements.md">requirements.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/audit/&lt;host&gt;-&lt;clone&gt;.md">audit/&lt;host&gt;-&lt;clone&gt;.md</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 5 ============ -->
+    <section class="step" id="s5" data-ph="2">
+      <header class="step-head"><span class="step-no">05</span><div>
+        <div class="step-phase">Phase 2 · Inception · stages 2.4–2.5 · then Rally</div>
+        <h2>Write the user stories, then mirror the work into Rally</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>PO approves stories; scrum master or PO imports to Rally</dd></div>
+          <div><dt>AI-DLC</dt><dd>2.4 User Stories (a mob of design, developer, and quality agents), 2.5 Refined Mockups (web)</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Approve stories; a human imports to Rally</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>Feature exists (step 02); stories are drafted now and imported after step 07</dd></div>
+        </dl>
+        <p>AI-DLC doesn't connect to Rally or Jira. Treat Rally as a reporting mirror that a human updates
+        at fixed gates. The AI drafts the import file, a human imports it, and the Rally IDs come back into
+        one map file. <span class="src conv">course convention</span></p>
+        <figure class="fig-fit">
+          <svg viewBox="0 0 760 300" role="img" aria-labelledby="rlT rlD">
+            <title id="rlT">AI-DLC to Rally mapping</title>
+            <desc id="rlD">Intent maps to a Rally Feature. Each unit of work maps to a Rally User Story tagged with its repo. AI-DLC user stories become acceptance criteria through the unit-to-story map. Bolts run inside Rally iterations. Gates move ScheduleState.</desc>
+            <defs><marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+            <text x="140" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ph2)">AI-DLC (source of truth)</text>
+            <text x="620" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="var(--rally)">Rally (mirror)</text>
+            <g font-size="12">
+              <rect x="20" y="34" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--ph2)"/><text x="140" y="58" text-anchor="middle">Intent · initiative-brief.md</text>
+              <rect x="20" y="88" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--ph2)"/><text x="140" y="112" text-anchor="middle">Unit of work (one per repo)</text>
+              <rect x="20" y="142" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--ph2)"/><text x="140" y="166" text-anchor="middle">User stories · stories.md</text>
+              <rect x="20" y="196" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--ph2)"/><text x="140" y="220" text-anchor="middle">Bolt (hours to days)</text>
+              <rect x="20" y="250" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--ph2)"/><text x="140" y="274" text-anchor="middle">Human gates</text>
+              <rect x="500" y="34" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--rally)"/><text x="620" y="58" text-anchor="middle">Feature (portfolio item)</text>
+              <rect x="500" y="88" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--rally)"/><text x="620" y="112" text-anchor="middle">User Story · tag repo:&lt;name&gt;</text>
+              <rect x="500" y="142" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--rally)"/><text x="620" y="166" text-anchor="middle">Acceptance criteria text</text>
+              <rect x="500" y="196" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--rally)"/><text x="620" y="220" text-anchor="middle">Iteration (reporting timebox)</text>
+              <rect x="500" y="250" width="240" height="38" rx="7" fill="var(--panel)" stroke="var(--rally)"/><text x="620" y="274" text-anchor="middle">ScheduleState</text>
+            </g>
+            <g color="var(--ink-soft)" stroke="currentColor" stroke-width="1.3" fill="none">
+              <path d="M262 53 H496" marker-end="url(#arr3)"/><path d="M262 107 H496" marker-end="url(#arr3)"/>
+              <path d="M262 161 H496" marker-end="url(#arr3)" stroke-dasharray="4 3"/>
+              <path d="M262 215 H496" marker-end="url(#arr3)" stroke-dasharray="4 3"/><path d="M262 269 H496" marker-end="url(#arr3)"/>
+            </g>
+            <g font-size="10.5" fill="var(--ink-soft)" text-anchor="middle">
+              <text x="380" y="47">1 : 1</text><text x="380" y="101">1 : 1</text><text x="380" y="155">via unit-of-work-story-map.md</text>
+              <text x="380" y="209">many bolts per iteration</text><text x="380" y="263">gate approved → state moves</text>
+            </g>
+          </svg>
+        </figure>
+        <div class="table-scroll"><table>
+          <thead><tr><th>AI-DLC gate (human)</th><th>Rally ScheduleState</th></tr></thead>
+          <tbody>
+            <tr><td>2.7 Units Generation approved + 2.9 bolt plan approved</td><td>Defined, with iteration assigned</td></tr>
+            <tr><td>3.5 code-generation plan approved for that unit</td><td>In-Progress</td></tr>
+            <tr><td>Unit checkpoint approved (verified)</td><td>Completed</td></tr>
+            <tr><td>3.6 Build and Test approved + PO acceptance</td><td>Accepted</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout info"><b>Pick your Rally level</b>
+        AWS's launch post says "Epics are replaced by Units of Work", so it puts units at epic level. If your
+        Rally workspace treats Features as epics, map intent → Initiative, unit → Feature, and each unit's
+        mapped stories → child User Stories, which carry the ScheduleState. The default above (unit → User
+        Story) suits small units like these three. Either way, keep one Rally item per unit, so each one
+        belongs to exactly one repo. <span class="src team">team decision</span></div>
+        <p>Run this after step 07, when the units and bolt plan are approved:</p>
+        <div class="engine-tabs">
+          <div class="engine-tab-btns" role="tablist">
+            <button class="active" data-engine="cc">Claude Code</button>
+            <button data-engine="cx">Codex CLI</button>
+          </div>
+          <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code — from the hub root, outside the /aidlc flow
+Read the approved artifacts in
+aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/
+(units-generation/, user-stories/stories.md, delivery-planning/bolt-plan.md).
+Write tracking/rally/261012-urgent-auth-72h/rally-import.csv with one
+User Story per unit of work: name, repo tag, unit tag, bolt tag, a
+description linking the unit's path, and acceptance criteria copied from
+the stories mapped in unit-of-work-story-map.md. Match the column
+headers to our Rally import template. Also write rally-map.md with a
+table unit | repo | Rally ID (blank). Do not edit anything under aidlc/.
+Do not call any Rally API.</code></pre>
+          </div>
+          <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI — from the hub root, outside the $aidlc flow
+Read the approved artifacts in
+aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/
+(units-generation/, user-stories/stories.md, delivery-planning/bolt-plan.md).
+Write tracking/rally/261012-urgent-auth-72h/rally-import.csv with one
+User Story per unit of work: name, repo tag, unit tag, bolt tag, a
+description linking the unit's path, and acceptance criteria copied from
+the stories mapped in unit-of-work-story-map.md. Match the column
+headers to our Rally import template. Also write rally-map.md with a
+table unit | repo | Rally ID (blank). Do not edit anything under aidlc/.
+Do not call any Rally API.</code></pre>
+          </div>
+        </div>
+        <div class="callout risk"><b>Keep Rally IDs out of approved artifacts</b>
+        Approved intent artifacts are reviewed and logged in the audit trail. Don't hand-edit Rally IDs into
+        them. Record the IDs in <code>rally-map.md</code> and in each repo's PR title, e.g.
+        <code>US1234 api-urgency-clock: …</code>. <span class="src conv">course convention</span></div>
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/user-stories/stories.md">stories.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/user-stories/personas.md">personas.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/refined-mockups/mockups.md">mockups.md</button>
+          <button class="chip" data-file="tracking/rally/261012-urgent-auth-72h/rally-import.csv">rally-import.csv</button>
+          <button class="chip" data-file="tracking/rally/261012-urgent-auth-72h/rally-map.md">rally-map.md</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 6 ============ -->
+    <section class="step" id="s6" data-ph="2">
+      <header class="step-head"><span class="step-no">06</span><div>
+        <div class="step-phase">Phase 2 · Inception · stages 2.6–2.8 · architecture</div>
+        <h2>Design the domain, cut one unit per repo, and agree the contract</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>Architect + all three repo leads</dd></div>
+          <div><dt>AI-DLC</dt><dd>2.6 Domain Design, 2.7 Units Generation, 2.8 Contract Design</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Approve units: the repo set and boundaries lock here</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>Units become User Stories (imported after step 07)</dd></div>
+        </dl>
+        <p>Domain Design writes <code>components.md</code> and an ADR log, <code>decisions.md</code>. Units
+        Generation writes the units, their dependency graph, and the unit-to-story map, and tags each unit
+        with a kind (<code>service</code>, <code>ui</code>, <code>spec</code>, …), which decides which design
+        documents it owes. Contract Design writes <code>contract-summary.md</code>, the inter-unit contracts.
+        <span class="src aws">AWS v2</span></p>
+        <figure class="fig-fit">
+          <svg viewBox="0 0 760 270" role="img" aria-labelledby="dagT dagD">
+            <title id="dagT">Unit dependency graph</title>
+            <desc id="dagD">U1 api-urgency-clock in prior-auth-api publishes the contract. U2 notify-service and U3 web-urgent-queue each depend only on the contract, so they can build in parallel against stubs.</desc>
+            <defs><marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+            <g font-size="12">
+              <rect x="20" y="92" width="220" height="84" rx="10" fill="var(--panel)" stroke="var(--ph3)" stroke-width="1.6"/>
+              <text x="36" y="116" font-weight="700" fill="var(--ph3)">U1 · api-urgency-clock</text>
+              <text x="36" y="136" class="mono" font-size="10.5" fill="var(--ink-soft)">kind: service · repo: prior-auth-api</text>
+              <text x="36" y="156" font-size="11">urgency, clock, queue order,</text><text x="36" y="170" font-size="11">events; publishes contract</text>
+              <rect x="300" y="104" width="160" height="60" rx="30" fill="var(--tint2)" stroke="var(--ph2)" stroke-dasharray="5 3"/>
+              <text x="380" y="128" text-anchor="middle" font-weight="600" fill="var(--ph2)">contract v1.1</text>
+              <text x="380" y="146" text-anchor="middle" class="mono" font-size="10" fill="var(--ink-soft)">OpenAPI + 2 event schemas</text>
+              <rect x="520" y="20" width="220" height="84" rx="10" fill="var(--panel)" stroke="var(--ph3)" stroke-width="1.6"/>
+              <text x="536" y="44" font-weight="700" fill="var(--ph3)">U2 · notify-service</text>
+              <text x="536" y="64" class="mono" font-size="10.5" fill="var(--ink-soft)">kind: service · repo: prior-auth-notify</text>
+              <text x="536" y="84" font-size="11">status + referenceId only (D-003)</text>
+              <rect x="520" y="166" width="220" height="84" rx="10" fill="var(--panel)" stroke="var(--ph3)" stroke-width="1.6"/>
+              <text x="536" y="190" font-weight="700" fill="var(--ph3)">U3 · web-urgent-queue</text>
+              <text x="536" y="210" class="mono" font-size="10.5" fill="var(--ink-soft)">kind: ui · repo: prior-auth-web</text>
+              <text x="536" y="230" font-size="11">badge, countdown, URGENT first</text>
+            </g>
+            <g color="var(--ink-soft)" stroke="currentColor" stroke-width="1.4" fill="none">
+              <path d="M240 134 H296" marker-end="url(#arr4)"/>
+              <path d="M460 124 C490 110 495 70 516 64" marker-end="url(#arr4)"/>
+              <path d="M460 144 C490 160 495 200 516 206" marker-end="url(#arr4)"/>
+            </g>
+            <text x="268" y="126" font-size="10" fill="var(--ink-soft)" text-anchor="middle">owns</text>
+            <text x="480" y="98" font-size="10" fill="var(--ink-soft)">builds vs stub</text>
+            <text x="480" y="186" font-size="10" fill="var(--ink-soft)">builds vs stub</text>
+          </svg>
+          <figcaption>Three units, one per repo. U2 and U3 depend on the <em>contract</em>, not on U1's
+          code, so they can build against stubs once the contract is approved.</figcaption>
+        </figure>
+        <div class="callout"><b>Two rules that make multi-repo work</b>
+        <b style="display:inline;font-family:inherit;font-size:inherit;text-transform:none;letter-spacing:0">1. One unit = one repo.</b>
+        During Construction each git operation is anchored to one repo, so a unit that spans two repos fights the engine.
+        <span class="src conv">course convention, follows from AWS v2's per-repo anchor</span><br>
+        <b style="display:inline;font-family:inherit;font-size:inherit;text-transform:none;letter-spacing:0">2. The contract is two artifacts.</b>
+        <code>contract-summary.md</code> in the hub is the design record. The machine-readable contract
+        (<code>prior-auth-api/contracts/</code>) is <em>code</em> that U1 generates, and consumers pin its version.
+        <span class="src conv">course convention</span></div>
+        <div class="artifact doc">
+          <div class="artifact-name"><b>inception/contract-design/contract-summary.md</b><span class="eng">excerpt</span></div>
+<pre><code>## C-1  AuthRequest (REST, prior-auth-api → web)
++ urgency: "STANDARD" | "URGENT"          default STANDARD (backward compatible)
++ decisionDueAt: ISO-8601 | null           null until the request is complete
+
+## C-2  determination.issued (event, api → notify, web)
+{ referenceId, status: AuthStatus, issuedAt }   — no clinical fields (D-003)
+
+## C-3  sla.at-risk (event, api → notify)
+{ referenceId, urgency, decisionDueAt }   — fires 24h before decisionDueAt</code></pre>
+        </div>
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/domain-design/components.md">components.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/domain-design/decisions.md">domain-design/decisions.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/units-generation/unit-of-work.md">unit-of-work.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/units-generation/unit-of-work-dependency.md">unit-of-work-dependency.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/units-generation/unit-of-work-story-map.md">unit-of-work-story-map.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/contract-design/contract-summary.md">contract-summary.md</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 7 ============ -->
+    <section class="step" id="s7" data-ph="2">
+      <header class="step-head"><span class="step-no">07</span><div>
+        <div class="step-phase">Phase 2 · Inception · stage 2.9 · then phase check</div>
+        <h2>Plan the bolts and pass the Inception check</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>Tech lead, PO</dd></div>
+          <div><dt>AI-DLC</dt><dd>2.9 Delivery Planning, then the Inception phase check</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Approve the bolt plan; the phase check must pass</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>Import the 3 stories (step 05 prompt); assign iteration</dd></div>
+        </dl>
+        <p>In v2 a bolt is a delivery slice covering one or more dependency-linked units.
+        <code>bolt-plan.md</code> records the grouping and the reasons without changing the dependency graph.
+        With the walking skeleton on, the first unit is built first as the smallest slice that works end to
+        end, and a human approves it before any later unit starts. <span class="src aws">AWS v2</span></p>
+        <figure class="fig-fit">
+          <svg viewBox="0 0 760 200" role="img" aria-labelledby="bT bD">
+            <title id="bT">Bolt timeline</title>
+            <desc id="bD">Bolt 1: U1 walking skeleton, checkpoint, then the rest of U1. Bolt 2: U2 and U3, serial by default or in parallel if the team opts into swarm execution.</desc>
+            <g font-size="11.5">
+              <line x1="20" y1="30" x2="740" y2="30" stroke="var(--line)"/>
+              <text x="20" y="20" fill="var(--ink-soft)" font-size="10.5" class="mono">time →</text>
+              <rect x="20" y="44" width="150" height="40" rx="7" fill="var(--ph3)" opacity=".22"/><rect x="20" y="44" width="150" height="40" rx="7" fill="none" stroke="var(--ph3)"/>
+              <text x="95" y="62" text-anchor="middle" font-weight="600">U1 skeleton</text><text x="95" y="77" text-anchor="middle" font-size="10" fill="var(--ink-soft)">urgency stored + returned</text>
+              <path d="M180 64 l9 -9 9 9 -9 9z" fill="var(--warn)"/>
+              <rect x="208" y="44" width="200" height="40" rx="7" fill="var(--ph3)" opacity=".14"/><rect x="208" y="44" width="200" height="40" rx="7" fill="none" stroke="var(--ph3)"/>
+              <text x="308" y="62" text-anchor="middle" font-weight="600">U1 rest</text><text x="308" y="77" text-anchor="middle" font-size="10" fill="var(--ink-soft)">clock · queue order · events</text>
+              <path d="M418 64 l9 -9 9 9 -9 9z" fill="var(--warn)"/>
+              <text x="214" y="104" font-size="10.5" fill="var(--ph3)" font-weight="600">BOLT 1</text>
+              <rect x="446" y="44" width="140" height="40" rx="7" fill="var(--ph3)" opacity=".14"/><rect x="446" y="44" width="140" height="40" rx="7" fill="none" stroke="var(--ph3)"/>
+              <text x="516" y="68" text-anchor="middle" font-weight="600">U2 notify</text>
+              <rect x="596" y="44" width="140" height="40" rx="7" fill="var(--ph3)" opacity=".14"/><rect x="596" y="44" width="140" height="40" rx="7" fill="none" stroke="var(--ph3)"/>
+              <text x="666" y="68" text-anchor="middle" font-weight="600">U3 web</text>
+              <text x="452" y="104" font-size="10.5" fill="var(--ph3)" font-weight="600">BOLT 2 · default: one unit at a time</text>
+              <rect x="446" y="124" width="200" height="30" rx="7" fill="none" stroke="var(--ph3)" stroke-dasharray="4 3"/><text x="546" y="143" text-anchor="middle">U2 notify</text>
+              <rect x="446" y="160" width="200" height="30" rx="7" fill="none" stroke="var(--ph3)" stroke-dasharray="4 3"/><text x="546" y="179" text-anchor="middle">U3 web</text>
+              <text x="656" y="150" font-size="10.5" fill="var(--ink-soft)">opt-in parallel</text><text x="656" y="164" font-size="10.5" fill="var(--ink-soft)">("run the units</text><text x="656" y="178" font-size="10.5" fill="var(--ink-soft)">in parallel")</text>
+            </g>
+          </svg>
+          <figcaption>◆ = human checkpoint. The default for new solo work is one unit at a time, with a verified
+          checkpoint after each. Parallel units need stage-major order with swarm execution; you can switch
+          by asking in plain words. <span class="src aws">AWS v2</span></figcaption>
+        </figure>
+        <div class="callout risk"><b>Known limit: team-owned units</b>
+        v2's team mode, where each person claims a unit in their own checkout, currently requires a
+        single-repo intent. For this three-repo intent, one conductor runs Construction and the repo leads
+        review at each unit checkpoint. <span class="src aws">AWS v2 limitation</span></div>
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/delivery-planning/bolt-plan.md">bolt-plan.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/inception/delivery-planning/risk-and-sequencing-rationale.md">risk-and-sequencing-rationale.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/verification/phase-check-inception.md">phase-check-inception.md</button>
+          <button class="chip" data-file="tracking/rally/261012-urgent-auth-72h/rally-map.md">rally-map.md (IDs filled)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 8 ============ -->
+    <section class="step" id="s8" data-ph="3">
+      <header class="step-head"><span class="step-no">08</span><div>
+        <div class="step-phase">Phase 3 · Construction · stages 3.1–3.5, per unit</div>
+        <h2>Design, plan, then generate code into the right repo</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>Conductor at the hub; the owning repo lead at each gate</dd></div>
+          <div><dt>AI-DLC</dt><dd>Functional → NFR reqs → NFR design → infra → code generation</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Plan approval before code; verified unit checkpoint after</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>Plan approved → In-Progress; checkpoint → Completed</dd></div>
+        </dl>
+        <p>Each unit's artifacts go to <code>construction/&lt;unit&gt;/&lt;stage&gt;/</code> in the hub. Its
+        code goes to the sibling repo, because the hub never holds application code. Code Generation always
+        starts with <code>code-generation-plan.md</code>, and plan approval is the one switch that only
+        a human can turn off. <span class="src aws">AWS v2</span></p>
+        <div class="engine-tabs">
+          <div class="engine-tab-btns" role="tablist">
+            <button class="active" data-engine="cc">Claude Code</button>
+            <button data-engine="cx">Codex CLI</button>
+          </div>
+          <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code — resume the active intent at the hub
+/aidlc
+# at a gate, reply in plain words:
+Approve
+# or
+Request Changes: the queue must order URGENT by decisionDueAt, not createdAt</code></pre>
+          </div>
+          <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI — resume the active intent at the hub
+$aidlc
+# at a gate, reply in plain words:
+Approve
+# or
+Request Changes: the queue must order URGENT by decisionDueAt, not createdAt</code></pre>
+          </div>
+        </div>
+        <div class="artifact doc">
+          <div class="artifact-name"><b>construction/api-urgency-clock/code-generation/code-generation-plan.md</b><span class="eng">approve before any code</span></div>
+<pre><code># Code generation plan — api-urgency-clock   (repo: prior-auth-api)
+- [ ] 1. Add Urgency enum (STANDARD | URGENT); add urgency, completeAt,
+         decisionDueAt to AuthRequest. Default STANDARD.
+- [ ] 2. DecisionClock: dueAt = completeAt + 72h (URGENT)
+         | + 7 calendar days (STANDARD). Requirements Q3, ADR-002.
+- [ ] 3. Nurse review queue: URGENT first, then decisionDueAt ascending.
+- [ ] 4. Emit determination.issued {referenceId, status, issuedAt}. D-003.
+- [ ] 5. Emit sla.at-risk 24h before decisionDueAt if no determination.
+- [ ] 6. Publish contracts/openapi.yaml and contracts/events/*.json v1.1.0.
+- [ ] 7. Tests: auto_approves_exactly_at_threshold stays green (D-001);
+         urgent_sorts_first; due_at_is_72h_from_complete; no_clinical_fields_in_events.</code></pre>
+        </div>
+        <h3>The per-repo branch and PR</h3>
+        <p>The engine anchors each git operation to one repo. On top of that, use the same branch name in every repo and
+        put the Rally ID and the intent path in each PR. A reviewer in any repo can then find the whole feature.
+        <span class="src conv">course convention</span></p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Repo</th><th>Branch</th><th>PR title</th><th>Merges</th></tr></thead>
+          <tbody>
+            <tr><td><code>prior-auth-api</code></td><td><code>feat/urgent-auth-72h</code></td><td><code>US1201 api-urgency-clock</code></td><td>first; additive and backward compatible</td></tr>
+            <tr><td><code>prior-auth-notify</code></td><td><code>feat/urgent-auth-72h</code></td><td><code>US1202 notify-service</code></td><td>after api's contract v1.1.0 is published</td></tr>
+            <tr><td><code>prior-auth-web</code></td><td><code>feat/urgent-auth-72h</code></td><td><code>US1203 web-urgent-queue</code></td><td>after api is deployed</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout"><b>Repo rules still win</b>
+        The engine runs from the hub, so the step-01 rule in <code>memory/project.md</code> does real work here. The plan
+        for U1 must cite D-001 and D-003 from <code>prior-auth-api/docs/decisions.md</code>. If a plan changes a
+        recorded rule without saying so, request changes. Don't approve it.</div>
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/construction/api-urgency-clock/functional-design/functional-spec.md">functional-spec.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/construction/api-urgency-clock/nfr-requirements/security-requirements.md">security-requirements.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/construction/api-urgency-clock/code-generation/code-generation-plan.md">code-generation-plan.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/construction/api-urgency-clock/code-generation/code-summary.md">code-summary.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/construction/api-urgency-clock/code-generation/traceability.json">traceability.json</button>
+          <button class="chip" data-file="prior-auth-api/contracts/openapi.yaml">prior-auth-api/contracts/*</button>
+          <button class="chip" data-file="prior-auth-api/src/**">prior-auth-api/src/**</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 9 ============ -->
+    <section class="step" id="s9" data-ph="3">
+      <header class="step-head"><span class="step-no">09</span><div>
+        <div class="step-phase">Phase 3 · Construction · stages 3.6–3.7, once</div>
+        <h2>Test across the repo boundary, not just inside each repo</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>QA lead + repo leads</dd></div>
+          <div><dt>AI-DLC</dt><dd>3.6 Build and Test, 3.7 CI Pipeline</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Approve test results; Construction phase check passes</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>PO acceptance → Accepted</dd></div>
+        </dl>
+        <p>Build and Test runs once, after all units. Each repo's own suite passing is necessary but not
+        enough. The three checks below are where a multi-repo feature actually breaks.</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Check</th><th>Proves</th><th>Lives in</th></tr></thead>
+          <tbody>
+            <tr><td>Provider contract test</td><td>api serves exactly contract v1.1.0</td><td><code>prior-auth-api</code> tests</td></tr>
+            <tr><td>Consumer contract tests</td><td>web and notify accept v1.1.0, including <code>urgency</code> absent (old clients)</td><td>each consumer repo</td></tr>
+            <tr><td>End-to-end path</td><td>URGENT request → top of queue → determination → notice with status + referenceId only</td><td>recorded in <code>build-and-test/test-results.md</code></td></tr>
+          </tbody>
+        </table></div>
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/construction/build-and-test/build-instructions.md">build-instructions.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/construction/build-and-test/test-results.md">test-results.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/construction/ci-pipeline/quality-gates.md">quality-gates.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/verification/phase-check-construction.md">phase-check-construction.md</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 10 ============ -->
+    <section class="step" id="s10" data-ph="4">
+      <header class="step-head"><span class="step-no">10</span><div>
+        <div class="step-phase">Phase 4 · Operation · stages 4.1–4.7 · then close-out</div>
+        <h2>Deploy in contract order, watch the clock, and copy decisions back to the repos</h2></div></header>
+      <div class="step-body">
+        <dl class="meta">
+          <div><dt>Who</dt><dd>Release owner, on-call, UM director</dd></div>
+          <div><dt>AI-DLC</dt><dd>Pipeline, deploy, observability, incident response, feedback</dd></div>
+          <div class="gate"><dt>Gate</dt><dd>Approve each deploy; Operation phase check</dd></div>
+          <div class="rally"><dt>Rally</dt><dd>Feature closed</dd></div>
+        </dl>
+        <ol>
+          <li><b>Deploy api first.</b> The change is additive, so old web and notify keep working.</li>
+          <li><b>Then notify.</b> It starts consuming the two new events.</li>
+          <li><b>Then web.</b> It shows the badge and countdown once the API returns <code>decisionDueAt</code>.</li>
+        </ol>
+        <p>Observability Setup writes the SLO. Here that is the share of URGENT requests determined within
+        72 hours of becoming complete, with the <code>sla.at-risk</code> alarm as the early warning. Incident
+        Response writes the runbook that on-call uses when that alarm fires.</p>
+        <h3>Close-out: make the feature's decisions outlive the feature</h3>
+        <p>The intent record stays in the hub. Each repo, though, needs the decisions it must keep honoring. Copy every
+        ADR from <code>domain-design/decisions.md</code> that constrains a repo into that repo's
+        <code>docs/decisions.md</code> as a new entry linking back to the intent. Then fold any new cross-repo practice
+        into <code>memory/project.md</code>. <span class="src conv">course convention</span></p>
+        <div class="artifact doc">
+          <div class="artifact-name"><b>prior-auth-api/docs/decisions.md</b><span class="eng">new entry at close-out</span></div>
+<pre><code>## D-005 — The urgent decision clock starts when the request is complete
+
+**Decision:** decisionDueAt = completeAt + 72h for URGENT, + 7 calendar
+days for STANDARD. prior-auth-api is the only component that computes it.
+
+**Why:** regulatory timeframe as read by compliance; one owner prevents
+three clocks drifting apart across api, web and notify.
+
+**Decided by:** UM director with compliance, in Mob Elaboration.
+**Source:** aidlc/spaces/default/intents/261012-urgent-auth-72h/
+inception/requirements-analysis/requirements-analysis-questions.md (Q3, Q4)</code></pre>
+        </div>
+        <div class="files"><span class="files-label">Writes</span>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/operation/deployment-pipeline/rollback-runbook.md">rollback-runbook.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/operation/deployment-execution/deployment-log.md">deployment-log.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/operation/observability-setup/slo-config.md">slo-config.md</button>
+          <button class="chip" data-file="aidlc/spaces/default/intents/261012-urgent-auth-72h/operation/incident-response/runbooks.md">runbooks.md</button>
+          <button class="chip" data-file="prior-auth-api/docs/decisions.md">prior-auth-api/docs/decisions.md</button>
+          <button class="chip" data-file="prior-auth-notify/docs/decisions.md">prior-auth-notify/docs/decisions.md</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EXPLORER ============ -->
+    <section class="block" id="explorer">
+      <h2>Where does every file go? Click any file</h2>
+      <p>The whole workspace after this run. Pick a file to see which stage writes it, who approves it,
+      whether it is committed, and how it relates to Rally. Every "Writes" chip above opens its file here.</p>
+      <div class="x-filter" role="group" aria-label="Filter by home">
+        <button class="active" data-filter="all">all</button>
+        <button data-filter="hub">hub · aidlc/</button>
+        <button data-filter="repo">code repos</button>
+        <button data-filter="track">Rally tracking</button>
+        <button data-filter="local">local only</button>
+      </div>
+      <div class="explorer">
+        <div class="x-tree" id="xTree" aria-label="Workspace files"></div>
+        <div class="x-detail" id="xDetail" aria-live="polite"><p class="empty">Select a file on the left.</p></div>
+      </div>
+    </section>
+
+    <!-- ============ GATES ============ -->
+    <section class="block" id="gates">
+      <h2>Gate checklist</h2>
+      <p>Seventeen gates in run order. Tick them off during the run or print the page for the room. Ticks
+      last only for this page view; the engine's own record of approvals is the audit trail.</p>
+      <div class="panel">
+        <ol class="checklist" id="checklist"></ol>
+        <p style="margin:14px 0 0"><button class="btn" id="printBtn" type="button">Print checklist</button>
+        <button class="btn ghost" id="resetBtn" type="button">Clear ticks</button><span class="progress" id="gateProgress"></span></p>
+      </div>
+    </section>
+
+    <!-- ============ PARITY ============ -->
+    <section class="block" id="parity">
+      <h2>Claude Code ↔ Codex CLI</h2>
+      <p>The method, stages, gates, and artifacts are the same on both engines. Only the shell differs.
+      <span class="src aws">AWS v2</span></p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Concern</th><th>Claude Code</th><th>Codex CLI</th></tr></thead>
+        <tbody>
+          <tr><td>Project setup</td><td><code>aidlc config --harness claude</code></td><td><code>aidlc config --harness codex</code></td></tr>
+          <tr><td>Invoke / resume</td><td><code>/aidlc</code></td><td><code>$aidlc</code></td></tr>
+          <tr><td>Engine directory</td><td><code>.claude/</code></td><td><code>.codex/</code></td></tr>
+          <tr><td>AI-DLC onboarding file</td><td><code>.claude/CLAUDE.md</code></td><td><code>.codex/onboarding.md</code> + <code>developer_instructions</code> in <code>.codex/config.toml</code></td></tr>
+          <tr><td>First-run extra</td><td>none</td><td><code>/hooks</code> → trust the AI-DLC hooks; project must be a Git repo</td></tr>
+          <tr><td>Repo steering (each repo)</td><td><code>CLAUDE.md</code> → <code>@AGENTS.md</code> + <code>@docs/decisions.md</code></td><td><code>AGENTS.md</code></td></tr>
+          <tr><td>Intent record, gates, artifacts</td><td colspan="2">Identical: <code>aidlc/spaces/…</code>. Teammates on different engines can share one intent.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ============ V1 ============ -->
+    <section class="block" id="v1">
+      <h2>If your team is still on v1 rules</h2>
+      <p>v1 is the copy-in rules release (<code>core-workflow.md</code> + <code>.aidlc-rule-details/</code>), now
+      maintained on the <code>v1</code> branch. It writes one <code>aidlc-docs/</code> folder and has no concept
+      of sibling repos. To run v1 across three repos, open the engine at a hub folder holding
+      <code>aidlc-docs/</code> and add the step-01 rules yourself (one unit = one repo, contract-first).
+      That part is your own convention. <span class="src aws">v1 layout</span> <span class="src conv">multi-repo use</span></p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Artifact</th><th>v1 · <code>aidlc-docs/</code></th><th>v2 · <code>aidlc/spaces/&lt;space&gt;/…</code></th></tr></thead>
+        <tbody>
+          <tr><td>Workflow state</td><td><code>aidlc-state.md</code></td><td><code>intents/&lt;id&gt;/aidlc-state.md</code></td></tr>
+          <tr><td>Audit trail</td><td><code>audit.md</code> (one file)</td><td><code>intents/&lt;id&gt;/audit/&lt;host&gt;-&lt;clone&gt;.md</code> (per-clone shards)</td></tr>
+          <tr><td>Reverse engineering</td><td><code>inception/reverse-engineering/</code></td><td><code>codekb/&lt;repo&gt;/</code>, one per repo, reused across intents</td></tr>
+          <tr><td>Requirements</td><td><code>inception/requirements/requirements.md</code></td><td><code>…/inception/requirements-analysis/requirements.md</code></td></tr>
+          <tr><td>Stories</td><td><code>inception/user-stories/stories.md</code></td><td><code>…/inception/user-stories/stories.md</code></td></tr>
+          <tr><td>Design</td><td><code>inception/application-design/</code></td><td><code>…/inception/domain-design/</code> (components + ADR log)</td></tr>
+          <tr><td>Units</td><td><code>inception/application-design/unit-of-work*.md</code></td><td><code>…/inception/units-generation/</code></td></tr>
+          <tr><td>Contracts / bolts</td><td>none</td><td><code>…/contract-design/</code>, <code>…/delivery-planning/bolt-plan.md</code></td></tr>
+          <tr><td>Execution plan</td><td><code>inception/plans/execution-plan.md</code></td><td>scope plan in <code>aidlc-state.md</code></td></tr>
+          <tr><td>Code plan per unit</td><td><code>construction/plans/&lt;unit&gt;-code-generation-plan.md</code></td><td><code>…/construction/&lt;unit&gt;/code-generation/code-generation-plan.md</code></td></tr>
+          <tr><td>Build and test</td><td><code>construction/build-and-test/</code></td><td><code>…/construction/build-and-test/</code></td></tr>
+          <tr><td>Operations</td><td>placeholder</td><td><code>…/operation/</code>, 7 conditional stages</td></tr>
+          <tr><td>Multi-repo</td><td>not supported</td><td>sibling repos, <code>repos.json</code>, per-repo git anchor</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ============ SOURCES ============ -->
+    <section class="block foot" id="sources">
+      <h2 style="font-size:1.2rem">Sources</h2>
+      <p>AWS facts are pinned to AI-DLC Workflows release <code>v2.11.0</code> (2026-10-08) unless marked v1.
+      Paths and command names were checked against these pages; the Rally mapping, the one-unit-per-repo
+      rule, the steering pointer, and the ADR copy-over are this course's conventions.</p>
+      <ul>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/README.md">AI-DLC Workflows README</a> — install, harness table</li>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/docs/guide/03-spaces-and-intents.md">Spaces and intents</a> — workspace layout, multi-repo intents, <code>repos.json</code></li>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/docs/guide/04-phases-and-stages.md">Phases and stages</a> — 33 stages, gates, unit-major vs stage-major, walking skeleton</li>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/docs/guide/05-scopes-and-depth.md">Scopes, depth, and test strategy</a> — the 11 scopes</li>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/docs/guide/10-state-and-audit.md">State and audit</a> — <code>aidlc-state.md</code>, audit shards</li>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/docs/guide/12-cli-commands.md">CLI commands</a> — <code>--repos</code>, <code>--repo</code>, workspace-sync, team-unit limit</li>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/docs/guide/14-artifacts-reference.md">Artifacts reference</a> — every artifact path in the explorer</li>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/docs/guide/harnesses/README.md">Harnesses</a> and <a href="https://github.com/awslabs/aidlc-workflows/blob/v2.11.0/docs/guide/harnesses/codex-cli.md">Codex CLI</a> — onboarding files, <code>$aidlc</code>, hooks trust</li>
+        <li><a href="https://github.com/awslabs/aidlc-workflows/blob/v1/docs/GENERATED_DOCS_REFERENCE.md">v1 generated docs reference</a> — the v1 column</li>
+        <li><a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/">AWS DevOps blog: AI-Driven Development Life Cycle</a> and <a href="https://aws.amazon.com/blogs/devops/open-sourcing-adaptive-workflows-for-ai-driven-development-life-cycle-ai-dlc/">Open-sourcing adaptive workflows for AI-DLC</a></li>
+        <li><a href="https://www.cms.gov/newsroom/fact-sheets/cms-interoperability-and-prior-authorization-final-rule-cms-0057-f">CMS fact sheet: CMS-0057-F</a> — decision timeframes (regulatory context only)</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script>
+/* ---------- copy buttons: same helper as course/index.html ---------- */
+function addCopyButton(pre) {
+  if (pre.parentElement.classList.contains("copy-wrap")) return;
+  const wrap = document.createElement("div");
+  wrap.className = "copy-wrap" + (pre.closest(".artifact.doc") ? " light" : "");
+  pre.parentNode.insertBefore(wrap, pre);
+  wrap.appendChild(pre);
+  pre.classList.add("copy-target");
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "copy-btn";
+  btn.textContent = "Copy";
+  btn.setAttribute("aria-label", "Copy this code block");
+  btn.addEventListener("click", () => copyBlock(pre.textContent.replace(/\r\n/g, "\n"), btn));
+  wrap.appendChild(btn);
+}
+function copyBlock(text, btn) {
+  const settle = ok => {
+    btn.textContent = ok ? "Copied ✓" : "Copy failed";
+    btn.classList.toggle("copied", ok);
+    btn.classList.toggle("failed", !ok);
+    clearTimeout(btn._resetT);
+    btn._resetT = setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied", "failed"); }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => settle(true), () => settle(legacyCopy(text)));
+  } else {
+    settle(legacyCopy(text));
+  }
+}
+function legacyCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.cssText = "position:fixed;top:0;left:-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
+}
+document.querySelectorAll("pre").forEach(addCopyButton);
+
+/* ---------- engine tabs ---------- */
+document.querySelectorAll(".engine-tabs").forEach(tabs => {
+  tabs.querySelectorAll(".engine-tab-btns button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const eng = btn.dataset.engine;
+      tabs.querySelectorAll(".engine-tab-btns button").forEach(b => b.classList.toggle("active", b === btn));
+      tabs.querySelectorAll(".engine-pane").forEach(p => p.classList.toggle("active", p.dataset.engine === eng));
+    });
+  });
+});
+
+/* ---------- file explorer data ----------
+   Stage facts come from the AWS v2.11.0 artifacts reference; `conv` marks this course's conventions. */
+const I = "aidlc/spaces/default/intents/261012-urgent-auth-72h/";
+const S = {
+  setup:  { stage: "Workspace setup (before the lifecycle)", step: "s1", by: "Tech lead / aidlc CLI", gate: "none: aidlc doctor is green" },
+  config: { stage: "aidlc config --harness …", step: "s1", by: "aidlc CLI (generated)", gate: "none", note: "Engine-owned. Don't hand-edit; re-run aidlc config to refresh." },
+  sync:   { stage: "aidlc system workspace-sync", step: "s1", by: "aidlc CLI (generated)", gate: "none" },
+  "0":    { stage: "0.1–0.3 Initialization", step: "s2", by: "Engine (deterministic, no AI)", gate: "none: Initialization has no gates" },
+  "1.1":  { stage: "1.1 Intent Capture", step: "s2", by: "AI, from the room's answers", gate: "Approve / Request Changes: PO + UM director" },
+  "1.2":  { stage: "1.2 Market Research", step: "s2", by: "AI", gate: "Approve: tech lead (build notify vs buy a messaging vendor)" },
+  "1.3":  { stage: "1.3 Feasibility", step: "s2", by: "AI", gate: "Approve: tech lead + compliance" },
+  "1.4":  { stage: "1.4 Scope Definition", step: "s2", by: "AI", gate: "Approve: PO + tech lead" },
+  "1.5":  { stage: "1.5 Team Formation", step: "s2", by: "AI", gate: "Approve: engineering manager" },
+  "1.6":  { stage: "1.6 Rough Mockups", step: "s2", by: "AI", gate: "Approve: PO + nurse lead" },
+  "1.7":  { stage: "1.7 Approval & Handoff", step: "s2", by: "AI", gate: "Approve: go/no-go for the whole initiative", rally: "After approval, a human creates the Rally Feature from this brief." },
+  "2.1":  { stage: "2.1 Reverse Engineering (per repo)", step: "s3", by: "Developer agent scans, architect agent writes", gate: "Approve: that repo's lead", note: "Space-level store, reused by later intents while still current." },
+  "2.2":  { stage: "2.2 Practices Discovery", step: "s3", by: "Lead drafts; quality, developer, devsecops inspect", gate: "Approve: tech lead; then promoted to memory/" },
+  "2.3":  { stage: "2.3 Requirements Analysis (Mob Elaboration)", step: "s4", by: "AI asks; the mob answers", gate: "Approve: after every [Answer]: is filled" },
+  "2.4":  { stage: "2.4 User Stories (agent mob)", step: "s5", by: "Lead + design, developer, quality agents", gate: "Approve: PO" },
+  "2.5":  { stage: "2.5 Refined Mockups", step: "s5", by: "AI", gate: "Approve: PO + nurse lead (web)" },
+  "2.6":  { stage: "2.6 Domain Design", step: "s6", by: "AI (architect)", gate: "Approve: architect" },
+  "2.7":  { stage: "2.7 Units Generation", step: "s6", by: "AI", gate: "Approve: tech lead. Repo set and unit boundaries lock here", rally: "Each unit becomes one Rally User Story tagged repo:<name>." },
+  "2.8":  { stage: "2.8 Contract Design", step: "s6", by: "AI", gate: "Approve: api lead + both consumer leads" },
+  "2.9":  { stage: "2.9 Delivery Planning", step: "s7", by: "AI (delivery agent)", gate: "Approve: tech lead + PO", rally: "Stories imported and assigned to an iteration after approval." },
+  vI:     { stage: "Phase check: Inception → Construction", step: "s7", by: "Engine verification", gate: "Must pass before Construction" },
+  "3.1":  { stage: "3.1 Functional Design (per unit)", step: "s8", by: "AI", gate: "Unit checkpoint: owning repo lead" },
+  "3.2":  { stage: "3.2 NFR Requirements (per unit)", step: "s8", by: "AI", gate: "Unit checkpoint: owning repo lead" },
+  "3.3":  { stage: "3.3 NFR Design (per unit)", step: "s8", by: "AI", gate: "Unit checkpoint: owning repo lead" },
+  "3.4":  { stage: "3.4 Infrastructure Design (per unit)", step: "s8", by: "AI", gate: "Unit checkpoint: owning repo lead" },
+  "3.5":  { stage: "3.5 Code Generation (per unit)", step: "s8", by: "AI", gate: "Plan approval before code; verified unit checkpoint after", rally: "Plan approved → In-Progress; checkpoint approved → Completed." },
+  code:   { stage: "3.5 Code Generation: output", step: "s8", by: "AI, anchored to this repo (--repo)", gate: "Unit checkpoint, then the repo's normal PR review", note: "Application code never lives in the hub." },
+  "3.6":  { stage: "3.6 Build and Test (once)", step: "s9", by: "AI", gate: "Approve: QA lead + repo leads", rally: "With PO acceptance → Accepted." },
+  "3.7":  { stage: "3.7 CI Pipeline", step: "s9", by: "AI", gate: "Approve: tech lead" },
+  vC:     { stage: "Phase check: Construction → Operation", step: "s9", by: "Engine verification", gate: "Must pass before Operation" },
+  "4.1":  { stage: "4.1 Deployment Pipeline", step: "s10", by: "AI", gate: "Approve: release owner" },
+  "4.2":  { stage: "4.2 Environment Provisioning", step: "s10", by: "AI", gate: "Approve: platform owner" },
+  "4.3":  { stage: "4.3 Deployment Execution", step: "s10", by: "AI", gate: "Approve each deploy: api → notify → web" },
+  "4.4":  { stage: "4.4 Observability Setup", step: "s10", by: "AI", gate: "Approve: on-call + UM director (SLO)" },
+  "4.5":  { stage: "4.5 Incident Response", step: "s10", by: "AI", gate: "Approve: on-call lead" },
+  "4.6":  { stage: "4.6 Performance Validation", step: "s10", by: "AI", gate: "Approve: tech lead" },
+  "4.7":  { stage: "4.7 Feedback & Optimization", step: "s10", by: "AI", gate: "Approve: PO", rally: "Feature closed." },
+  vO:     { stage: "Phase check: Operation → complete", step: "s10", by: "Engine verification", gate: "Intent status → complete" },
+  vx:     { stage: "Phase checks (each phase boundary)", step: "map", by: "Engine verification", gate: "Must pass to cross the boundary" },
+  audit:  { stage: "Every stage", step: "s4", by: "Engine hooks (append-only)", gate: "n/a: it records the gates", note: "Every artifact write, answer and gate decision. Query with aidlc engine audit history." },
+  state:  { stage: "Every stage", step: "s2", by: "Engine", gate: "n/a", note: "Stage checkboxes: [ ] → [-] → [?] awaiting you → [x]; [R] revising, [S] skipped." },
+  steer:  { stage: "Owned by the repo team", step: "s1", by: "Humans (AI may propose)", gate: "the repo's normal PR review", note: "Read before any change in this repo (rule in memory/project.md)." },
+  adr:    { stage: "Close-out", step: "s10", by: "AI drafts; repo lead approves", gate: "the repo's PR review", note: "ADR copy-over: new D-### entries link back to the intent.", conv: true },
+  mem:    { stage: "2.2 promotion, plus close-out", step: "s3", by: "Engine promotion, plus tech lead edits", gate: "Approve at 2.2", note: "Loaded into every stage of every intent in this space." },
+  rally:  { stage: "After 2.9 (import) and at each gate (status)", step: "s5", by: "AI drafts; a human imports", gate: "a human imports; no API call", conv: true },
+  local:  { stage: "Engine runtime", step: "s1", by: "Engine", gate: "n/a", note: "Gitignored, machine-local. Never commit." }
+};
+const F = [
+  ["repos.json","setup"], [".gitignore","sync"], ["aidlc.code-workspace","sync"],
+  [".claude/CLAUDE.md","config"], [".codex/onboarding.md","config"], [".codex/config.toml","config"], ["AGENTS.md","config"],
+  ["aidlc/active-space","local"],
+  ["aidlc/spaces/default/memory/org.md","mem"], ["aidlc/spaces/default/memory/team.md","mem"], ["aidlc/spaces/default/memory/project.md","mem"],
+  ["aidlc/spaces/default/knowledge/documents/cms-0057-f-summary.md","mem"],
+  ...["business-overview","architecture","code-structure","api-documentation","component-inventory","technology-stack","dependencies","code-quality-assessment","reverse-engineering-timestamp"]
+     .flatMap(n => [["aidlc/spaces/default/codekb/prior-auth-api/"+n+".md","2.1"],["aidlc/spaces/default/codekb/prior-auth-web/"+n+".md","2.1"]]),
+  ["aidlc/spaces/default/intents/intents.json","0"], ["aidlc/spaces/default/intents/active-intent","local"],
+  [I+"aidlc-state.md","state"], [I+"audit/<host>-<clone>.md","audit"], [I+".aidlc-engine/","local"],
+  [I+"verification/phase-check-initialization.md","vx"], [I+"verification/phase-check-ideation.md","vx"],
+  [I+"verification/phase-check-inception.md","vI"], [I+"verification/phase-check-construction.md","vC"], [I+"verification/phase-check-operation.md","vO"],
+  [I+"initialization/workspace-scaffold/scaffold-report.md","0"], [I+"initialization/workspace-detection/workspace-findings.md","0"], [I+"initialization/state-init/state-init-summary.md","0"],
+  [I+"ideation/intent-capture/intent-capture-questions.md","1.1"], [I+"ideation/intent-capture/intent-statement.md","1.1"], [I+"ideation/intent-capture/stakeholder-map.md","1.1"],
+  [I+"ideation/market-research/competitive-analysis.md","1.2"], [I+"ideation/market-research/build-vs-buy.md","1.2"],
+  [I+"ideation/feasibility/feasibility-assessment.md","1.3"], [I+"ideation/feasibility/constraint-register.md","1.3"], [I+"ideation/feasibility/raid-log.md","1.3"],
+  [I+"ideation/scope-definition/scope-document.md","1.4"], [I+"ideation/scope-definition/intent-backlog.md","1.4"],
+  [I+"ideation/team-formation/team-assessment.md","1.5"], [I+"ideation/team-formation/mob-composition.md","1.5"],
+  [I+"ideation/rough-mockups/wireframes.md","1.6"], [I+"ideation/rough-mockups/user-flow.md","1.6"],
+  [I+"ideation/approval-handoff/initiative-brief.md","1.7"], [I+"ideation/approval-handoff/decision-log.md","1.7"],
+  [I+"inception/practices-discovery/team-practices.md","2.2"], [I+"inception/practices-discovery/discovered-rules.md","2.2"],
+  [I+"inception/requirements-analysis/requirements-analysis-questions.md","2.3"], [I+"inception/requirements-analysis/requirements.md","2.3"],
+  [I+"inception/user-stories/stories.md","2.4"], [I+"inception/user-stories/personas.md","2.4"],
+  [I+"inception/refined-mockups/mockups.md","2.5"], [I+"inception/refined-mockups/interaction-spec.md","2.5"], [I+"inception/refined-mockups/accessibility-checklist.md","2.5"],
+  [I+"inception/domain-design/components.md","2.6"], [I+"inception/domain-design/decisions.md","2.6"],
+  [I+"inception/units-generation/unit-of-work.md","2.7"], [I+"inception/units-generation/unit-of-work-dependency.md","2.7"], [I+"inception/units-generation/unit-of-work-story-map.md","2.7"],
+  [I+"inception/contract-design/contract-summary.md","2.8"],
+  [I+"inception/delivery-planning/bolt-plan.md","2.9"], [I+"inception/delivery-planning/team-allocation.md","2.9"], [I+"inception/delivery-planning/risk-and-sequencing-rationale.md","2.9"], [I+"inception/delivery-planning/external-dependency-map.md","2.9"],
+  ...[["functional-design",["entities.md","rules.md","functional-spec.md"],"3.1"],
+      ["nfr-requirements",["security-requirements.md","performance-requirements.md","observability-requirements.md"],"3.2"],
+      ["nfr-design",["security-design.md","performance-design.md","observability-design.md"],"3.3"],
+      ["infrastructure-design",["infrastructure-specification.md","monitoring-design.md","cicd-pipeline.md"],"3.4"],
+      ["code-generation",["code-generation-plan.md","code-generation-questions.md","unit-test-instructions.md","code-summary.md","traceability.json","source-manifest.json"],"3.5"]]
+     .flatMap(([d, files, st]) => files.map(f => [I+"construction/api-urgency-clock/"+d+"/"+f, st])),
+  ...["notify-service","web-urgent-queue"].flatMap(u => [
+      [I+"construction/"+u+"/functional-design/functional-spec.md","3.1"],
+      [I+"construction/"+u+"/code-generation/code-generation-plan.md","3.5"],
+      [I+"construction/"+u+"/code-generation/code-summary.md","3.5"]]),
+  [I+"construction/build-and-test/build-instructions.md","3.6"], [I+"construction/build-and-test/test-results.md","3.6"],
+  [I+"construction/ci-pipeline/ci-config.md","3.7"], [I+"construction/ci-pipeline/quality-gates.md","3.7"],
+  [I+"operation/deployment-pipeline/cd-config.md","4.1"], [I+"operation/deployment-pipeline/deployment-strategy.md","4.1"], [I+"operation/deployment-pipeline/rollback-runbook.md","4.1"],
+  [I+"operation/environment-provisioning/environment-inventory.md","4.2"], [I+"operation/environment-provisioning/validation-report.md","4.2"],
+  [I+"operation/deployment-execution/deployment-log.md","4.3"], [I+"operation/deployment-execution/smoke-test-results.md","4.3"],
+  [I+"operation/observability-setup/dashboards.md","4.4"], [I+"operation/observability-setup/alarms.md","4.4"], [I+"operation/observability-setup/slo-config.md","4.4"],
+  [I+"operation/incident-response/runbooks.md","4.5"], [I+"operation/incident-response/incident-plan.md","4.5"], [I+"operation/incident-response/escalation-matrix.md","4.5"],
+  [I+"operation/performance-validation/load-test-plan.md","4.6"], [I+"operation/performance-validation/nfr-validation-matrix.md","4.6"],
+  [I+"operation/feedback-optimization/slo-report.md","4.7"], [I+"operation/feedback-optimization/cost-analysis.md","4.7"], [I+"operation/feedback-optimization/feedback-loop.md","4.7"],
+  ["tracking/rally/261012-urgent-auth-72h/rally-import.csv","rally"], ["tracking/rally/261012-urgent-auth-72h/rally-map.md","rally"],
+  ["prior-auth-api/AGENTS.md","steer"], ["prior-auth-api/CLAUDE.md","steer"], ["prior-auth-api/docs/decisions.md","adr"],
+  ["prior-auth-api/contracts/openapi.yaml","code"], ["prior-auth-api/contracts/events/determination.issued.json","code"], ["prior-auth-api/contracts/events/sla.at-risk.json","code"], ["prior-auth-api/src/**","code"],
+  ["prior-auth-web/AGENTS.md","steer"], ["prior-auth-web/CLAUDE.md","steer"], ["prior-auth-web/docs/decisions.md","adr"], ["prior-auth-web/src/**","code"],
+  ["prior-auth-notify/AGENTS.md","steer"], ["prior-auth-notify/CLAUDE.md","steer"], ["prior-auth-notify/docs/decisions.md","adr"], ["prior-auth-notify/src/**","code"]
+];
+const NOTES = {
+  "aidlc/spaces/default/memory/project.md": "Add the step-01 'Repo steering (multi-repo)' section here. (course convention)",
+  "aidlc/spaces/default/knowledge/documents/cms-0057-f-summary.md": "Example: your compliance team's summary of the rule, dropped into knowledge/documents so agents can read it.",
+  ".gitignore": "workspace-sync rewrites a managed block: one /<repo>/ line per sibling, so the hub never commits the code repos.",
+  "aidlc/spaces/default/intents/intents.json": "Registry row for this intent: uuid, slug, scope, repos [prior-auth-api, prior-auth-web, prior-auth-notify], status.",
+  "prior-auth-notify/AGENTS.md": "New repo: write its AGENTS.md before Construction, as a human-owned file. Start from prior-auth-api's and the contract.",
+  "prior-auth-api/contracts/openapi.yaml": "The machine-readable contract is code generated by U1; contract-summary.md in the hub is its design record. (course convention)",
+  [I+"inception/domain-design/decisions.md"]: "The feature's ADR log. At close-out, ADRs that constrain a repo are copied into that repo's docs/decisions.md.",
+  [I+"construction/api-urgency-clock/code-generation/source-manifest.json"]: "Engine-required manifest of the source the unit produced.",
+  "tracking/rally/261012-urgent-auth-72h/rally-map.md": "unit | repo | Rally ID. The only place Rally IDs are written in the hub."
+};
+function homeOf(p) {
+  const s = S[F.find(f => f[0] === p)[1]];
+  if (s === S.local) return "local";
+  if (p.startsWith("tracking/")) return "track";
+  if (p.startsWith("prior-auth-")) return "repo";
+  return "hub";
+}
+function committed(p, key) {
+  if (key === "local") return "No: gitignored, machine-local";
+  if (p.startsWith("prior-auth-")) return "Yes, in that repo (via its own PR)";
+  return "Yes, in the hub repo";
+}
+
+/* ---------- explorer render ---------- */
+const xTree = document.getElementById("xTree"), xDetail = document.getElementById("xDetail");
+const fileBtns = new Map();
+function buildTree() {
+  const root = {};
+  F.forEach(([p]) => {
+    const parts = p.split("/").filter(Boolean);
+    let node = root;
+    parts.forEach((part, i) => {
+      const leaf = i === parts.length - 1 && !p.endsWith("/");
+      if (leaf) { (node.__files = node.__files || []).push({ name: part, path: p }); }
+      else { node[part] = node[part] || {}; node = node[part]; }
+    });
+    if (p.endsWith("/")) { (node.__files = node.__files || []); node.__self = p; }
+  });
+  const ul = document.createElement("ul");
+  const top = document.createElement("li");
+  const d = document.createElement("details"); d.open = true;
+  const s = document.createElement("summary"); s.textContent = "prior-auth-workspace/";
+  d.appendChild(s); d.appendChild(renderNode(root, 0)); top.appendChild(d); ul.appendChild(top);
+  xTree.appendChild(ul);
+}
+function renderNode(node, depth) {
+  const ul = document.createElement("ul");
+  Object.keys(node).filter(k => !k.startsWith("__")).forEach(k => {
+    const li = document.createElement("li");
+    const det = document.createElement("details");
+    det.open = depth < 1 || ["aidlc","spaces","default","intents","261012-urgent-auth-72h"].includes(k);
+    const sum = document.createElement("summary");
+    sum.textContent = k + "/";
+    det.appendChild(sum);
+    if (node[k].__self) det.appendChild(fileBtn({ name: "(engine state dir)", path: node[k].__self }));
+    det.appendChild(renderNode(node[k], depth + 1));
+    li.appendChild(det); ul.appendChild(li);
+  });
+  (node.__files || []).forEach(f => { const li = document.createElement("li"); li.appendChild(fileBtn(f)); ul.appendChild(li); });
+  return ul;
+}
+function fileBtn(f) {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "x-file"; b.textContent = f.name;
+  b.dataset.path = f.path; b.dataset.home = homeOf(f.path);
+  b.addEventListener("click", () => select(f.path, false));
+  fileBtns.set(f.path, b);
+  return b;
+}
+function esc(t) { return String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function select(path, scroll) {
+  const entry = F.find(f => f[0] === path);
+  if (!entry) return;
+  const s = S[entry[1]], home = homeOf(path);
+  fileBtns.forEach(b => b.classList.toggle("sel", b.dataset.path === path));
+  const btn = fileBtns.get(path);
+  let el = btn; while (el && el !== xTree) { if (el.tagName === "DETAILS") el.open = true; el = el.parentElement; }
+  const homeLabel = { hub: "Hub · aidlc/ (feature record)", repo: "Code repo · " + path.split("/")[0], track: "Hub · tracking/ (Rally mirror)", local: "Local only" }[home];
+  const isConv = s.conv || home === "track" || path.endsWith("project.md");
+  const note = NOTES[path] || s.note || "";
+  xDetail.innerHTML =
+    '<div class="path">' + esc(path) + '</div>' +
+    '<dl>' +
+    '<dt>Home</dt><dd>' + esc(homeLabel) + '</dd>' +
+    '<dt>Written in</dt><dd>' + esc(s.stage) + '</dd>' +
+    '<dt>Written by</dt><dd>' + esc(s.by) + '</dd>' +
+    '<dt>Gate</dt><dd>' + esc(s.gate) + '</dd>' +
+    '<dt>Committed</dt><dd>' + esc(committed(path, entry[1])) + '</dd>' +
+    (s.rally ? '<dt>Rally</dt><dd>' + esc(s.rally) + '</dd>' : '') +
+    (note ? '<dt>Note</dt><dd>' + esc(note) + '</dd>' : '') +
+    '<dt>Source</dt><dd>' + (isConv ? '<span class="src conv">course convention</span>' : '<span class="src aws">AWS v2.11.0</span>') + '</dd>' +
+    '<dt>Runbook</dt><dd><a href="#' + s.step + '">jump to the step</a></dd>' +
+    '</dl>';
+  if (scroll) {
+    document.getElementById("explorer").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    btn.scrollIntoView({ block: "nearest" });
+  }
+}
+buildTree();
+document.querySelectorAll(".chip[data-file]").forEach(c => {
+  const p = c.dataset.file;
+  if (fileBtns.has(p)) c.dataset.home = homeOf(p);
+  c.title = "Show in the file explorer";
+  c.addEventListener("click", () => select(p, true));
+});
+document.querySelectorAll(".x-filter button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".x-filter button").forEach(x => x.classList.toggle("active", x === b));
+  const f = b.dataset.filter;
+  fileBtns.forEach(btn => { btn.parentElement.style.display = (f === "all" || btn.dataset.home === f) ? "" : "none"; });
+  xTree.querySelectorAll("details").forEach(d => {
+    const any = [...d.querySelectorAll(".x-file")].some(x => x.parentElement.style.display !== "none");
+    d.parentElement.style.display = any ? "" : "none";
+    if (f !== "all" && any) d.open = true;
+  });
+}));
+select(I + "inception/contract-design/contract-summary.md", false);
+
+/* ---------- gate checklist (in-memory only: no browser storage) ---------- */
+const GATES = [
+  ["1", "1.1 Intent statement approved", "PO + UM director"],
+  ["1", "1.4 Scope document approved", "PO + tech lead"],
+  ["1", "1.7 Initiative brief approved → create Rally Feature", "Sponsor"],
+  ["2", "2.1 codekb approved: prior-auth-api, prior-auth-web", "Each repo lead"],
+  ["2", "2.2 Practices promoted to memory/ (repo-steering rule included)", "Tech lead"],
+  ["2", "2.3 Requirements approved: every [Answer]: filled", "The mob"],
+  ["2", "2.4 User stories approved", "PO"],
+  ["2", "2.6 Domain design + ADR log approved", "Architect"],
+  ["2", "2.7 Units approved: one unit per repo; repo set locked", "Tech lead"],
+  ["2", "2.8 Contract summary approved", "api lead + web lead + notify lead"],
+  ["2", "2.9 Bolt plan approved → import Rally stories (Defined)", "Tech lead + PO"],
+  ["3", "U1 skeleton checkpoint approved", "api lead"],
+  ["3", "Per unit: code-generation plan approved → Rally In-Progress", "Owning repo lead"],
+  ["3", "Per unit: verified unit checkpoint → Rally Completed", "Owning repo lead"],
+  ["3", "3.6 Build and Test approved: contract + end-to-end", "QA lead"],
+  ["4", "Deploys approved in order: api → notify → web", "Release owner"],
+  ["4", "Close-out: ADRs copied into repo decisions.md; Rally Accepted; intent complete", "Tech lead + PO"]
+];
+const PHN = { "1": "Ideation", "2": "Inception", "3": "Construction", "4": "Operation" };
+const PHC = { "1": "var(--ph1)", "2": "var(--ph2)", "3": "var(--ph3)", "4": "var(--ph4)" };
+const cl = document.getElementById("checklist"), prog = document.getElementById("gateProgress");
+GATES.forEach(([ph, text, who], i) => {
+  const li = document.createElement("li");
+  li.style.setProperty("--phc", PHC[ph]);
+  const id = "g" + i;
+  li.innerHTML = '<input type="checkbox" id="' + id + '"><label for="' + id + '"><span class="st">' + PHN[ph] + '</span> · ' + esc(text) + '<span class="who">' + esc(who) + '</span></label>';
+  cl.appendChild(li);
+});
+function updateProg() { const n = cl.querySelectorAll("input:checked").length; prog.textContent = n + " / " + GATES.length + " gates"; }
+cl.addEventListener("change", updateProg); updateProg();
+document.getElementById("printBtn").addEventListener("click", () => window.print());
+document.getElementById("resetBtn").addEventListener("click", () => { cl.querySelectorAll("input").forEach(x => x.checked = false); updateProg(); });
+
+/* ---------- toc highlight ---------- */
+const tocLinks = [...document.querySelectorAll(".toc a")];
+const targets = tocLinks.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  targets.forEach(t => io.observe(t));
+}
+</script>
+</body>
+</html>
