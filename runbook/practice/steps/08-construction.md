@@ -120,6 +120,50 @@ changes undid earlier gate decisions:
 
 The approval reply named who confirmed each reversal. The audit trail now shows it.
 
+**The walking-skeleton checkpoint (M1) came with evidence, not a claim.** After Steps 1–8, the
+engine stopped and pasted output from its own run of the gate, separate from the developer
+agent's:
+
+```
+=== verify summary ===
+- Node check (engines): passed
+- npm ci: passed
+- typecheck: passed
+- lint + Prettier check: passed
+- build, then tests with coverage: passed
+- npm audit --omit=dev --audit-level=high: passed
+- secret scan (gitleaks): not run (gitleaks not on PATH)
+verify: PASSED
+
+Tests:       39 passed, 39 total
+All files   | % Stmts 93.08 | % Branch 91.42 | % Funcs 92.1 | % Lines 93.45
+
+through the built entry point (node dist/cli/main.js)
+  √ stores_an_urgent_request_and_reads_it_back_with_its_urgency (203 ms)
+```
+
+The skeleton proved the privacy point the reviewer had raised at the plan gate. `read`
+returns exactly `{referenceId, procedureCode, status, urgency, submittedAt}`, so `memberId`
+and `providerId` never come out.
+
+**It also listed its own shortfalls, unprompted:**
+
+> 1. **Failing-test evidence was recorded per test file, not per behaviour.** [...] Most of
+>    the first failures were "not implemented" errors, not the test's own assertion. [...]
+>    This falls short of the team's rule that each test is seen failing for the right reason.
+> 2. **Nothing is committed.** [...]
+> 5. **36 vulnerabilities in development-only packages** (1 critical). The gate's audit
+>    doesn't check development packages, so it doesn't see them.
+
+**The api lead re-ran the suite before approving** (39/39, `auto_approves_exactly_at_threshold`
+green, no diff in `src/domain`, `src/determination`, `AGENTS.md` or `CLAUDE.md`). The approval
+carried four rulings:
+
+- the test-first shortfall accepted for M1, with per-behaviour failing runs from Step 9 on;
+- the two new error names accepted;
+- the dev-dependency vulnerabilities recorded as a go-live item;
+- the three NFR design choices confirmed.
+
 <!-- RUN-QUOTES:08-CODE -->
 
 ## Under the hood
