@@ -8,6 +8,10 @@ the course presents them as AWS's own layout or vocabulary.
 **Line numbers** refer to `course/index.html` at commit `b774206`. They are approximate (±2) and point
 at the line where the claim starts.
 
+> **Status: closed, 2026-10-11.** Every annotate and rewrite item below is fixed, committed and
+> deployed to learnings.varasrinivas.com/ai-dlc-course/. See **Resolution log** for the commit per
+> item. Line numbers in the body still refer to `b774206`, before the fixes.
+
 ## Sources (pinned)
 
 AWS v2 (GA, tag `v2.11.0`, 2026-10-08 per release notes; README badge reads 2.11.0):
@@ -39,6 +43,8 @@ AWS blogs:
 | keep | 13 | M08, M15, M17, M20, M21, M24, M25, M26, M27, M28, M30, M32, M34 |
 | annotate | 17 | M01, M04, M05, M06, M07, M09, M10, M12, M13, M14, M16, M18, M19, M22, M23, M29, M31 |
 | rewrite | 7 | P00, P01, M00, M02, M03, M11, M33 |
+
+All 24 annotate and rewrite modules are now fixed.
 
 The "rewrite" status applies to specific sentences or table rows that are now factually wrong. No module
 needs a structural rebuild.
@@ -227,54 +233,82 @@ No code block in the course claims to be an official AI-DLC command. The course 
   The course's attribution ("as reported by AWS") matches the root CLAUDE.md, but no source URL is cited.
 - **Fix (annotate):** Add the primary-source URL and exact AWS wording to M04 (and to the M31 Blue Origin
   line). Until a source is confirmed, treat the numbers as unverified. See "Not verified" below.
+- **Resolved 2026-10-11 (`2162271`, `8221500`).** Primary sources found:
+  - Bedrock: 6 engineers, 76 days, against "30 engineers, 12 to 18 months"
+    (https://kiro.dev/case-studies/bedrock/). Jassy's 2025 shareholder letter says 40 engineers and a
+    full year, as quoted on AWS's AI-DLC financial-services blog, which calls the project's ways of
+    working "parts of what we refer to today as" AI-DLC
+    (https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/).
+  - Amazon Stores: "4.5x median productivity gain", not "developer velocity"; not AI-DLC-specific
+    (https://aws.amazon.com/about-aws/learn-from-amazon/).
+  - Blue Origin: "95% of software engineers already using generative AI tools to write code". That is
+    tool adoption, not AI-DLC adoption (https://aws.amazon.com/solutions/case-studies/blue-origin-case-study/).
+
+## Resolution log
+
+| Fix-order item | Commit | What changed |
+|---|---|---|
+| 1. M03 | `57e9c26` | AWS's bolt and unit definitions first; one unit per bolt named as the course's simplest case |
+| 10. Bolt rail | `24c328c` | Label "course bolt" plus a tooltip giving AWS's definition (done right after M03) |
+| C5 term | `d736d6a` | "AI-managed" → "AI-autonomous" in CLAUDE.md, the course, labs, curriculum map and the prior-auth-api README (user decision) |
+| 2. M00 | `dedec51` | Bolt lines, v2 five-phase callout, Epic → Unit of work bridge row, v2 harness and steering notes |
+| 3. P00 | `804044d` | Optional v2 `aidlc` CLI named; the course runs the method by hand; bolt lines; Project Rules marked v1-era |
+| 4. P01 + SETUP.md | `da16914` | Same install wording in both; transcripts re-run (api 4/4, web 5/5, both typechecks clean) |
+| 5. M02 | `72d8220` | AWS AI-DLC column of the Conductor/OpenSpec table |
+| 6. M11 | `e15ee98` | Stage library labelled as the course's model; semantic survey → 2.1; Mob Elaboration is a ritual; v2 extension points. M25 and M30 checked, no change |
+| 7. M33 | `55e2c33` | Epic → Unit of work (AWS), then story-sized units (course); lab and runbook callout aligned |
+| 8. M04 + CLAUDE.md | `2162271` | Evidence figures from primary sources (see C11); lab line 5 is now an inflated claim |
+| 8. M31 | `8221500` | Blue Origin's 95% no longer used as adoption-as-behavior |
+| 9. Annotations | `48b33ee`, `8b5c1ad` | One "In AWS's v2 workflows" callout each in M05–M07, M09, M10, M12–M14, M16, M18, M19, M23, M29; M16 stage map retitled to phases; M22 names note. M01 needed nothing after the term change |
+
+The runbook link from P00 is `dea96b7`. The P00 recap links to the runbook, which ships at
+`ai-dlc-course/runbook/` on the site.
 
 ## Per-module table
 
 | Module | Status | Versioned claims found | Fix note | Source |
 |---|---|---|---|---|
-| P00 | rewrite | "no npm package … never install the methodology" (~1294–1308, ~1359); "three AI-DLC phases every bolt has" (~712); "one unit = one bolt = one session" (~1240); steering names incl. Q Project Rules (~1054); "AI-managed" (~1151, sim ~7966) | C2: reword the install claim (v2 `aidlc` CLI exists; the course runs the method by hand). C1: reword the bolt lines. C5/C6: gloss only. Keep the "no npm package" half. | v2 README; glossary "Bolt" |
-| P01 | rewrite | "There is no package for AI-DLC … You never install it" (~1380); methodology row "nothing" (~1385); recap "Nothing installs AI-DLC" (~1639); "AWS's open-source methodology, not an AWS service" (~1390, OK) | C2: add a one-line note that AWS's v2 engine is optional and not used here. Update `SETUP.md` identically (root CLAUDE.md P01 rule). No transcript changes. | v2 README Quick Start |
-| M00 | rewrite | "three phases" (~1663); fig 0.1 "three phases per bolt" (~1704); recap "Three phases per bolt" (~1858); bridge row Story/task → Unit of work (~1713); "AWS demonstrates it with Amazon Q Developer and Kiro" (~1660); steering names (~1794); "AI-managed" (~1659, ~1725, ~1857) | C1 + C3 rewrite: bolt lines and bridge row. C4/C6 annotate: v2 has 5 phases and native Claude Code and Codex harnesses. C5 gloss is the user's decision. | glossary; 04-phases; blog (Epics → Units); harnesses/README |
-| M01 | annotate | "AI-managed" as AWS's anti-pattern name throughout (~1876–2014); two dimensions described correctly | C5: add "AWS: AI-autonomous" gloss if the user keeps the term. Content otherwise matches the blog. | 2025 blog |
-| M02 | rewrite | Conductor table: AWS AI-DLC "a methodology — nothing to install" (~2118); "Covers intent → construction → operations" (~2120); "unit of work inside a bolt" (~2119) | C2: change the cell to "a methodology plus an optional installable engine (v2 `aidlc`)". C4: note Initialization/Ideation. The two dimensions are correct. | v2 README; 04-phases |
-| M03 | rewrite | Bolt = "one complete pass — Inception, Construction, Operations" (~2224); fig 3.1 (~2283); recap (~2436); "Bolt close — Operations" ritual row (~2304); unit sizing rule (~2287) | C1: this is the canonical definition to fix first, framing one unit per bolt as the course's simplest case. C3: the sizing rule is the course's own; say so. | glossary "Bolt", "Unit of work" |
-| M04 | annotate | Bedrock 18 mo/30 devs → 6 engineers/76 days; Amazon Stores 4.5x; Blue Origin 95% (~2455–2558, fig ~2479) | C11: add the primary source URL and exact AWS wording. Not found in either blog. | not verified |
-| M05 | annotate | Inception pipeline intent → requirements → stories → UWs (~2578); intent as Inception input (~2574); questions at every joint (~2634) | C4: map to v2 1.1 Intent Capture (Ideation), 2.3 Requirements, 2.4 User Stories, 2.7 Units Generation, 2.9 Delivery Planning. C10: questions-file sidebar. | 04-phases; 07-interaction-modes |
-| M06 | annotate | Mob Elaboration mechanics (~2793–2879) presented as AI-DLC's ritual; decisions recorded in decisions.md | The ritual name comes from the 2025 blog. Note that v2 has no "Mob Elaboration" stage (2.4 User Stories is an agent mob) and that v2's questions file is the record of answers (C10). | 2025 blog; 04-phases "Mob" mode |
-| M07 | annotate | Construction = per-UW architecture proposal → plan → code + tests → review (~2989–3050) | C4: v2 runs 3.1 Functional Design, 3.2–3.4 NFR/Infra (conditional), 3.5 Code Generation (ALWAYS) per Unit, then 3.6 Build and Test once and 3.7 CI. Architecture sits at 2.6 Domain Design. v2 also has Plan Approval (matches). | 04-phases Phase 3 |
+| P00 | rewrite → **fixed** `804044d` | "no npm package … never install the methodology" (~1294–1308, ~1359); "three AI-DLC phases every bolt has" (~712); "one unit = one bolt = one session" (~1240); steering names incl. Q Project Rules (~1054); "AI-managed" (~1151, sim ~7966) | C2: reword the install claim (v2 `aidlc` CLI exists; the course runs the method by hand). C1: reword the bolt lines. C5/C6: gloss only. Keep the "no npm package" half. | v2 README; glossary "Bolt" |
+| P01 | rewrite → **fixed** `da16914` | "There is no package for AI-DLC … You never install it" (~1380); methodology row "nothing" (~1385); recap "Nothing installs AI-DLC" (~1639); "AWS's open-source methodology, not an AWS service" (~1390, OK) | C2: add a one-line note that AWS's v2 engine is optional and not used here. Update `SETUP.md` identically (root CLAUDE.md P01 rule). No transcript changes. | v2 README Quick Start |
+| M00 | rewrite → **fixed** `dedec51` | "three phases" (~1663); fig 0.1 "three phases per bolt" (~1704); recap "Three phases per bolt" (~1858); bridge row Story/task → Unit of work (~1713); "AWS demonstrates it with Amazon Q Developer and Kiro" (~1660); steering names (~1794); "AI-managed" (~1659, ~1725, ~1857) | C1 + C3 rewrite: bolt lines and bridge row. C4/C6 annotate: v2 has 5 phases and native Claude Code and Codex harnesses. C5 gloss is the user's decision. | glossary; 04-phases; blog (Epics → Units); harnesses/README |
+| M01 | annotate → **fixed** `d736d6a` | "AI-managed" as AWS's anti-pattern name throughout (~1876–2014); two dimensions described correctly | C5: add "AWS: AI-autonomous" gloss if the user keeps the term. Content otherwise matches the blog. | 2025 blog |
+| M02 | rewrite → **fixed** `72d8220` | Conductor table: AWS AI-DLC "a methodology — nothing to install" (~2118); "Covers intent → construction → operations" (~2120); "unit of work inside a bolt" (~2119) | C2: change the cell to "a methodology plus an optional installable engine (v2 `aidlc`)". C4: note Initialization/Ideation. The two dimensions are correct. | v2 README; 04-phases |
+| M03 | rewrite → **fixed** `57e9c26` | Bolt = "one complete pass — Inception, Construction, Operations" (~2224); fig 3.1 (~2283); recap (~2436); "Bolt close — Operations" ritual row (~2304); unit sizing rule (~2287) | C1: this is the canonical definition to fix first, framing one unit per bolt as the course's simplest case. C3: the sizing rule is the course's own; say so. | glossary "Bolt", "Unit of work" |
+| M04 | annotate → **fixed** `2162271` | Bedrock 18 mo/30 devs → 6 engineers/76 days; Amazon Stores 4.5x; Blue Origin 95% (~2455–2558, fig ~2479) | C11: add the primary source URL and exact AWS wording. Not found in either blog. | not verified |
+| M05 | annotate → **fixed** `48b33ee` | Inception pipeline intent → requirements → stories → UWs (~2578); intent as Inception input (~2574); questions at every joint (~2634) | C4: map to v2 1.1 Intent Capture (Ideation), 2.3 Requirements, 2.4 User Stories, 2.7 Units Generation, 2.9 Delivery Planning. C10: questions-file sidebar. | 04-phases; 07-interaction-modes |
+| M06 | annotate → **fixed** `48b33ee` | Mob Elaboration mechanics (~2793–2879) presented as AI-DLC's ritual; decisions recorded in decisions.md | The ritual name comes from the 2025 blog. Note that v2 has no "Mob Elaboration" stage (2.4 User Stories is an agent mob) and that v2's questions file is the record of answers (C10). | 2025 blog; 04-phases "Mob" mode |
+| M07 | annotate → **fixed** `48b33ee` | Construction = per-UW architecture proposal → plan → code + tests → review (~2989–3050) | C4: v2 runs 3.1 Functional Design, 3.2–3.4 NFR/Infra (conditional), 3.5 Code Generation (ALWAYS) per Unit, then 3.6 Build and Test once and 3.7 CI. Architecture sits at 2.6 Domain Design. v2 also has Plan Approval (matches). | 04-phases Phase 3 |
 | M08 | keep | Mob Construction ritual; two exits (sign-off / send-back) | Consistent with the blog and with v2 Approve / Request Changes. Optional: mention the v2 Unit checkpoint. | 2025 blog; 07-interaction-modes |
-| M09 | annotate | Operations as "deploy, observe, preserve context"; "one full bolt, phase by phase" (~3533) | C4: v1 Operations was a placeholder; v2 Operation has 4.1–4.7, all CONDITIONAL. The close-out is a course convention (fine). C1 for the recap line. | v1 README; 04-phases Phase 4 |
-| M10 | annotate | Adaptive rigor as a five-input dial; greenfield/brownfield detection signals incl. "steering file existence, commit history density" (~3549–3553) | C9: add v2 scopes (11) × depth (3), the composer, and rule-based Workspace Detection 0.2. The dial stays as a teaching model. | 05-scopes-and-depth; 04-phases 0.2 |
-| M11 | rewrite | "AI-DLC ships as an open-source workflow definition" (~3716); "standard library" stages `semantic-survey` and Mob Elaboration (~3721); six-field stage anatomy (~3720); engines "read the same stage text" | C8: label the format and examples as the course's model; map semantic-survey → 2.1 Reverse Engineering; Mob Elaboration is a ritual, not a v2 stage; v2 extension is plugins and `scope save`. | v2 README layout; 04-phases; 05 composer/scope save |
-| M12 | annotate | "semantic context building"; "That ratio … is what AI-DLC calls high semantics-per-token" (~3890) | Map to v2 2.1 Reverse Engineering (brownfield; 9 RE artifacts) and `aidlc/spaces/<space>/codekb/<repo>/`. The semantics-per-token phrase is not in v2 docs (see Not verified). | 04-phases 2.1; 03-spaces-and-intents |
-| M13 | annotate | Steering names table incl. Amazon Q "Project Rules" (~4053, ~4090–4095); three-layer memory hierarchy (~4040) | C6: v1 vs v2 placement note; v2 rules layering (org → team → project → phase → stage) under `aidlc/spaces/…/memory/`. The course's three layers stay as a teaching model. | v1 README; harnesses/README; glossary "Rule" |
-| M14 | annotate | CLAUDE.md as the steering file; project-root placement (~4235–4236) | Claude Code mechanics are fine. Add a C6 note: v1 copied `core-workflow.md` into CLAUDE.md (root or `.claude/`); v2 `aidlc config --harness claude` writes `.claude/CLAUDE.md` plus an `@`-import stub, so teams that adopt AWS's engine share that file with it. | v1 README; harnesses/README |
+| M09 | annotate → **fixed** `48b33ee` | Operations as "deploy, observe, preserve context"; "one full bolt, phase by phase" (~3533) | C4: v1 Operations was a placeholder; v2 Operation has 4.1–4.7, all CONDITIONAL. The close-out is a course convention (fine). C1 for the recap line. | v1 README; 04-phases Phase 4 |
+| M10 | annotate → **fixed** `48b33ee` | Adaptive rigor as a five-input dial; greenfield/brownfield detection signals incl. "steering file existence, commit history density" (~3549–3553) | C9: add v2 scopes (11) × depth (3), the composer, and rule-based Workspace Detection 0.2. The dial stays as a teaching model. | 05-scopes-and-depth; 04-phases 0.2 |
+| M11 | rewrite → **fixed** `e15ee98` | "AI-DLC ships as an open-source workflow definition" (~3716); "standard library" stages `semantic-survey` and Mob Elaboration (~3721); six-field stage anatomy (~3720); engines "read the same stage text" | C8: label the format and examples as the course's model; map semantic-survey → 2.1 Reverse Engineering; Mob Elaboration is a ritual, not a v2 stage; v2 extension is plugins and `scope save`. | v2 README layout; 04-phases; 05 composer/scope save |
+| M12 | annotate → **fixed** `8b5c1ad` | "semantic context building"; "That ratio … is what AI-DLC calls high semantics-per-token" (~3890) | Map to v2 2.1 Reverse Engineering (brownfield; 9 RE artifacts) and `aidlc/spaces/<space>/codekb/<repo>/`. The semantics-per-token phrase is not in v2 docs (see Not verified). | 04-phases 2.1; 03-spaces-and-intents |
+| M13 | annotate → **fixed** `8b5c1ad` | Steering names table incl. Amazon Q "Project Rules" (~4053, ~4090–4095); three-layer memory hierarchy (~4040) | C6: v1 vs v2 placement note; v2 rules layering (org → team → project → phase → stage) under `aidlc/spaces/…/memory/`. The course's three layers stay as a teaching model. | v1 README; harnesses/README; glossary "Rule" |
+| M14 | annotate → **fixed** `8b5c1ad` | CLAUDE.md as the steering file; project-root placement (~4235–4236) | Claude Code mechanics are fine. Add a C6 note: v1 copied `core-workflow.md` into CLAUDE.md (root or `.claude/`); v2 `aidlc config --harness claude` writes `.claude/CLAUDE.md` plus an `@`-import stub, so teams that adopt AWS's engine share that file with it. | v1 README; harnesses/README |
 | M15 | keep | Claude Code plan mode as the Inception gate | Engine fact, not an AWS versioned claim. Optional: v2 invokes with `/aidlc`. | — |
-| M16 | annotate | "The stage map: AI-DLC stages ↔ what you actually see in Claude Code" (~4635–4662) uses phase-level labels as "AI-DLC stage" names; "one unit of work per session" (~4556) | C4: retitle the table or add a column of v2 stage numbers. C1: one UW per session is the course rule; a v2 bolt may span several units. | 04-phases; glossary |
+| M16 | annotate → **fixed** `8b5c1ad` | "The stage map: AI-DLC stages ↔ what you actually see in Claude Code" (~4635–4662) uses phase-level labels as "AI-DLC stage" names; "one unit of work per session" (~4556) | C4: retitle the table or add a column of v2 stage numbers. C1: one UW per session is the course rule; a v2 bolt may span several units. | 04-phases; glossary |
 | M17 | keep | Claude Code permissions and hooks | Engine facts. Optional: v2's Claude harness installs its own hooks into `.claude/settings.json`; merge, don't overwrite. | harnesses/README |
-| M18 | annotate | "Parallel bolts with subagents"; serialise vs stub-decouple coupled units | C1: in v2 parallelism is Unit-level (stage-major `Construction Execution: swarm` batches, team mode); "parallel bolts" is course vocabulary. The dependency handling matches v2's Unit DAG. | 04-phases "What can run in parallel" |
-| M19 | annotate | Codex reads AGENTS.md at start (~5195); steering parity | C6: v1 Codex setup = `core-workflow.md` → root AGENTS.md plus `.aidlc-rule-details/`. v2 = `aidlc config --harness codex`, `$aidlc`, `.codex/onboarding.md`, a shared root AGENTS.md block, Codex ≥ 0.145.0, git repo required. | v1 README; harnesses/codex-cli |
+| M18 | annotate → **fixed** `8b5c1ad` | "Parallel bolts with subagents"; serialise vs stub-decouple coupled units | C1: in v2 parallelism is Unit-level (stage-major `Construction Execution: swarm` batches, team mode); "parallel bolts" is course vocabulary. The dependency handling matches v2's Unit DAG. | 04-phases "What can run in parallel" |
+| M19 | annotate → **fixed** `8b5c1ad` | Codex reads AGENTS.md at start (~5195); steering parity | C6: v1 Codex setup = `core-workflow.md` → root AGENTS.md plus `.aidlc-rule-details/`. v2 = `aidlc config --harness codex`, `$aidlc`, `.codex/onboarding.md`, a shared root AGENTS.md block, Codex ≥ 0.145.0, git repo required. | v1 README; harnesses/codex-cli |
 | M20 | keep | Codex plan-only contract; parity experiment | Course technique; no AWS versioned claim. | — |
 | M21 | keep | Codex sandbox and diff review | Engine facts. | — |
-| M22 | annotate | "The steering file has many names — CLAUDE.md, AGENTS.md, Project Rules, Kiro Steering" (~5676); "one methodology, many engines" | C6 names note. Opportunity: v2's own tagline is "one core, many harnesses"; cite it as corroboration. | v2 README |
-| M23 | annotate | Capstone "four bolts", each with one Mob Elaboration, sessions per UW, Mob Construction and a close (~5819–5820) | C1: v2 plans bolts at 2.9 Delivery Planning (`bolt-plan.md`). Note that the capstone backlog plays that role and each bolt here groups several UWs, which is closer to v2 than M03's 1:1 rule. | glossary; 04-phases 2.9 |
+| M22 | annotate → **fixed** `8b5c1ad` | "The steering file has many names — CLAUDE.md, AGENTS.md, Project Rules, Kiro Steering" (~5676); "one methodology, many engines" | C6 names note. Opportunity: v2's own tagline is "one core, many harnesses"; cite it as corroboration. | v2 README |
+| M23 | annotate → **fixed** `8b5c1ad` | Capstone "four bolts", each with one Mob Elaboration, sessions per UW, Mob Construction and a close (~5819–5820) | C1: v2 plans bolts at 2.9 Delivery Planning (`bolt-plan.md`). Note that the capstone backlog plays that role and each bolt here groups several UWs, which is closer to v2 than M03's 1:1 rule. | glossary; 04-phases 2.9 |
 | M24 | keep | Capstone bolt 1 | No AWS versioned claims. | — |
 | M25 | keep | Capstone bolt 2; PHI-review stage | Depends on M11's PHI stage (course-owned); no AWS claim. | — |
 | M26 | keep | Capstone bolt 3 | No AWS versioned claims. | — |
 | M27 | keep | Capstone bolt 4 | No AWS versioned claims. | — |
 | M28 | keep | Ship in rings; observe; next cycle | Course content. Optional: map to v2 4.1–4.7. | 04-phases Phase 4 |
-| M29 | annotate | "Per bolt: Mob Elaboration opens it, Mob Construction guards its increments, the bolt close writes it down" (~6814) | C1 wording. Optional: v2 team mode (`Unit Ownership: team`) and workshop scope as AWS's multi-person mechanics. | glossary; 04-phases |
+| M29 | annotate → **fixed** `8b5c1ad` | "Per bolt: Mob Elaboration opens it, Mob Construction guards its increments, the bolt close writes it down" (~6814) | C1 wording. Optional: v2 team mode (`Unit Ownership: team`) and workshop scope as AWS's multi-person mechanics. | glossary; 04-phases |
 | M30 | keep | Governance by construction; "stage library" references | Inherits M11's framing; no direct AWS claim. Optional: v2's 115-event audit trail as corroboration. | v2 README |
-| M31 | annotate | "Blue Origin's reported 95% was this shape" (~7103) | C11: needs a source; the interpretation ("this shape") is the course's and should say so. | not verified |
+| M31 | annotate → **fixed** `8221500` | "Blue Origin's reported 95% was this shape" (~7103) | C11: needs a source; the interpretation ("this shape") is the course's and should say so. | not verified |
 | M32 | keep | Rollout playbook | No AWS versioned claims. | — |
-| M33 | rewrite | Bridge table Epic → "A bolt (or a short run)", Story → "A unit of work" (~7417–7419; prose ~7370) | C3: AWS maps Epic → Unit of Work. Show AWS's mapping and then the course's finer slicing. Sprint → Bolt stays. | 2025 blog; glossary |
+| M33 | rewrite → **fixed** `55e2c33` | Bridge table Epic → "A bolt (or a short run)", Story → "A unit of work" (~7417–7419; prose ~7370) | C3: AWS maps Epic → Unit of Work. Show AWS's mapping and then the course's finer slicing. Sprint → Bolt stays. | 2025 blog; glossary |
 | M34 | keep | AWS Responsible AI dimensions ("six of the eight AWS names"); "AI-managed" echo (~7514) | RAI dimensions are AWS RAI, not AI-DLC versioned. The term is covered by C5 (user decision). | — |
 
 ## Not verified
 
-- **Evidence numbers** (Bedrock 76 days / 18-month-30-dev estimate / 6 engineers; Amazon Stores 4.5x; Blue
-  Origin 95%). They are absent from both cited AWS blogs and the v2 docs. The primary source and exact AWS
-  wording are not confirmed.
+- ~~**Evidence numbers**~~ Resolved: primary sources found and the course corrected. See C11.
 - **"Semantics-per-token" and "semantic context building"** as AWS terms. They are not in the v2 docs, the
   v2 glossary or the two blogs as fetched. They likely come from the AI-DLC method definition paper linked
   from the v2 README, which was not checked.
@@ -294,6 +328,8 @@ No code block in the course claims to be an official AI-DLC command. The course 
   re-read.
 
 ## Recommended fix order (one module per session)
+
+All ten items are done; see **Resolution log**.
 
 Follow the course workflow: run `/plan-module` → `/build-module` → `/build-lab` → `/validate-module` for
 each item, one module per session, and edit by injection only (never by rewriting index.html).
@@ -316,6 +352,6 @@ each item, one module per session, and edit by injection only (never by rewritin
 the new runbook at `runbook/multi-repo-feature.html` (written in the same session, after this audit
 ran), so the course modules need no multi-repo rewrite now. The runbook's Rally mapping (unit → User
 Story, with the epic-level alternative noted as a team decision) should match whatever M33 settles on in
-fix 7. An optional future **Track 8** could teach
+fix 7. (Done: M33 uses the same pair of mappings, and the runbook callout says so.) An optional future **Track 8** could teach
 running the course's method on AWS's v2 engine (`aidlc config`, spaces/intents, scopes, multi-repo
 intents). Planning it would need a root CLAUDE.md update first (track list, Lakeview beats).
