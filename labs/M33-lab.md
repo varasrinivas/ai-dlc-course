@@ -105,5 +105,5 @@ units of work, criteria that name their rule, a flagged dependency — is the de
 - [ ] `docs/M33-migration-inception.md` holds one sprint story converted to a bolt
       Inception: intent, 2-4 units of work, testable/traceable criteria.
 - [ ] At least one cross-unit dependency is flagged with a serialise-or-stub call.
-- [ ] You can point at how each piece would remap the Jira board (epic→bolt,
-      story→unit of work, criteria→M06 criteria).
+- [ ] You can point at how each piece would remap the Jira board (epic→unit of
+      work per AWS, sliced here into story-sized units that a bolt delivers; criteria→M06 criteria).
