@@ -2120,9 +2120,9 @@ codex
       <table class="bridge">
         <thead><tr><th></th><th>Conductor</th><th>OpenSpec</th><th>AWS AI-DLC</th></tr></thead>
         <tbody>
-          <tr><td>What it is</td><td>a CLI extension you install</td><td>a CLI + slash commands you install</td><td><b>a methodology — nothing to install</b></td></tr>
-          <tr><td>The unit</td><td>a "track": spec + <code>plan.md</code> with phases and tasks</td><td>a "change": proposal / specs / design / tasks folder</td><td>a unit of work inside a bolt</td></tr>
-          <tr><td>Covers</td><td>context → spec &amp; plan → implement</td><td>propose → specs → design → tasks → implement</td><td><b>intent → construction → operations</b>, plus the team layer</td></tr>
+          <tr><td>What it is</td><td>a CLI extension you install</td><td>a CLI + slash commands you install</td><td><b>a methodology</b>, plus an optional installable engine (AWS's v2 <code>aidlc</code> CLI)</td></tr>
+          <tr><td>The unit</td><td>a "track": spec + <code>plan.md</code> with phases and tasks</td><td>a "change": proposal / specs / design / tasks folder</td><td>a unit of work; a bolt delivers one or more of them</td></tr>
+          <tr><td>Covers</td><td>context → spec &amp; plan → implement</td><td>propose → specs → design → tasks → implement</td><td><b>intent → construction → operations</b> (v2 adds Initialization and Ideation up front), plus the team layer</td></tr>
           <tr><td>The team layer</td><td>you + the agent</td><td>you + the agent</td><td><b>Mob Elaboration, Mob Construction, leader track, governance, rollout metrics</b></td></tr>
           <tr><td>Memory model</td><td>product / tech-stack / workflow context files; plan state in <code>plan.md</code></td><td>the specs folder as living source of truth</td><td>steering + <b>decisions with their reasons</b>, carried across bolts and teams</td></tr>
         </tbody>
