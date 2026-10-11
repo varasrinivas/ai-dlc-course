@@ -2454,19 +2454,20 @@ codex
   minutes: 25,
   audience: "leader",
   body: `
-<p class="hook">The portal team's first bolts are working, and now the program needs funding to scale — which means Thursday's meeting with the CFO and the chief medical officer. The CFO has seen a decade of "10x" slideware and has one question ready: "Show me this working somewhere real, at scale, with numbers someone signed their name to." What exists is AWS's reported record for AI-DLC: one re-architecture, one velocity figure, one adoption rate. Your job on Thursday is to present those numbers honestly — including what made them possible and what they don't prove about your org — because the fastest way to lose a CFO is to get caught inflating someone else's results.</p>
+<p class="hook">The portal team's first bolts are working, and now the program needs funding to scale — which means Thursday's meeting with the CFO and the chief medical officer. The CFO has seen a decade of "10x" slideware and has one question ready: "Show me this working somewhere real, at scale, with numbers someone signed their name to." What exists is AWS's reported record: one re-architecture AWS ties to AI-DLC, and two wider results from AI-native development at Amazon and at a customer. Your job on Thursday is to present those numbers honestly — including what made them possible and what they don't prove about your org — because the fastest way to lose a CFO is to get caught inflating someone else's results.</p>
 
 <h2>Three results, as reported</h2>
-<p>The flagship is the <strong>Bedrock re-architecture</strong>: a body of work estimated at 18 months for 30 developers, delivered by 6 engineers in 76 days. That is a compression story — an estimate against a delivery — and it is the number every AI-DLC conversation eventually reaches.</p>
-<p>Two more results round out the record, and they measure different things. <strong>Amazon Stores</strong> reported <strong>4.5x developer velocity</strong> — a throughput claim. <strong>Blue Origin</strong> reported <strong>95% adoption</strong> — a behavior-change claim: engineers who tried the method kept working this way. Throughput can be gamed by definition games; sustained adoption is harder to fake. Quoting both together is stronger than either alone.</p>
-<p>One epistemic note, without cynicism: all three figures are self-reported by the methodology's author. That doesn't make them false — it makes attribution part of the claim. "As reported by AWS" is not hedging; it is how a credible leader cites a vendor's number.</p>
+<p>The flagship is the <strong>Bedrock re-architecture</strong>: six engineers rebuilt Amazon Bedrock's inference engine, now called Mantle, in 76 days. The estimate it beat depends on who tells it: AWS's Kiro case study says 30 engineers and 12 to 18 months; Andy Jassy's 2025 shareholder letter says 40 engineers and a full year. That is a compression story — an estimate against a delivery — and it is the one AWS connects to this method: its AI-DLC blog calls the project's ways of working "parts of what we refer to today as AI-Driven Development Lifecycle."</p>
+<p>Two more results are AWS-reported, and neither source names AI-DLC; both describe AI-native development at large. <strong>Amazon Stores</strong> reported a <strong>4.5x median productivity gain</strong> from AI coding assistants plus spec-driven development — a throughput claim, and "median" is doing honest work in it. <strong>Blue Origin</strong> reported that <strong>95% of its software engineers</strong> already use generative AI tools to write code — tool adoption, not method adoption. Quote each in its source's words: round Stores up to "velocity" or Blue Origin up to "AI-DLC adoption" and you have inflated someone else's number.</p>
+<p>Sources: <a href="https://kiro.dev/case-studies/bedrock/" target="_blank" rel="noopener">Kiro: Bedrock case study</a> · <a href="https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/" target="_blank" rel="noopener">AWS: AI-DLC for Financial Services (quotes the shareholder letter)</a> · <a href="https://aws.amazon.com/about-aws/learn-from-amazon/" target="_blank" rel="noopener">AWS: Learn from Amazon</a> · <a href="https://aws.amazon.com/solutions/case-studies/blue-origin-case-study/" target="_blank" rel="noopener">AWS: Blue Origin case study</a></p>
+<p>One epistemic note, without cynicism: all three figures are self-reported by AWS, which also authors the methodology and sells the tools. That doesn't make them false — it makes attribution part of the claim. "As reported by AWS" is not hedging; it is how a credible leader cites a vendor's number.</p>
 
 <h2>What made those work</h2>
 <p>The figures above are AWS's; what follows is this course's reading of them. Results like these come from conditions, not magic, and three conditions stand out — each one something this course has already named. <strong>Small modules:</strong> the work was sliced so an AI could hold a whole piece in context and a human could honestly review it — M03's unit-of-work sizing rule operating at codebase scale. <strong>Monorepo context:</strong> the AI could see the entire system, not fragments — context memory in its most literal form (and Track 3 shows how to build the equivalent when your estate is messier than a monorepo). <strong>Explicit errors:</strong> failure was loud and checkable rather than silently wrong — the validation-gate habit that M02's checkpoints started and M17 and Track 7 harden.</p>
 <p>This is the load-bearing insight for a leader: if the results rode on conditions, conditions are buildable. The 76 days is not a lottery ticket; it is what conditions like those make possible.</p>
 
 <aside class="analogy">
-<p>When friends ask why they trusted an architect-builder no one had heard of, Meera and Ravi don't quote the brochure — they describe the three finished houses they visited before signing. At the first, the owners showed them a build book so complete a new crew could start cold the next morning. At the second, a build estimated at a year and a half had closed in a season, and the owner credited day-sized work packages, not heroics. At the third, every county sign-off had passed on the first inspection. "We didn't buy their promises," Ravi says. "We bought their as-builts."</p>
+<p>When friends ask why they trusted an architect-builder no one had heard of, Meera and Ravi don't quote the brochure — they describe the three finished houses they visited before signing. At the first, the owners showed them a build book so complete a new crew could start cold the next morning. At the second, a build estimated at a year or more had closed in a season, and the owner credited day-sized work packages, not heroics. At the third, every county sign-off had passed on the first inspection. "We didn't buy their promises," Ravi says. "We bought their as-builts."</p>
 <span class="maps-to">maps to → <b>the three houses</b> = Bedrock, Amazon Stores, Blue Origin (as reported) · <b>day-sized packages</b> = small modules / units of work · <b>the complete build book</b> = monorepo context · <b>first-pass sign-offs</b> = explicit errors caught by gates</span>
 </aside>
 
@@ -2480,23 +2481,23 @@ codex
   <g font-family="JetBrains Mono, monospace" text-anchor="middle">
     <rect x="30" y="40" width="210" height="110" rx="10" fill="none" stroke="var(--t1)" stroke-width="2.5"/>
     <text x="135" y="68" font-size="11" fill="var(--t1)" font-weight="600" letter-spacing="1">BEDROCK RE-ARCH</text>
-    <text x="135" y="94" font-size="10" fill="var(--ink-soft)" text-decoration="line-through">est. 18 months · 30 devs</text>
+    <text x="135" y="94" font-size="10" fill="var(--ink-soft)" text-decoration="line-through">est. 12–18 months · 30 devs</text>
     <text x="135" y="116" font-size="10.5" fill="var(--ink)" font-weight="600">delivered: 76 days</text>
     <text x="135" y="132" font-size="10.5" fill="var(--ink)" font-weight="600">by 6 engineers</text>
 
     <rect x="275" y="40" width="210" height="110" rx="10" fill="none" stroke="var(--t1)" stroke-width="2.5"/>
     <text x="380" y="68" font-size="11" fill="var(--t1)" font-weight="600" letter-spacing="1">AMAZON STORES</text>
     <text x="380" y="104" font-size="15" fill="var(--ink)" font-weight="600">4.5x</text>
-    <text x="380" y="126" font-size="10" fill="var(--ink-soft)">developer velocity</text>
+    <text x="380" y="126" font-size="10" fill="var(--ink-soft)">median productivity gain</text>
 
     <rect x="520" y="40" width="210" height="110" rx="10" fill="none" stroke="var(--t1)" stroke-width="2.5"/>
     <text x="625" y="68" font-size="11" fill="var(--t1)" font-weight="600" letter-spacing="1">BLUE ORIGIN</text>
     <text x="625" y="104" font-size="15" fill="var(--ink)" font-weight="600">95%</text>
-    <text x="625" y="126" font-size="10" fill="var(--ink-soft)">adoption</text>
+    <text x="625" y="126" font-size="10" fill="var(--ink-soft)">of SWEs use gen-AI tools</text>
 
     <rect x="30" y="212" width="700" height="46" rx="9" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
     <text x="380" y="240" font-size="11" fill="var(--accent)" font-weight="600" letter-spacing="1">THE CONDITIONS — small modules · monorepo context · explicit errors</text>
-    <text x="380" y="288" font-size="9.5" fill="var(--ink-soft)">the three results: as reported by AWS · the conditions: this course's reading</text>
+    <text x="380" y="288" font-size="9.5" fill="var(--ink-soft)">the three results: as reported by AWS (only Bedrock is tied to AI-DLC) · the conditions: this course's reading</text>
   </g>
   <line x1="135" y1="208" x2="135" y2="156" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#m04arr)"/>
   <line x1="380" y1="208" x2="380" y2="156" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#m04arr)"/>
@@ -2526,17 +2527,17 @@ codex
     <div class="path-label">Path A — Understand It (no tooling)</div>
     <p>Six claim-lines from the internal one-pager pitching the portal program. Label each one <strong>OUTCOME-HONEST</strong>, <strong>OUTCOME-INFLATED</strong>, or <strong>CONDITION</strong>.</p>
 <pre><code>1  "AWS reports 6 engineers replaced 30."
-2  "Bedrock's 18-month estimate was delivered in 76 days,
-    as reported by AWS."
+2  "AWS reports 6 engineers rebuilt Bedrock's inference engine
+    in 76 days, against a 30-engineer, 12-18 month estimate."
 3  "4.5x velocity is guaranteed by the methodology."
-4  "Amazon Stores reported 4.5x developer velocity; definitions
-    of velocity vary — we will publish ours."
-5  "Blue Origin reached 95% adoption, which suggests engineers
+4  "Amazon Stores reported a 4.5x median productivity gain;
+    definitions vary — we will publish ours."
+5  "Blue Origin reached 95% AI-DLC adoption: its engineers
     chose to keep working this way."
 6  "Our pilot will publish its baseline turnaround before bolt 1."</code></pre>
     <p><strong>Check yourself:</strong> (1) What exactly is wrong with line 1? (2) Which single word makes line 3 indefensible? (3) Which lines would survive a hostile CFO fact-check unchanged?</p>
     <details><summary>Answers</summary>
-      <p>(1) It converts an estimate-vs-delivery comparison into a headcount-replacement claim — the 30 developers were an estimate's staffing, not people who were replaced. OUTCOME-INFLATED. (2) "Guaranteed" — it turns someone else's reported outcome into your promise. (3) Lines 2, 4, 5, and 6: each one attributes, qualifies, or commits to a condition. Line 5 earns it by marking "suggests" as interpretation; line 6 is the only pure CONDITION — and the most persuasive line on the page.</p>
+      <p>(1) It converts an estimate-vs-delivery comparison into a headcount-replacement claim — the 30 developers were an estimate's staffing, not people who were replaced. OUTCOME-INFLATED. (2) "Guaranteed" — it turns someone else's reported outcome into your promise (and "velocity" isn't what Stores measured). (3) Lines 2, 4, and 6: each one attributes, qualifies, or commits to a condition; line 6 is the only pure CONDITION — and the most persuasive line on the page. Line 5 fails the fact-check: AWS's source says 95% of Blue Origin's software engineers use generative AI tools to write code. That is tool adoption, and the source never mentions AI-DLC. OUTCOME-INFLATED.</p>
     </details>
   </div>
 
@@ -2548,7 +2549,7 @@ codex
       <li><strong>The pilot bar:</strong> one baseline (current auth-request turnaround), one metric with a number and a date, one counterfactual guard — plus the enabling condition your org is missing today (small modules? shared context? gates?) and the first move to build it.</li>
     </ol>
     <details><summary>A worked answer</summary>
-      <p><em>Evidence slide:</em> "AWS reports its Bedrock re-architecture — estimated at 18 months for 30 developers — was delivered by 6 engineers in 76 days. Amazon Stores reports 4.5x developer velocity under the same methodology. Blue Origin reports 95% adoption. All figures are AWS-reported; we treat them as what conditions like ours can produce, not as promises."</p>
+      <p><em>Evidence slide:</em> "AWS reports that six engineers rebuilt Amazon Bedrock's inference engine in 76 days, against an estimate of 30 engineers and 12–18 months, using practices AWS now counts as part of AI-DLC. AWS also reports a 4.5x median productivity gain at Amazon Stores from AI coding assistants and spec-driven development, and that 95% of Blue Origin's software engineers use generative AI tools to write code. All figures are AWS-reported, and the last two describe AI-native development broadly, not AI-DLC; we treat them as what conditions like ours can produce, not as promises."</p>
       <p><em>Pilot bar:</em> "Baseline: median prior-auth turnaround is 4.2 days, measured over the last 90 days, frozen before bolt 1. Metric: median turnaround under 24 hours for auto-approvable requests by end of quarter, with zero determinations lacking a nurse decision below the 0.85 threshold. Counterfactual guard: the claims-intake team, similar backlog, keeps its current process this quarter — we report our delta against theirs. Missing condition: our estate is not a monorepo and has no shared context artifact; first move is a steering file and decision log for the portal repos, starting this bolt."</p>
     </details>
   </div>
@@ -2557,7 +2558,7 @@ codex
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>The record, as reported by AWS: Bedrock's 18-month/30-dev estimate delivered by 6 engineers in 76 days; Amazon Stores 4.5x developer velocity; Blue Origin 95% adoption.</li>
+    <li>The record, as reported by AWS: 6 engineers rebuilt Bedrock's inference engine in 76 days against a 30-engineer, 12–18-month estimate, the one result AWS ties to AI-DLC; Amazon Stores a 4.5x median productivity gain; 95% of Blue Origin's software engineers using generative AI tools. Quote each in its source's words.</li>
     <li>The conditions this course reads into those results — small modules, monorepo context, explicit errors — map one-to-one onto AI-DLC practices you can build deliberately.</li>
     <li>Leaders quote outcomes with conditions attached; a pitch that skips the conditions is the tell of a bad case.</li>
     <li>Your pilot's evidence bar: a baseline, one honest metric with a date, and a counterfactual guard — the full measurement system arrives in M31.</li>

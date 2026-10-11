@@ -28,7 +28,7 @@ Two suggested paths are rendered in M00:
 | M01 | The Two Anti-Patterns | both | AI-autonomous (full autonomy) vs AI-assisted (narrow tasks); why both underdeliver; 10–15% vs transformative gains |
 | M02 | AI-DLC Core Principles | both | AI-powered execution with human oversight; dynamic team collaboration; AI plans, asks, defers critical decisions |
 | M03 | New Rituals & Vocabulary | both | Bolts (not sprints), Mob Elaboration, Mob Construction, units of work, context memory across the lifecycle |
-| M04 | The Evidence | leader | Bedrock re-architecture (30 devs/18 months → 6 devs/76 days), Amazon Stores 4.5x velocity, Blue Origin 95% adoption; what made those work (small modules, monorepo context, explicit errors) |
+| M04 | The Evidence | leader | Bedrock re-architecture (30 devs/12–18 months → 6 devs/76 days; the one AWS ties to AI-DLC), Amazon Stores 4.5x median productivity gain, 95% of Blue Origin SWEs using gen-AI tools; what made those work (small modules, monorepo context, explicit errors) |
 
 ## Track 2 — The Three Phases (color: #0d9488)
 

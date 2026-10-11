@@ -50,8 +50,17 @@ and Codex CLI** as interchangeable engines:
   selection); **semantic context building** for brownfield; high **semantics-per-token** ratio.
 - Steering files are one pattern with many names: CLAUDE.md (Claude Code), AGENTS.md (Codex),
   Project Rules (Amazon Q Developer), Steering (Kiro). Say this explicitly when relevant.
-- Evidence (cite as reported by AWS): Bedrock re-architecture — 18-month/30-dev estimate delivered
-  by 6 engineers in 76 days; Amazon Stores 4.5x developer velocity; Blue Origin 95% adoption.
+- Evidence (cite as reported by AWS, in each source's own words, with its link). Never call these
+  "developer velocity" or "AI-DLC adoption", and never say all three came from AI-DLC.
+  - Bedrock: six engineers rebuilt Amazon Bedrock's inference engine (Mantle) in 76 days, using
+    Kiro, against an estimate of 30 engineers and 12 to 18 months (https://kiro.dev/case-studies/bedrock/).
+    Andy Jassy's 2025 shareholder letter puts the estimate at 40 engineers and a full year. AWS's
+    AI-DLC blog says the project's ways of working are "parts of what we refer to today as AI-DLC"
+    (https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/). This is the only one of the three AWS ties to AI-DLC.
+  - Amazon Stores: a "4.5x median productivity gain" from AI coding assistants plus spec-driven
+    development (https://aws.amazon.com/about-aws/learn-from-amazon/). Not AI-DLC-specific.
+  - Blue Origin: "95% of software engineers already using generative AI tools to write code"
+    (https://aws.amazon.com/solutions/case-studies/blue-origin-case-study/). That is tool adoption, not AI-DLC adoption.
 
 ## Voice & writing standards
 

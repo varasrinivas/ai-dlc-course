@@ -10,12 +10,12 @@
 
 ```text
 1  "AWS reports 6 engineers replaced 30."
-2  "Bedrock's 18-month estimate was delivered in 76 days,
-    as reported by AWS."
+2  "AWS reports 6 engineers rebuilt Bedrock's inference engine
+    in 76 days, against a 30-engineer, 12-18 month estimate."
 3  "4.5x velocity is guaranteed by the methodology."
-4  "Amazon Stores reported 4.5x developer velocity; definitions
-    of velocity vary — we will publish ours."
-5  "Blue Origin reached 95% adoption, which suggests engineers
+4  "Amazon Stores reported a 4.5x median productivity gain;
+    definitions vary — we will publish ours."
+5  "Blue Origin reached 95% AI-DLC adoption: its engineers
     chose to keep working this way."
 6  "Our pilot will publish its baseline turnaround before bolt 1."
 ```
@@ -24,7 +24,7 @@
 1. Label each line OUTCOME-HONEST, OUTCOME-INFLATED, or CONDITION.
 2. For every outcome line, check three things: is it attributed, is it precise about what
    was measured, and is it presented as a report rather than a promise?
-3. Rewrite the two worst lines so they would survive a fact-check.
+3. Rewrite the inflated lines so they would survive a fact-check.
 
 **Check yourself:**
 1. What exactly is wrong with line 1?
@@ -36,17 +36,20 @@
 1. It converts an estimate-vs-delivery comparison into a headcount-replacement claim —
    the 30 developers were an estimate's staffing, not people who were replaced.
    OUTCOME-INFLATED.
-2. "Guaranteed" — it turns someone else's reported outcome into your promise.
-3. Lines 2, 4, 5, and 6: each one attributes, qualifies, or commits to a condition.
-   Line 5 earns it by marking "suggests" as interpretation; line 6 is the only pure
-   CONDITION — and the most persuasive line on the page.
+2. "Guaranteed" — it turns someone else's reported outcome into your promise (and
+   "velocity" isn't what Stores measured).
+3. Lines 2, 4, and 6: each one attributes, qualifies, or commits to a condition; line 6
+   is the only pure CONDITION — and the most persuasive line on the page. Line 5 fails
+   the fact-check: AWS's source says 95% of Blue Origin's software engineers use
+   generative AI tools to write code. That is tool adoption, and the source never
+   mentions AI-DLC. OUTCOME-INFLATED.
 
 </details>
 
 ## Path B — Lead It (decision exercise)
 
 **Scenario:** Thursday's funding meeting with the CFO and the chief medical officer. You
-present AWS's reported record for AI-DLC and your own pilot's evidence bar — and you will
+present AWS's reported record and your own pilot's evidence bar — and you will
 be fact-checked.
 
 **Your task:** draft two artifacts on one page.
@@ -59,11 +62,7 @@ be fact-checked.
 
 **Compare:** <details><summary>A worked answer</summary>
 
-*Evidence slide:* "AWS reports its Bedrock re-architecture — estimated at 18 months for 30
-developers — was delivered by 6 engineers in 76 days. Amazon Stores reports 4.5x developer
-velocity under the same methodology. Blue Origin reports 95% adoption. All
-figures are AWS-reported; we treat them as what conditions like ours can produce, not as
-promises."
+*Evidence slide:* "AWS reports that six engineers rebuilt Amazon Bedrock's inference engine in 76 days, against an estimate of 30 engineers and 12–18 months, using practices AWS now counts as part of AI-DLC. AWS also reports a 4.5x median productivity gain at Amazon Stores from AI coding assistants and spec-driven development, and that 95% of Blue Origin's software engineers use generative AI tools to write code. All figures are AWS-reported, and the last two describe AI-native development broadly, not AI-DLC; we treat them as what conditions like ours can produce, not as promises."
 
 *Pilot bar:* "Baseline: median prior-auth turnaround is 4.2 days, measured over the last
 90 days, frozen before bolt 1. Metric: median turnaround under 24 hours for auto-approvable
@@ -77,7 +76,7 @@ and decision log for the portal repos, starting this bolt."
 
 ## Done when
 
-- [ ] All six pitch lines are labeled, and the two inflated ones are rewritten with
+- [ ] All six pitch lines are labeled, and the inflated ones are rewritten with
       attribution and precision.
 - [ ] Your evidence slide cites all three results in one sentence each, each carrying
       "as reported by AWS" or equivalent attribution.
