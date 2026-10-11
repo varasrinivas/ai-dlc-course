@@ -1658,10 +1658,11 @@ which is the only reason this page exists.</div>
 
 <h2>What this course teaches</h2>
 <p>AI-DLC is AWS's open-source methodology for building software with AI as a first-class collaborator. It is not a tool. It is a way of working: AI drafts the plans, asks the clarifying questions, and writes most of the code — while humans validate every consequential decision. The methodology rejects two familiar anti-patterns: <strong>AI-autonomous</strong> development (hand the AI a wish and hope) and <strong>AI-assisted</strong> development (AI as a fancy autocomplete on narrow tasks). Both leave most of the value on the table.</p>
-<p>Because AI-DLC is a methodology, it does not care which agentic engine executes it. AWS demonstrates it with Amazon Q Developer and Kiro; this course runs it on <strong>Claude Code</strong> and <strong>OpenAI Codex CLI</strong> — two engines, one operating protocol. Every hands-on lab gives you both variants, and by Track 5 you will be able to choose between them deliberately.</p>
+<p>Because AI-DLC is a methodology, it does not care which agentic engine executes it. AWS launched it with Amazon Q Developer and Kiro, and its current v2 workflows ship native setups for several engines, Claude Code and Codex CLI among them. This course runs it on <strong>Claude Code</strong> and <strong>OpenAI Codex CLI</strong> — two engines, one operating protocol. Every hands-on lab gives you both variants, and by Track 5 you will be able to choose between them deliberately.</p>
 
 <h2>The three phases, at a glance</h2>
-<p>AI-DLC organizes work into three phases. <strong>Inception</strong> turns business intent into requirements, stories, and units of work — with the whole team validating the AI's proposals in a ritual called <strong>Mob Elaboration</strong>. <strong>Construction</strong> turns units of work into architecture, plans, code, and tests, with human checkpoints at every consequential decision. <strong>Operations</strong> ships the result and — critically — preserves the context so the next cycle starts smarter. Work moves in <strong>bolts</strong>: cycles measured in hours or days, not the weeks of a sprint.</p>
+<p>AI-DLC organizes work into three phases. <strong>Inception</strong> turns business intent into requirements, stories, and units of work — with the whole team validating the AI's proposals in a ritual called <strong>Mob Elaboration</strong>. <strong>Construction</strong> turns units of work into architecture, plans, code, and tests, with human checkpoints at every consequential decision. <strong>Operations</strong> ships the result and — critically — preserves the context so the next cycle starts smarter. Work moves in <strong>bolts</strong>: AWS defines a bolt as a Construction delivery slice over one or more linked units of work, measured in hours or days rather than the weeks of a sprint. This course runs the simplest case — one unit per bolt, with its own short Inception and close (M03 has the detail).</p>
+<div class="callout"><b>In AWS's v2 workflows.</b> The three phases are AWS's method-level description, and they are what this course teaches. AWS's reference workflows split the same lifecycle into <strong>five phases and 33 stages</strong>: Initialization and Ideation come before Inception, Construction follows, and Operation closes it. Many stages are conditional, so a small change skips most of them.</div>
 
 <figure>
 <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The AI-DLC loop: Inception, Construction, Operations, cycling as bolts">
@@ -1702,7 +1703,7 @@ which is the only reason this page exists.</div>
     <text x="380" y="37" fill="var(--ink)" letter-spacing="1.5">HUMAN OVERSIGHT — AI plans and asks; humans decide at every checkpoint</text>
   </g>
 </svg>
-<figcaption>fig 0.1 — the AI-DLC loop: three phases per bolt, humans at every checkpoint</figcaption>
+<figcaption>fig 0.1 — the AI-DLC loop as this course runs it: three phases around each bolt, humans at every checkpoint</figcaption>
 </figure>
 
 <p>AI-DLC renames the rituals on purpose — the new names mark that the tempo and the division of labor have changed. You will use these terms in every module:</p>
@@ -1711,7 +1712,7 @@ which is the only reason this page exists.</div>
   <tbody>
     <tr><td>Sprint (2 weeks)</td><td><b>Bolt</b> (hours–days)</td><td>AI compresses execution; the cycle shrinks to decision speed</td></tr>
     <tr><td>Backlog refinement</td><td><b>Mob Elaboration</b></td><td>AI drafts requirements and asks questions; the whole team validates live</td></tr>
-    <tr><td>Story / task</td><td><b>Unit of work</b></td><td>Sized for one AI construction loop with one human checkpoint</td></tr>
+    <tr><td>Epic (AWS) · story (this course)</td><td><b>Unit of work</b></td><td>AWS: "Epics are replaced by Units of Work." This course cuts units to story size: one AI construction loop, one human checkpoint</td></tr>
     <tr><td>Pairing on a ticket</td><td><b>Mob Construction</b></td><td>Team reviews AI-built increments together at the checkpoint</td></tr>
     <tr><td>Definition of done</td><td><b>Human checkpoint</b></td><td>A person signs off on every consequential decision — and understands every line</td></tr>
     <tr><td>Project wiki</td><td><b>Context memory</b></td><td>Plans and decisions are artifacts the AI reads in the next bolt</td></tr>
@@ -1792,7 +1793,7 @@ which is the only reason this page exists.</div>
 <figcaption>fig 0.2 — the Prior Auth Portal domain: every module builds some part of this flow</figcaption>
 </figure>
 
-<div class="callout"><b>One protocol, two engines.</b> The steering file is the same idea everywhere: <code>CLAUDE.md</code> in Claude Code, <code>AGENTS.md</code> in Codex, Project Rules in Amazon Q Developer, Steering in Kiro. Learn the pattern once; rename the file per engine.</div>
+<div class="callout"><b>One protocol, two engines.</b> The steering file is the same idea everywhere: <code>CLAUDE.md</code> in Claude Code, <code>AGENTS.md</code> in Codex, Project Rules in Amazon Q Developer (the v1-era name), Steering in Kiro. AWS's v2 workflows write a short onboarding file per engine (<code>.claude/CLAUDE.md</code>, <code>.codex/onboarding.md</code>) and keep the shared rules in their own <code>aidlc/</code> memory folder. Learn the pattern once; rename the file per engine.</div>
 
 <section class="lab">
   <div class="lab-head">Lab M00 · 20 min</div>
@@ -1855,8 +1856,8 @@ codex
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>AI-DLC rejects both anti-patterns: AI-autonomous (full autonomy) and AI-assisted (narrow tasks).</li>
-    <li>Three phases per bolt — Inception, Construction, Operations — with humans deciding at every checkpoint.</li>
+    <li>AI-DLC rejects both anti-patterns: AI-autonomous (whole applications, no human in the loop) and AI-assisted (narrow tasks).</li>
+    <li>Three method-level phases — Inception, Construction, Operations — with humans deciding at every checkpoint. AWS's v2 workflows split them into five; this course wraps all three around each one-unit bolt.</li>
     <li>Bolts replace sprints; Mob Elaboration and Mob Construction replace refinement and pairing.</li>
     <li>The methodology is engine-agnostic: this course runs it on Claude Code and Codex CLI in parallel.</li>
     <li>One domain and one story everywhere: the Prior Auth Portal from AuthRequest to Determination, and the Lakeview build — Meera, Ravi, the design desk, the crews, and the build book return in every module.</li>
