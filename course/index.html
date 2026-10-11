@@ -17,6 +17,7 @@
   /* track colors */
   --t0:#6366f1; --t1:#b45309; --t2:#0d9488; --t3:#7c3aed;
   --t4:#c2410c; --t5:#1d4ed8; --t6:#be185d; --t7:#4d7c0f;
+  --t8:#475569;
   --radius:10px;
   --font-display:"Fraunces",serif;
   --font-body:"Inter",system-ui,sans-serif;
@@ -488,7 +489,8 @@ const TRACK_META = {
   4: { name: "Claude Code as the Engine",            color: "var(--t4)" },
   5: { name: "Codex as the Engine",                  color: "var(--t5)" },
   6: { name: "Capstone: Prior Auth Portal",          color: "var(--t6)" },
-  7: { name: "Leading the Transformation",           color: "var(--t7)" }
+  7: { name: "Leading the Transformation",           color: "var(--t7)" },
+  8: { name: "Running on AWS's v2 Engine",           color: "var(--t8)" }
 };
 
 const MODS = [
@@ -7703,9 +7705,9 @@ npx jest</code></pre>
     <li>The auto-approval threshold is a clinical-policy decision: engines may read it, only named humans may move it, and the nurse review queue is the fairness backstop beneath it.</li>
     <li>Context leaves the building: decisions and schemas go in the chain; member data never enters a prompt, a fixture, or a steering file.</li>
     <li>Explainability is schema — <code>score</code>, <code>criteriaVersion</code>, <code>decidedBy</code> on every Determination; provenance for code is the chain plus understand-every-line.</li>
-    <li>The engine builds; the names on the checkpoint answer for the build. Course complete — go run a bolt, responsibly.</li>
+    <li>The engine builds; the names on the checkpoint answer for the build. That completes the method by hand; Track 8 runs it on AWS's own engine, where the same rule holds.</li>
   </ul>
-  <span class="next">Course complete — go run a bolt, responsibly. ⚡</span>
+  <span class="next">Next → M35 · Install the Engine, Keep the Method</span>
 </section>
 `
 },
