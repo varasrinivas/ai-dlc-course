@@ -1,0 +1,8 @@
+{
+  "org": "local-practice",
+  "repos": [
+    { "name": "prior-auth-api",    "branch": "main", "url": "D:/aidlc-practice/remotes/prior-auth-api" },
+    { "name": "prior-auth-web",    "branch": "main", "url": "D:/aidlc-practice/remotes/prior-auth-web" },
+    { "name": "prior-auth-notify", "branch": "main", "url": "D:/aidlc-practice/remotes/prior-auth-notify" }
+  ]
+}

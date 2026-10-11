@@ -1,0 +1,13 @@
+{
+  "name": "prior-auth-pack",
+  "version": "0.1.0",
+  "description": "Learning pack for the AI-DLC multi-repo runbook: makes every stage read the owning sibling repo's steering and decision log, keeps one unit per repo, treats the contract as two artifacts, and gives the agents a Prior Auth domain primer.",
+  "author": { "name": "AI-DLC course kit" },
+  "dependencies": ["core"],
+  "aidlc": {
+    "contributes": {
+      "overlays": "contributions/",
+      "knowledge": "knowledge/"
+    }
+  }
+}
