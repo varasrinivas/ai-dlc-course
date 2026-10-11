@@ -109,7 +109,8 @@ Visual: reuse the runbook's swimlane map in course style.
 ## Decisions (approved 2026-10-11)
 
 All four went as recommended: (1) coda beats, with the site office as the new cast member; (2) the
-`prior-auth-workspace/` hub folder; (3) a version stamp per module and a re-verify pass per minor
+`prior-auth-workspace/` hub folder, placed **outside** the kit at setup (Claude Code reads every
+parent `CLAUDE.md`, so an in-kit hub would load the course-authoring rules into engine sessions); (3) a version stamp per module and a re-verify pass per minor
 release; (4) the engine is an option, not a replacement. The beats and rules are now in `CLAUDE.md`
 (Lakeview T8 coda, "Track 8 rules"), and Track 8 is in `curriculum-map.md`.
 

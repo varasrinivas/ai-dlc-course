@@ -215,9 +215,12 @@ open("course/index.html", "w", encoding="utf-8").write(
 - **Version stamp.** Each Track 8 module states the engine version it was verified against and the
   date (e.g. "Verified against aidlc v2.11.0, 2026-10-11"). Re-verify every Track 8 module at each
   minor release; update the stamp and the transcripts together.
-- **Workspace.** The engine runs in `prior-auth-workspace/`, a hub folder in the kit with the
-  practice repos as siblings (matches `runbook/multi-repo-feature.html`). Never run `aidlc` at
-  the kit root: its `aidlc/` record must not land in the course repo's own tree.
+- **Workspace.** The engine runs in a `prior-auth-workspace/` hub with the practice repos cloned
+  as siblings by `aidlc system workspace-sync` from `repos.json` (matches
+  `runbook/multi-repo-feature.html`). The hub lives **outside** the kit (reference run:
+  `D:idlc-track8\prior-auth-workspace`), never inside it: Claude Code loads every parent
+  folder's `CLAUDE.md`, so a hub inside the kit would feed these authoring standards to the engine,
+  and `aidlc/` would land in the course repo's tree. Raw transcripts go to `D:idlc-track8	ranscripts\`.
 - **Stance.** The engine is an option, not a replacement (see the method view vs engine view
   above). Every module names what stays human.
 
