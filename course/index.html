@@ -550,7 +550,7 @@ waiting on me.</pre>
   if it does not exist), with reasoning and who decided. (D-00X)
 - One unit of work per session. Write each one to docs/units/.</pre>
     </div>
-    <p>The repo at this point: <strong>there is no <code>docs/</code> folder.</strong> The rules file declares where things will live, and the AI creates them the first time it has something to record — you'll see it at step 4. Beyond the engine itself, there is nothing to install. <em>(The shipped <code>prior-auth-api</code> repo shows the evolved file, with <code>@</code>-imports — M13 and M14 cover how these files physically become the engine's memory.)</em></p>
+    <p>The repo at this point: <strong>there is no <code>docs/</code> folder.</strong> The rules file declares where things will live, and the AI creates them the first time it has something to record — you'll see it at step 4. Beyond the engine itself, this course installs nothing — it runs AI-DLC by hand. <em>(The shipped <code>prior-auth-api</code> repo shows the evolved file, with <code>@</code>-imports — M13 and M14 cover how these files physically become the engine's memory.)</em></p>
 
     <h3>Step 1 — you enter plan mode, then paste the story</h3>
     <div class="who-row">
@@ -709,7 +709,7 @@ src/determination/…           AI wrote it · you read every line</pre>
     <p>Fair worry — "Mob Elaboration" and "Mob Construction" sound like a standing meeting. The reality
     is the opposite of a sprint's ceremony load: AI-DLC <strong>concentrates</strong> synchronous time
     into two short moments per bolt, and the files buy everything between back as offline work.</p>
-    <p>The loop below plays one bolt in four scenes — the three AI-DLC phases every bolt has, plus the close:</p>
+    <p>The loop below plays one bolt in four scenes — the three AI-DLC phases as this course wraps them around each bolt, plus the close:</p>
     <ol>
       <li><strong>Inception — sync, ~30 min.</strong> Mob Elaboration: the team and the AI turn the ticket into a unit of work. The AI's open question becomes a recorded decision before any code exists.</li>
       <li><strong>Construction — async, hours.</strong> The engine builds from the files while everyone works at their own desk. Mid-build questions are answered by the decision log, not a meeting.</li>
@@ -1051,7 +1051,7 @@ src/determination/…           AI wrote it · you read every line</pre>
       <table class="bridge">
         <thead><tr><th>What you saw</th><th>What AI-DLC calls it</th></tr></thead>
         <tbody>
-          <tr><td>The AI had read the project's standards before you typed anything</td><td><b>Steering</b> — one pattern, many names: CLAUDE.md, AGENTS.md, Q Developer Project Rules, Kiro Steering</td></tr>
+          <tr><td>The AI had read the project's standards before you typed anything</td><td><b>Steering</b> — one pattern, many names: CLAUDE.md, AGENTS.md, Q Developer Project Rules (the v1-era name), Kiro Steering</td></tr>
           <tr><td>"This is one unit of work, not an epic"</td><td>A <b>unit of work</b> — the atom AI-DLC schedules, sized to finish</td></tr>
           <tr><td>The question it refused to guess at</td><td><b>AI-powered execution with human oversight</b> — the AI plans and asks; humans decide anything consequential</td></tr>
           <tr><td>The pause before any code was written</td><td>A <b>human checkpoint</b>, the ritual around it is <b>Mob Construction</b></td></tr>
@@ -1237,7 +1237,7 @@ src/determination/…           AI wrote it · you read every line</pre>
       <pre>AGENTS.md                 the steering file — the rules. Codex reads this by name.
 CLAUDE.md                 Claude Code's entry point: imports @AGENTS.md + @docs/decisions.md
 docs/decisions.md         context memory: decisions + reasoning + who decided
-docs/units/               units of work; one unit = one bolt = one session
+docs/units/               units of work; this course runs one unit per bolt, one session each
 src/domain/               Member, Provider, AuthRequest, ClinicalCriteria, the threshold
 src/determination/        AuthStatus, Determination, the service, its spec</pre>
     </div>
@@ -1292,8 +1292,11 @@ Tests:       4 passed, 4 total</pre>
     <h2>What you actually install</h2>
     <p>This is where nearly everyone starts out confused, so here it is bluntly:
     <strong>there is no npm package for AI-DLC.</strong> Not <code>ai-dlc</code>, not
-    <code>aws-ai-dlc</code> — check the registry, they don't exist. You never install the
-    methodology.</p>
+    <code>aws-ai-dlc</code> — check the registry, they don't exist. The methodology itself needs no
+    install. AWS does ship a reference implementation: its v2 workflows install an <code>aidlc</code>
+    command (not from npm) that sets up your engine and runs the stages for you. This course
+    deliberately runs the method by hand, on a bare engine plus plain files, so you see every moving
+    part.</p>
     <p>Two kinds of dependency are in play, and they have nothing to do with each other:</p>
 
     <div class="table-scroll">
@@ -1304,8 +1307,8 @@ Tests:       4 passed, 4 total</pre>
             <td>Ordinary app tooling. Nothing to do with AI-DLC — a Python shop would have pytest here and the method would be identical.</td></tr>
           <tr><td>An engine <em>(pick one, global)</em></td><td><b>@anthropic-ai/claude-code</b><br>or <b>@openai/codex</b></td>
             <td>The thing that actually reads your files, writes code, and runs commands.</td></tr>
-          <tr><td>AI-DLC itself</td><td><b>— nothing —</b></td>
-            <td>It's the plain files already in the repo: the steering file, the decision log, the units of work, and the gates.</td></tr>
+          <tr><td>AI-DLC itself</td><td><b>— nothing, in this course —</b><br>AWS's optional <code>aidlc</code> CLI</td>
+            <td>Here it's the plain files already in the repo: the steering file, the decision log, the units of work, and the gates. AWS's v2 CLI automates the same stages; the multi-repo runbook shows it.</td></tr>
         </tbody>
       </table>
     </div>
@@ -1356,7 +1359,7 @@ Tests:       4 passed, 4 total</pre>
   <ul>
     <li>AI-DLC re-seats you: the AI produces volume — plans, code, tests, docs — and you produce judgment: intent, decisions, review. The code still ships under your name.</li>
     <li>One cycle — intent → plan → your answers → generation → your review → decisions written down — is a bolt, and it is the entire methodology. Everything else is names for its pieces.</li>
-    <li>There is nothing to install for AI-DLC itself. One magic filename (CLAUDE.md / AGENTS.md) bootstraps every other file the method uses — including the docs/ folder the AI creates itself.</li>
+    <li>This course installs nothing for AI-DLC itself: AWS's optional v2 <code>aidlc</code> CLI automates the method, but here you run it by hand. One magic filename (CLAUDE.md / AGENTS.md) bootstraps every other file the method uses — including the docs/ folder the AI creates itself.</li>
     <li>Gates are real only where they are mechanical: plan mode locks the write tools, imports load the memory. Everything else is an instruction the model follows — usually.</li>
     <li>The deep dives live in the tracks: sprint roles → M03, the Claude Code stage map → M16, Conductor/OpenSpec positioning → M02, how files become memory → M13.</li>
     <li>One feature across several repos? The <a href="../runbook/multi-repo-feature.html" target="_blank" rel="noopener">multi-repo runbook ↗</a> walks one Prior Auth feature through AWS AI-DLC v2, from requirement to Rally to architecture to code, and shows where every .md file goes. It follows v2, so where it differs from these modules, the runbook is current.</li>
