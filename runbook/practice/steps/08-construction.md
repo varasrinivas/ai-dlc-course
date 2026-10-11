@@ -164,6 +164,19 @@ carried four rulings:
 - the dev-dependency vulnerabilities recorded as a go-live item;
 - the three NFR design choices confirmed.
 
+**Contract publication (Step 21): the second time a recorded rule beat the runbook.** The
+runbook's `sla.at-risk` event carries `urgency` and `decisionDueAt`. The room had allowed
+that only as compliance's reading, pending privacy-office confirmation. Confirmation never
+came, so v1.1.0 shipped the agreed fallback for **both** events. The engine pointed out that
+the fallback covered `determination.issued` too, which the human reply hadn't mentioned:
+
+> `determination.issued` (C-2) is also exactly `{referenceId, status}`, with no `issuedAt`.
+> [...] Once v1.1.0 is published it can't be edited, so tell me now if you meant C-2 to
+> keep `issuedAt`.
+
+The choice became prior-auth-api **D-014**. If privacy later approves the wider alert,
+that's v1.2.0 with its own decision entry. The first time was the urgency badge in step 05.
+
 <!-- RUN-QUOTES:08-CODE -->
 
 ## Under the hood
@@ -244,4 +257,9 @@ approve the original plan.
 - **`aidlc-state.md` stays on "functional-design" through all of a unit's design stages.**
   Use `/aidlc --status`, or the stage folders under `construction/<unit>/`, to see where
   you really are.
+- **Headless runs need one reply per stretch of work.** With `claude -p`, each reply ends
+  the session, and with it the developer agent working in the background. The engine
+  resumes from the branch on the next reply ("Steps 9–12 were committed before the last
+  session ended"), so no work is lost, but U1 took several "continue" replies. In an
+  interactive session the agent keeps going until the next stop.
 <!-- RUN-SNAGS:08 -->
