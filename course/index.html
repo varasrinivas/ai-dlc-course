@@ -3897,6 +3897,7 @@ codex
 <span class="maps-to">maps to → <b>the cottage</b> = the brownfield estate · <b>load-bearing vs decorative</b> = invariants vs re-derivable detail · <b>red tags for the previous owner</b> = flagged unknowns awaiting human confirmation · <b>eleven pages, not eight hundred photos</b> = high semantics-per-token</span>
 </aside>
 
+<div class="callout"><b>In AWS's v2 workflows.</b> The survey is stage 2.1 Reverse Engineering, which runs on brownfield code. It writes nine reverse-engineering files per repo into <code>aidlc/spaces/&lt;space&gt;/codekb/&lt;repo&gt;/</code>, committed so every later intent reuses them. The semantic map in this module is the course's hand-run version of the same artifact.</div>
 <h2>High semantics-per-token</h2>
 <p>What makes a map good is density, and the reason is economic: context windows are finite and shared with the actual work. Raw code is low-density context — it restates what the system does at 1:1 scale. The map compresses meaning: <em>"eligibility data is up to 24h stale (nightly 02:00 refresh)"</em> is one line that permanently answers the staleness question M07's plan parked at step 4; the code that implies it is 500 lines across two repos and an ops cron table. That ratio — meaning per token spent — is what AI-DLC calls <strong>high semantics-per-token</strong>, and it's the survey's quality bar.</p>
 <p>Curation heuristics: record <em>invariants</em> (what must stay true), <em>surprises</em> (what a reasonable engineer would guess wrong), and <em>semantics</em> (what E4 actually means). Skip what any reader re-derives in seconds — getters, DTOs, framework noise. Density isn't a style preference; it's why the map gets read at all, by engines and by humans.</p>
@@ -4107,6 +4108,7 @@ codex
   </tbody>
 </table>
 
+<div class="callout"><b>In AWS's v2 workflows.</b> Placement changed between releases. v1 copied its rule files into each engine's own spot (<code>.amazonq/rules/</code>, <code>.kiro/steering/</code>, <code>CLAUDE.md</code>, <code>AGENTS.md</code>); Project Rules is the v1-era Amazon Q name. v2 writes the rules once, under <code>aidlc/spaces/&lt;space&gt;/memory/</code>, and layers them org → team → project → phase → stage; each engine pulls them in through its own include. The three layers in this module are the course's simpler model of that chain.</div>
 <h2>How a file physically becomes memory</h2>
     <div class="callout-strong">Writing a file does not make it memory. A file on disk is not
     in the model's context.</div>
@@ -4246,6 +4248,7 @@ codex
 <p><code>CLAUDE.md</code> loads at launch, before any prompt exists. That position is the whole trick: the session starts already knowing how this team builds, so steering outranks conversation the way a constitution outranks a motion. The engine doesn't have to be reminded, and neither does the teammate who joined Tuesday.</p>
 <p>There's a cascade. A global <code>~/.claude/CLAUDE.md</code> carries personal defaults; the project root's <code>CLAUDE.md</code> carries team rules — in version control, edited by review, like any artifact that binds everyone; subdirectory <code>CLAUDE.md</code> files scope module-specific rules. All of them <strong>load additively</strong> — Claude Code assembles the applicable files rather than picking a winner — so "most specific wins" is a convention teams adopt, not documented tool behavior. Write rules that don't contradict; where two could, say in the text itself which governs. And what belongs in the project file is M13's top layer verbatim: conventions, domain guardrails, workflow rules, and pointers to the knowledge layer (<code>decisions.md</code>, the semantic map) — pointers, not copies.</p>
 
+<div class="callout"><b>In AWS's v2 workflows.</b> If your team adopts AWS's engine, it shares this file with you. v1 asked you to copy its core workflow into <code>CLAUDE.md</code> (project root or <code>.claude/</code>). v2's <code>aidlc config --harness claude</code> writes its onboarding into <code>.claude/CLAUDE.md</code> and pulls the rules in with an <code>@</code>-import, so keep your team rules beside that block, not over it.</div>
 <h2>Rules that steer</h2>
 <p>A steering rule is <strong>imperative, checkable, and scoped</strong>. "Collect all validation errors; never fail-fast" can be obeyed, and — the underrated half — can be <em>caught when violated</em>. "Write clean code" can be neither; it's a values poster, and engines read posters the way people do: warmly, briefly, without consequence.</p>
 <p>Domain guardrails deserve the full pattern — value, authority, refusal path: <em>"<code>AUTO_APPROVE_THRESHOLD</code> = 0.85. Changes are clinical policy: medical director sign-off plus a decision record, or refuse."</em> The PHI rules likewise name behavior and alternative: no <code>Member</code> fields in logs; test fixtures synthetic-only, generators live in <code>fixtures/</code>. Attach the why in one clause when the why prevents misapplication. The anti-patterns are cadence errors in M13's terms: novels (the engine reads all of it; your humans won't), per-bolt state (rots by Friday), and duplicated knowledge (point to <code>decisions.md</code>; don't restate what it owns).</p>
@@ -4568,6 +4571,7 @@ codex
 <p>The rule is blunt — <strong>one session, one unit of work</strong> — and it has three reasons. Context stays <em>dense</em>: M12's economics apply to your own session, which should hold one UW's worth of meaning, not a day's residue. Diffs stay <em>reviewable</em>: M08's understand-every-line discipline is arithmetic, and a session that built two things presents a diff that reviews like neither. Failures stay <em>local</em>: a session that goes sideways costs one UW, not a Wednesday-sized hole in the bolt.</p>
 <p>A session opens by reading the chain — steering auto-loads (M14), and the approved plan and decisions arrive by pointer — and it closes by writing: increment merged or parked, summary in docs/, then <code>/clear</code>. Because sessions are stateless by design (M13), killing a confused one is cheap <em>and correct</em>: everything worth keeping already left as an artifact.</p>
 
+<div class="callout"><b>In AWS's v2 workflows.</b> One unit per session is this course's rule. In AWS's v2 a bolt can span several dependency-linked units. The stage map below is phase-level; v2 numbers the same steps as Inception 2.3&#8211;2.9, plan approval and code at 3.5 Code Generation, and 3.6 Build and Test.</div>
 <h2>The loop inside the session</h2>
 <p>Inside the session, M07's pipeline becomes a rhythm: the plan is posted (or resumed from the one already approved), the checkpoint holds, then the engine builds in steps and validates continuously. Steering mid-loop is normal, not failure — interrupt, redirect, or narrow-block a step on a deferred decision exactly the way M02's transcript froze step 6 while the rest proceeded.</p>
 <p>One protocol earns its keep at review time: the engine flags plan deviations <em>as it makes them</em>. Do that, and Mob Construction's deviations-first opening (M08) writes itself — the increment arrives with its departures already annotated instead of discovered.</p>
@@ -4643,7 +4647,7 @@ codex
   </tbody>
 </table>
 
-<h3>The stage map: AI-DLC stages ↔ what you actually see in Claude Code</h3>
+<h3>The stage map: AI-DLC phases ↔ what you actually see in Claude Code</h3>
     <p>AI-DLC's phase names are methodology language. When you're sitting at the terminal, what you
     actually experience is Claude Code's native loop — <strong>plan mode → a task list → execution</strong> —
     plus the files each stage leaves behind. Here is the honest mapping, stage by stage. AI-DLC doesn't
@@ -4651,7 +4655,7 @@ codex
 
     <div class="table-scroll">
       <table class="bridge">
-        <thead><tr><th>AI-DLC stage</th><th>What you literally see in Claude Code</th><th>What lands on disk</th></tr></thead>
+        <thead><tr><th>AI-DLC phase</th><th>What you literally see in Claude Code</th><th>What lands on disk</th></tr></thead>
         <tbody>
           <tr><td><b>Inception</b> — intent → requirements → stories → units of work, validated in Mob Elaboration</td>
             <td>Plan mode on (<code>shift+tab</code>): a "plan mode" banner, write tools disabled. It reads the repo, asks its clarifying questions, proposes the decomposition. Approving the plan is the exit gate.</td>
@@ -4969,6 +4973,7 @@ codex
 <span class="maps-to">maps to → <b>two rooms, two packages</b> = disjoint UWs in parallel subagents · <b>the chalked shared wall, signed first</b> = interface contracts pinned before fan-out · <b>walking the seam first</b> = gates on the merged whole · <b>moving the outlet to the chalk</b> = conflicts re-plan to the contract, never force-merge</span>
 </aside>
 
+<div class="callout"><b>In AWS's v2 workflows.</b> "Parallel bolts" is course vocabulary; v2 parallelizes at the unit level. On a stage-major walk with <code>Construction Execution: swarm</code>, units whose dependencies are done build together in one batch and share one checkpoint, and in team mode each person claims a unit in their own checkout. The dependency handling here, serialize or stub against a contract, matches v2's unit dependency graph from 2.7 Units Generation.</div>
 <h2>Merge discipline</h2>
 <p><strong>Pin the seams first.</strong> Every shared interface — DTOs, ports, function signatures — is agreed and written down <em>before</em> the fan-out, in a contract file both subagents receive. A subagent that discovers it needs to change a pinned contract has exactly one move: stop and defer. That's plan→ask→defer operating at the seam, and it's what prevents the worst merge pathology — two halves each internally perfect and mutually incompatible.</p>
 <p>Then: integrate, and <strong>run the full gates on the merged whole</strong> — each slice green does not imply the union green; the seam is precisely where neither slice's tests were looking. Conflicts trigger a narrow re-plan of the smaller slice, never a force-merge. And log every seam event: one collision is noise, repeated collisions on the same seam mean the decomposition was wrong — feedback that belongs in the next Inception.</p>
@@ -5215,6 +5220,7 @@ codex
 <span class="maps-to">maps to → <b>same three layers, different binder</b> = AGENTS.md in the position CLAUDE.md holds · <b>"approve it warm"</b> = Codex approval postures vs fixed gates · <b>two laws</b> = steering drift when rules get duplicated · <b>one rule sheet, both binders point at it</b> = one source of truth plus an import</span>
 </aside>
 
+<div class="callout"><b>In AWS's v2 workflows.</b> With AWS's engine: v1 copied its core workflow into a root <code>AGENTS.md</code> plus <code>.aidlc-rule-details/</code>. v2's <code>aidlc config --harness codex</code> writes <code>.codex/onboarding.md</code> and a shared block in the root <code>AGENTS.md</code>, you invoke it with <code>$aidlc</code>, and it needs Codex CLI 0.145.0 or later inside a git repo.</div>
 <h2>Approval modes and the sandbox</h2>
 <p>Codex's trust dial has three broad postures. <strong>Suggest</strong>: the engine proposes diffs; a human applies them — maximum ceremony, every change warm-approved. <strong>Auto-edit</strong>: the engine writes files itself but asks before running commands. <strong>Full-auto</strong>: the engine executes end-to-end — inside a sandbox: network-disabled, scoped to the working directory. Containment is the counterweight for autonomy, where Claude Code's counterweight is hooks and permission prompts. Different sleeve, same arm. And note which end of the dial is real enforcement: suggest is not a promise — the tool will not land a write until you approve it.</p>
 <p><strong>A naming caveat, because the tool moved.</strong> "Suggest / auto-edit / full-auto" are the <code>--approval-mode</code> values of the original (2025, TypeScript) Codex CLI. They stay the clearest names for the three postures, which is why this course keeps them — but the current (Rust) CLI splits the same dial in two: <code>--ask-for-approval</code> (<code>untrusted</code> · <code>on-failure</code> · <code>on-request</code> · <code>never</code>) and <code>--sandbox</code> (<code>read-only</code> · <code>workspace-write</code> · <code>danger-full-access</code>). Read across: suggest ≈ <code>--sandbox read-only</code> with <code>--ask-for-approval untrusted</code>; auto-edit ≈ <code>workspace-write</code> + <code>on-request</code>; full-auto ≈ <code>workspace-write</code> + <code>never</code>. Check <code>codex --help</code> for your build — the postures are the durable idea, the flag names are not.</p>
@@ -5684,7 +5690,7 @@ claude
 
 <h2>Run both, deliberately</h2>
 <p>Three run-both patterns earned their receipts in this course. The <strong>parity experiment</strong> (M20): one consequential intent, two independent decompositions, differences arriving at the mob as options — free design review. <strong>Cross-engine review</strong> (M21): one engine builds, the other reads the hunks cold — two authors' theories, one diff. <strong>Split-by-class</strong>: each engine owns the change classes it enforces best, per your M22 policy table.</p>
-<p>The tax is real: keeping one set of rules reaching both engines (M19's drift is a standing risk, not a one-time bug), doubled spend, and two dialects of muscle memory. A small team on a simple estate shouldn't pay it. And the strategic close, stated once more with everything behind it: <strong>one methodology, many engines.</strong> The steering file has many names — CLAUDE.md, AGENTS.md, Project Rules, Kiro Steering — but your rules, decisions, maps, plans, and close-outs are engine-neutral text. The lock-in test belongs in every bolt close: <em>could we switch engines next bolt?</em> If the answer is no, an artifact is missing. Find it. Write it.</p>
+<p>The tax is real: keeping one set of rules reaching both engines (M19's drift is a standing risk, not a one-time bug), doubled spend, and two dialects of muscle memory. A small team on a simple estate shouldn't pay it. And the strategic close, stated once more with everything behind it: <strong>one methodology, many engines.</strong> The steering file has many names — CLAUDE.md, AGENTS.md, Project Rules (Amazon Q's v1-era name), Kiro Steering — and AWS's own v2 states the same idea as "one core, many harnesses"; but your rules, decisions, maps, plans, and close-outs are engine-neutral text. The lock-in test belongs in every bolt close: <em>could we switch engines next bolt?</em> If the answer is no, an artifact is missing. Find it. Write it.</p>
 
 <figure>
 <svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Routing guide from task profiles to Claude Code, Codex, or both, over a shared methodology band">
@@ -5898,6 +5904,7 @@ codex
 <figcaption>fig 23.1 — four bolts, gated like everything else; the chain did the remembering</figcaption>
 </figure>
 
+<div class="callout"><b>In AWS's v2 workflows.</b> v2 plans bolts at 2.9 Delivery Planning, which writes a <code>bolt-plan.md</code> grouping units into bolts. The capstone backlog plays that role here, and each capstone bolt groups several units, which is closer to v2's bolt than M03's one-unit simplest case.</div>
 <section class="lab">
   <div class="lab-head">Lab M23 · 35 min</div>
   <h2>Read the kickoff, then run the Inception</h2>
@@ -6830,6 +6837,7 @@ codex
 <span class="maps-to">maps to → <b>one site team per lot</b> = pods split on decision-domain seams · <b>the owner's proxy on site</b> = the decision-owner on call · <b>the weekly meeting that died</b> = status ceremonies starved by the chain · <b>Meera's two numbers</b> = decision latency and checkpoint integrity</span>
 </aside>
 
+<div class="callout"><b>In AWS's v2 workflows.</b> AWS's v2 has its own multi-person mechanics: team mode (<code>Unit Ownership: team</code>), where each person claims a unit in their own checkout, and a <code>workshop</code> scope for facilitated sessions. The calendar here is the course's ritual set; v2's bolt is the Construction slice inside it.</div>
 <h2>Role shifts</h2>
 <p>Every role moves toward judgment. The <strong>PO</strong> stops grooming backlogs and becomes the decision-owner on call: jurisdiction explicit, latency measured, rationale recorded — the M24 idempotency call in four minutes is the job now. The <strong>architect</strong> stops writing documents that age and becomes the contract pinner and seam judge — M18's chalk, at street scale. <strong>QA</strong> stops authoring tests after code and becomes the gate designer and spot-explain auditor: owner of the gate stack's health, sampler of the room's actual understanding.</p>
 <p>And the <strong>leader</strong> trades velocity theater for checkpoint topology: the M17 bolt-close audit — which gates fired, which rubber-stamped, which caught something — becomes a standing leadership artifact. Across all four shifts, one scarce skill appreciates fastest: <em>deciding quickly, with a rationale someone can read later.</em> Hire for it, coach it, measure it.</p>
