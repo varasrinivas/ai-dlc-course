@@ -38,7 +38,7 @@ Never invent a second domain. Never use foo/bar examples.
 AI-DLC is AWS's open-source methodology. Teach it faithfully, then execute it with **Claude Code
 and Codex CLI** as interchangeable engines:
 
-- Two anti-patterns it rejects: **AI-managed** (expect AI to build systems autonomously) and
+- Two anti-patterns it rejects: **AI-autonomous** (AWS's term: AI expected to generate entire applications without human intervention) and
   **AI-assisted** (AI on narrow tasks only).
 - Two dimensions: **AI-powered execution with human oversight** (AI plans, asks clarifying
   questions, defers critical decisions to humans) and **dynamic team collaboration**.
@@ -81,7 +81,7 @@ and Codex CLI** as interchangeable engines:
   reference beats already built):
   - T0: meet the firm; why this build runs differently
   - T1: the two bad firms Meera and Ravi rejected — one that says "trust us, see you at
-    handover" (AI-managed), one that only sends a handyman for odd jobs (AI-assisted)
+    handover" (AI-autonomous), one that only sends a handyman for odd jobs (AI-assisted)
   - T2: lot survey → blueprints → framing → walkthroughs → occupancy of the first wing
   - T3: the renovation subplot — the existing lake cottage (brownfield) needs a structural
     survey before any crew touches it (semantic context building); a gazebo doesn't need the

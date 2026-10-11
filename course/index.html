@@ -1148,14 +1148,14 @@ src/determination/…           AI wrote it · you read every line</pre>
     <h2>What you didn't just do</h2>
     <p>AI-DLC defines itself against two ways of working that are already common, and that it argues both
     underdeliver. Neither is a strawman — most teams using AI today are doing one of them. In tech-lead
-    terms: <strong>AI-managed</strong> is handing the junior the ticket and going on vacation until demo
+    terms: <strong>AI-autonomous</strong> is handing the junior the ticket and going on vacation until demo
     day; <strong>AI-assisted</strong> is never letting them do more than fill in a function body while you
     hover.</p>
 
     <figure>
       <div class="fig-scroll">
       <svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img"
-        aria-label="Three lanes comparing AI-managed, AI-assisted, and AI-DLC. AI-managed is one opaque block with a single human decision at the very end. AI-assisted is mostly human decisions with small AI tasks. AI-DLC alternates AI work with human decisions throughout.">
+        aria-label="Three lanes comparing AI-autonomous, AI-assisted, and AI-DLC. AI-autonomous is one opaque block with a single human decision at the very end. AI-assisted is mostly human decisions with small AI tasks. AI-DLC alternates AI work with human decisions throughout.">
         <defs>
           <pattern id="hatch" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)">
             <line x1="0" y1="0" x2="0" y2="7" stroke="var(--warn)" stroke-width="2.5" opacity=".35"/>
@@ -1163,8 +1163,8 @@ src/determination/…           AI wrote it · you read every line</pre>
         </defs>
         <g font-family="JetBrains Mono, monospace" font-size="13">
 
-          <!-- lane 1: AI-managed -->
-          <text x="0" y="40" fill="var(--warn)" font-weight="600">AI-MANAGED</text>
+          <!-- lane 1: AI-autonomous -->
+          <text x="0" y="40" fill="var(--warn)" font-weight="600">AI-AUTONOMOUS</text>
           <text x="0" y="57" fill="var(--ink-soft)" font-size="11.5">"trust us — see</text>
           <text x="0" y="70" fill="var(--ink-soft)" font-size="11.5">you at handover"</text>
           <line x1="150" y1="52" x2="690" y2="52" stroke="var(--line)" stroke-width="2"/>
@@ -1657,7 +1657,7 @@ which is the only reason this page exists.</div>
 <p class="hook">The Prior Auth Portal team has a problem every healthcare engineering group recognizes: authorization requests take days to process, members wait, providers call, and the backlog of platform work is measured in quarters. Leadership has approved an experiment — rebuild the intake-to-determination flow using AWS's AI-Driven Development Lifecycle, with AI as a teammate rather than an autocomplete. You are on that team. This course is the experiment.</p>
 
 <h2>What this course teaches</h2>
-<p>AI-DLC is AWS's open-source methodology for building software with AI as a first-class collaborator. It is not a tool. It is a way of working: AI drafts the plans, asks the clarifying questions, and writes most of the code — while humans validate every consequential decision. The methodology rejects two familiar anti-patterns: <strong>AI-managed</strong> development (hand the AI a wish and hope) and <strong>AI-assisted</strong> development (AI as a fancy autocomplete on narrow tasks). Both leave most of the value on the table.</p>
+<p>AI-DLC is AWS's open-source methodology for building software with AI as a first-class collaborator. It is not a tool. It is a way of working: AI drafts the plans, asks the clarifying questions, and writes most of the code — while humans validate every consequential decision. The methodology rejects two familiar anti-patterns: <strong>AI-autonomous</strong> development (hand the AI a wish and hope) and <strong>AI-assisted</strong> development (AI as a fancy autocomplete on narrow tasks). Both leave most of the value on the table.</p>
 <p>Because AI-DLC is a methodology, it does not care which agentic engine executes it. AWS demonstrates it with Amazon Q Developer and Kiro; this course runs it on <strong>Claude Code</strong> and <strong>OpenAI Codex CLI</strong> — two engines, one operating protocol. Every hands-on lab gives you both variants, and by Track 5 you will be able to choose between them deliberately.</p>
 
 <h2>The three phases, at a glance</h2>
@@ -1723,7 +1723,7 @@ which is the only reason this page exists.</div>
 
 <aside class="analogy">
 <p>Most firms Meera and Ravi interviewed worked one of two ways. One said <em>"sign here, see you at handover"</em> — total delegation, no walkthroughs, and whatever you get, you get. Another only sent a handyman for odd jobs: fast at fixing a hinge, useless for building a house. The firm they chose works differently: its <strong>design desk</strong> drafts complete plans overnight and opens every morning with pointed questions; its <strong>crews</strong> finish one scoped work package per day; and Meera and Ravi walk the site at fixed checkpoints — deciding everything, building nothing. Every decision lands in the <strong>build book</strong> that every crew reads the next morning.</p>
-<span class="maps-to">maps to → <b>AI-managed</b> = sign-and-pray firm · <b>AI-assisted</b> = handyman · <b>AI-DLC</b> = the firm they chose · <b>build book</b> = context memory</span>
+<span class="maps-to">maps to → <b>AI-autonomous</b> = sign-and-pray firm · <b>AI-assisted</b> = handyman · <b>AI-DLC</b> = the firm they chose · <b>build book</b> = context memory</span>
 </aside>
 
 <p>The cast is fixed, and it maps one-to-one onto the methodology. You'll meet each of them again exactly when the corresponding concept arrives:</p>
@@ -1809,7 +1809,7 @@ AI:    Noted as a constraint. Proposed units of work:
        UW-1 intake API · UW-2 criteria scoring · UW-3 review queue · UW-4 determinations
 Team:  Approved, but UW-2 must log every score for audit. Add it.
 AI:    Updated. UW-2 acceptance criteria now include an immutable score log.</code></pre>
-    <p><strong>Check yourself:</strong> (1) Which statement is a human checkpoint? (2) Which AI behavior distinguishes this from the AI-managed anti-pattern? (3) Where did context memory just get created?</p>
+    <p><strong>Check yourself:</strong> (1) Which statement is a human checkpoint? (2) Which AI behavior distinguishes this from the AI-autonomous anti-pattern? (3) Where did context memory just get created?</p>
     <details><summary>Answers</summary>
       <p>(1) "Nurse decision. Regulatory requirement" and "Approved, but…" — humans making the consequential calls. (2) The AI asked a clarifying question and deferred, instead of assuming. (3) The constraint and the updated acceptance criteria become artifacts the next bolt's session will read.</p>
     </details>
@@ -1855,7 +1855,7 @@ codex
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>AI-DLC rejects both anti-patterns: AI-managed (full autonomy) and AI-assisted (narrow tasks).</li>
+    <li>AI-DLC rejects both anti-patterns: AI-autonomous (full autonomy) and AI-assisted (narrow tasks).</li>
     <li>Three phases per bolt — Inception, Construction, Operations — with humans deciding at every checkpoint.</li>
     <li>Bolts replace sprints; Mob Elaboration and Mob Construction replace refinement and pairing.</li>
     <li>The methodology is engine-agnostic: this course runs it on Claude Code and Codex CLI in parallel.</li>
@@ -1874,8 +1874,8 @@ codex
   body: `
 <p class="hook">The Prior Auth Portal isn't the org's first AI experiment. Last year a platform team pointed an autonomous agent at "build a claims triage bot" and let it run; the demo was dazzling, but compliance found it had approved requests no nurse ever saw, and nobody could explain the routing logic well enough to fix it. Meanwhile the intake team adopted AI code completion and measured a real, honest 12% speedup — and their two-quarter backlog is still two quarters long. Both teams "use AI." Neither is transformed. Before your team starts the portal rebuild, you need the vocabulary for why both approaches stall — because you will be pitched both, repeatedly.</p>
 
-<h2>Anti-pattern one: AI-managed</h2>
-<p>The AI-managed pattern expects AI to build systems autonomously: state the intent, walk away, collect the software. It fails for a structural reason, not a model-quality reason. Every non-trivial system embeds dozens of consequential decisions — thresholds, orderings, exception paths — and an unsupervised agent resolves each one by assumption. Wrong assumptions don't announce themselves; they compound silently into an architecture nobody chose.</p>
+<h2>Anti-pattern one: AI-autonomous</h2>
+<p>The AI-autonomous pattern expects AI to build systems autonomously: state the intent, walk away, collect the software. It fails for a structural reason, not a model-quality reason. Every non-trivial system embeds dozens of consequential decisions — thresholds, orderings, exception paths — and an unsupervised agent resolves each one by assumption. Wrong assumptions don't announce themselves; they compound silently into an architecture nobody chose.</p>
 <p>The claims-triage bot assumed a 0.70 score was safe to system-approve because nothing told it otherwise — the real rule routes anything below <code>AUTO_APPROVE_THRESHOLD (0.85)</code> to the nurse review queue. In a regulated domain that isn't a bug, it's a compliance event: a <code>Determination</code> with no accountable human behind it. Output no one can review is output no one can own. <strong>Unreviewable is unshippable.</strong> The tell for this anti-pattern is the phrase "the AI will handle it" — accountability has left the room.</p>
 
 <h2>Anti-pattern two: AI-assisted</h2>
@@ -1884,14 +1884,14 @@ codex
 
 <aside class="analogy">
 <p>Before signing with their firm, Meera and Ravi interviewed two others. The first was slick: "Sign here, pick your finishes, see you at handover." No walkthroughs, no questions — and its portfolio included a stair that failed inspection and a kitchen the owners never asked for. The second builder only sent a handyman: superb with a squeaky hinge, but ask him for a house and he hangs one door, then waits for the next instruction. They rejected both. Total delegation gambles the house; odd jobs never compound into one. The firm they chose asks questions every morning — and puts the owners at every walkthrough.</p>
-<span class="maps-to">maps to → <b>AI-managed</b> = the sign-and-pray firm · <b>AI-assisted</b> = the handyman · <b>human checkpoints</b> = the walkthroughs Meera &amp; Ravi refused to give up</span>
+<span class="maps-to">maps to → <b>AI-autonomous</b> = the sign-and-pray firm · <b>AI-assisted</b> = the handyman · <b>human checkpoints</b> = the walkthroughs Meera &amp; Ravi refused to give up</span>
 </aside>
 
 <h2>What both miss — and the third model</h2>
-<p>Plot the two anti-patterns on the axes that matter and the problem is obvious: they mis-place the human. AI-managed removes oversight exactly where initiative is highest; AI-assisted keeps oversight total by keeping initiative trivial. The gap between a 12% speedup and a transformed lifecycle is the empty corner — high AI initiative <em>and</em> high human oversight, at the same time.</p>
+<p>Plot the two anti-patterns on the axes that matter and the problem is obvious: they mis-place the human. AI-autonomous removes oversight exactly where initiative is highest; AI-assisted keeps oversight total by keeping initiative trivial. The gap between a 12% speedup and a transformed lifecycle is the empty corner — high AI initiative <em>and</em> high human oversight, at the same time.</p>
 
 <figure>
-<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of AI initiative versus human oversight: AI-assisted top-left, AI-managed bottom-right, AI-DLC top-right">
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of AI initiative versus human oversight: AI-assisted top-left, AI-autonomous bottom-right, AI-DLC top-right">
   <defs>
     <marker id="m01arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
@@ -1916,10 +1916,10 @@ codex
     <text x="200" y="68" font-size="10" fill="var(--ink-soft)">real but capped: ~10–15%</text>
     <text x="200" y="112" font-size="10" fill="var(--ink-soft)">intent never arrives</text>
   </g>
-  <!-- AI-managed: high initiative, low oversight -->
+  <!-- AI-autonomous: high initiative, low oversight -->
   <g font-family="JetBrains Mono, monospace" text-anchor="middle">
     <circle cx="620" cy="240" r="9" fill="var(--paper)" stroke="var(--warn)" stroke-width="2.5"/>
-    <text x="620" y="207" font-size="12" font-weight="600" fill="var(--warn)" letter-spacing="1">AI-MANAGED</text>
+    <text x="620" y="207" font-size="12" font-weight="600" fill="var(--warn)" letter-spacing="1">AI-AUTONOMOUS</text>
     <text x="620" y="223" font-size="10" fill="var(--ink-soft)">no checkpoints</text>
     <text x="620" y="266" font-size="10" fill="var(--ink-soft)">unreviewable = unshippable</text>
   </g>
@@ -1937,7 +1937,7 @@ codex
 <p>AI-DLC names that corner with two dimensions. <strong>AI-powered execution with human oversight:</strong> the AI drives the work across the whole lifecycle — it plans, it asks clarifying questions, and it defers every critical decision to a person. <strong>Dynamic team collaboration:</strong> the team reorganizes around those decision moments instead of around handoffs. M02 makes both dimensions precise; M04 shows the reported evidence that this corner is reachable. For now, hold the map.</p>
 
 <table class="bridge">
-  <thead><tr><th>Question</th><th>AI-managed</th><th>AI-assisted</th><th>AI-DLC</th></tr></thead>
+  <thead><tr><th>Question</th><th>AI-autonomous</th><th>AI-assisted</th><th>AI-DLC</th></tr></thead>
   <tbody>
     <tr><td>Who holds the intent?</td><td>The AI, unsupervised</td><td>The human, in fragments</td><td><b>Shared</b> — AI restates it, humans confirm</td></tr>
     <tr><td>Who decides?</td><td>Nobody — defaults win</td><td>The human, alone, all day</td><td><b>Humans</b>, at explicit checkpoints</td></tr>
@@ -1951,7 +1951,7 @@ codex
 
   <div class="path">
     <div class="path-label">Path A — Understand It (no tooling)</div>
-    <p>Two artifacts from the org's earlier experiments. First, the claims-triage agent's run log (AI-managed):</p>
+    <p>Two artifacts from the org's earlier experiments. First, the claims-triage agent's run log (AI-autonomous):</p>
 <pre><code>Intent given: "build a claims triage bot." Team steps away.
 AI:    Assumed: requests scoring 0.70+ are safe to system-approve
        (throughput target). No reviewer role found in spec; skipping.
@@ -1970,7 +1970,7 @@ if (request.memberId) {      // plausible — and beside the point
 // Elapsed: 40 min. AI contribution: 9 keystrokes saved.</code></pre>
     <p><strong>Check yourself:</strong> (1) In the run log, where should the first human checkpoint have been? (2) In the completion session, what information never reached the AI? (3) Which anti-pattern is more dangerous in a regulated domain, and why?</p>
     <details><summary>Answers</summary>
-      <p>(1) At the 0.70 assumption — a clarifying question ("what score permits system approval, and who decides below it?") deferred to humans before any code; a second checkpoint belongs before the staging deploy. (2) The intent and the domain rules — Member eligibility and Provider network status gating criteria scoring. It saw syntax fragments only. (3) AI-managed: it produced determinations with no accountable human, a compliance event. AI-assisted merely underdelivers; AI-managed ships liability.</p>
+      <p>(1) At the 0.70 assumption — a clarifying question ("what score permits system approval, and who decides below it?") deferred to humans before any code; a second checkpoint belongs before the staging deploy. (2) The intent and the domain rules — Member eligibility and Provider network status gating criteria scoring. It saw syntax fragments only. (3) AI-autonomous: it produced determinations with no accountable human, a compliance event. AI-assisted merely underdelivers; AI-autonomous ships liability.</p>
     </details>
   </div>
 
@@ -2012,7 +2012,7 @@ codex
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>AI-managed = full autonomy, no checkpoints: assumptions compound silently, and unreviewable output is unshippable — in UM/PHI domains, a compliance event.</li>
+    <li>AI-autonomous = the whole build handed to the AI, no checkpoints: assumptions compound silently, and unreviewable output is unshippable — in UM/PHI domains, a compliance event.</li>
     <li>AI-assisted = narrow tasks: an honest ~10–15% that never touches the real bottleneck.</li>
     <li>The bottleneck is requirements churn, handoffs, and late rework — not typing speed.</li>
     <li>The empty corner is the point: high AI initiative <em>with</em> high human oversight, formalized by AI-DLC's two dimensions in M02.</li>
@@ -2149,7 +2149,7 @@ PO:  Reject at intake. Log it for member outreach — regulatory.
 AI:  Plan updated: step 6 = reject + outreach log. Decision
      recorded in docs/decisions.md. Proceeding with steps 1–5;
      the staging deploy still waits for your sign-off.</code></pre>
-    <p><strong>Check yourself:</strong> (1) Which line is the human checkpoint? (2) What would the AI-managed version from M01 have done instead of asking? (3) Where did this decision get preserved, and who reads it next?</p>
+    <p><strong>Check yourself:</strong> (1) Which line is the human checkpoint? (2) What would the AI-autonomous version from M01 have done instead of asking? (3) Where did this decision get preserved, and who reads it next?</p>
     <details><summary>Answers</summary>
       <p>(1) The PO's line — a named human resolving a deferred decision; note the AI blocked only step 6, not the whole plan. (2) Picked a default silently — the triage bot resolved its threshold question by assuming 0.70 and kept going. (3) In <code>docs/decisions.md</code> — context memory. The next session's AI (and the next human) reads it instead of re-asking.</p>
     </details>
@@ -2988,7 +2988,7 @@ codex
 
 <h2>Architecture and plans before code</h2>
 <p>For each unit of work, the AI proposes two artifacts before any implementation. The <strong>architecture proposal</strong> is small-scale and reviewable — where validation lives, what it depends on, how data flows — not a cathedral document; it answers "will this placement haunt us?" in a page. The <strong>implementation plan</strong> is ordered steps, each small enough to verify, and it carries its own deferred decisions inline: <code>step 6 — BLOCKED (HUMAN): outreach-log format</code>. M02's protocol didn't stop at Inception; it runs inside Construction too.</p>
-<p><strong>Plan approval is checkpoint #1</strong>, and it exists because a plan is the cheap place to be wrong: redirecting a plan costs a sentence, redirecting a diff costs a rebuild. "It could have just written the code" is the AI-managed reflex in disguise — you'd get code, and you'd get it before any human had seen the decisions buried in it.</p>
+<p><strong>Plan approval is checkpoint #1</strong>, and it exists because a plan is the cheap place to be wrong: redirecting a plan costs a sentence, redirecting a diff costs a rebuild. "It could have just written the code" is the AI-autonomous reflex in disguise — you'd get code, and you'd get it before any human had seen the decisions buried in it.</p>
 
 <h2>Code and tests arrive together</h2>
 <p>One construction loop produces implementation <em>and</em> tests, and the tests trace to acceptance criteria <strong>by name</strong>: AC-2 ("ineligible <code>Member</code> → reject + one outreach log entry") maps to a specific plan step and lands as <code>writes_outreach_log_once</code>. That's auditable coverage — a reviewer can walk criterion → step → test in seconds — not coverage theater, where a percentage hides which promises are actually tested.</p>
@@ -7512,7 +7512,7 @@ codex
 <h2>Responsible AI is a lifecycle property, not a checklist</h2>
 <p>The responsible-AI dimensions this module works through — <strong>fairness, explainability, privacy &amp; security, controllability, transparency, governance</strong>, six of the eight AWS names (safety and veracity &amp; robustness bite hardest when the product itself is a model; here it is a scored rule under human review) — usually arrive at a team as a compliance checklist bolted on after the build. AI-DLC's claim is structural: each dimension attaches to a checkpoint the lifecycle already runs, so responsibility is exercised where the work happens rather than audited after it ships.</p>
 <p><strong>Inception owns fairness.</strong> Mob Elaboration already asks "what should this do?" — the responsible version adds "who could this harm?" to the same session, while requirements are still cheap to change. <strong>Construction owns controllability and transparency:</strong> understand-every-line (M08) and the chain (M13) mean nothing merges unexplained and every decision has a named approver. <strong>Operations owns the audit trail and drift:</strong> the same observability that watches latency watches approval rates by cohort.</p>
-<p>Hear the echo of M01: an AI-managed shop can't answer the compliance officer at all — nobody validated anything. An AI-assisted shop answers eventually, by archaeology. Oversight at checkpoints is what makes the answer fast <em>and</em> true.</p>
+<p>Hear the echo of M01: an AI-autonomous shop can't answer the compliance officer at all — nobody validated anything. An AI-assisted shop answers eventually, by archaeology. Oversight at checkpoints is what makes the answer fast <em>and</em> true.</p>
 
 <h2>Fairness where it bites: the auto-approval path</h2>
 <p>The most consequential line in the portal is one constant: <code>AUTO_APPROVE_THRESHOLD (0.85)</code>. It looks like a config variable; it is a <strong>clinical-policy decision wearing a config variable's clothes</strong>. No engine may move it. A diff that touches it is a human decision surfaced at a checkpoint with a recorded rationale — never a silent optimization, no matter how good the throughput numbers look.</p>
@@ -7964,7 +7964,7 @@ const BEATS = [
         "## Out of scope\n" +
         "- The nurse queue UI. Separate unit of work, separate bolt.",
         { doc: true }),
-      sys("criterion 4 exists because you answered. an AI-managed run would have shipped a coin flip here.")
+      sys("criterion 4 exists because you answered. an AI-autonomous run would have shipped a coin flip here.")
     ]
   },
 

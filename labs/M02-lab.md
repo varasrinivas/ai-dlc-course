@@ -29,7 +29,7 @@ AI:  Plan updated: step 6 = reject + outreach log. Decision
 
 **Check yourself:**
 1. Which line is the human checkpoint?
-2. What would the AI-managed version from M01 have done instead of asking?
+2. What would the AI-autonomous version from M01 have done instead of asking?
 3. Where did this decision get preserved, and who reads it next?
 
 <details><summary>Answers</summary>

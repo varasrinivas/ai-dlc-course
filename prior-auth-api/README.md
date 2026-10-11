@@ -143,7 +143,7 @@ Use the same prompt verbatim. The wording of its plan will differ; the artifacts
 - `docs/decisions.md` gaining a D-004 with your reasoning, and the "Open" entry cleared
 - `npm test` green, with the output shown to you rather than asserted
 
-If the engine sailed past the re-score question and just picked one — that's the AI-managed
+If the engine sailed past the re-score question and just picked one — that's the AI-autonomous
 anti-pattern happening to you live, and it's worth sitting with. Tell it so, and watch what
 a steering file is actually for.
 

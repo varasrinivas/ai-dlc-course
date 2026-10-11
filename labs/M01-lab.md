@@ -7,7 +7,7 @@
 ## Path A — Understand It (no tooling required)
 
 **Artifact:** two records from the org's earlier AI experiments — the claims-triage agent's
-run log (AI-managed) and forty minutes of the intake developer's completion session
+run log (AI-autonomous) and forty minutes of the intake developer's completion session
 (AI-assisted).
 
 Run log 1 — the claims-triage agent:
@@ -55,8 +55,8 @@ if (request.memberId) {      // plausible — and beside the point
    before the staging deploy.
 2. The intent and the domain rules — Member eligibility and Provider network status gating
    ClinicalCriteria scoring. It saw syntax fragments only.
-3. AI-managed: it produced determinations with no accountable human, a compliance event.
-   AI-assisted merely underdelivers; AI-managed ships liability.
+3. AI-autonomous: it produced determinations with no accountable human, a compliance event.
+   AI-assisted merely underdelivers; AI-autonomous ships liability.
 
 </details>
 

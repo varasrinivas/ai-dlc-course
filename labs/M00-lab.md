@@ -28,7 +28,7 @@ AI:    Updated. UW-2 acceptance criteria now include an immutable score log.
 
 **Check yourself:**
 1. Which statement is a human checkpoint?
-2. Which AI behavior distinguishes this from the AI-managed anti-pattern?
+2. Which AI behavior distinguishes this from the AI-autonomous anti-pattern?
 3. Where did context memory just get created?
 
 <details><summary>Answers</summary>
