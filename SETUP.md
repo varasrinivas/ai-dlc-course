@@ -15,15 +15,18 @@ genuinely wrong — the fix is probably in [When it doesn't work](#when-it-doesn
 
 ## What you install — and the thing everyone gets wrong
 
-**There is no package for AI-DLC.** Not `ai-dlc`, not `aws-ai-dlc` — check the registry yourself,
-they don't exist. AI-DLC is a *methodology, not a runtime*. You never install it. You install an
-**engine**, and AI-DLC is the set of plain files and rituals you point that engine at.
+**There is no npm package for AI-DLC.** Not `ai-dlc`, not `aws-ai-dlc` — check the registry yourself,
+they don't exist. AI-DLC is a *methodology*, and this course runs it by hand. You install an
+**engine**, and AI-DLC is the set of plain files and rituals you point that engine at. AWS does ship
+an optional reference implementation, a v2 `aidlc` command installed by its own script rather than
+npm, that sets up your engine and runs the stages for you. You don't need it here: doing the method
+by hand is how you see every moving part.
 
 Three layers are in play, and they have almost nothing to do with each other:
 
 | Layer | What you actually do | Why |
 |---|---|---|
-| **The methodology** | **Nothing.** It's already in the repos: `CLAUDE.md`, `AGENTS.md`, `docs/decisions.md`, `docs/units/` | Text files plus human attention. No install step, no daemon. |
+| **The methodology** | **Nothing, in this course.** It's already in the repos: `CLAUDE.md`, `AGENTS.md`, `docs/decisions.md`, `docs/units/` | Text files plus human attention. AWS's optional `aidlc` CLI automates the same stages; this course doesn't use it. |
 | **An engine** (pick one, global) | `npm i -g @anthropic-ai/claude-code` **or** `npm i -g @openai/codex` | The thing that reads files, writes code, and runs your commands. |
 | **Each repo's own tooling** | `npm install` inside `prior-auth-api` **and** inside `prior-auth-web` | Ordinary app deps — TypeScript, Jest, Vite, Vitest. A Python shop would have pytest here and the method would be identical. |
 

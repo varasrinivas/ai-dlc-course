@@ -1381,12 +1381,12 @@ Tests:       4 passed, 4 total</pre>
 
 <section class="block">
 <h2>What you install — and the thing everyone gets wrong</h2>
-<p><strong>There is no package for AI-DLC.</strong> Not <code>ai-dlc</code>, not <code>aws-ai-dlc</code> — check the registry yourself, they don't exist. This trips up almost everyone, so it's worth being blunt about: AI-DLC is a methodology, not a runtime. You never install it. You install an <em>engine</em>, and AI-DLC is the set of plain files and rituals you point that engine at.</p>
+<p><strong>There is no npm package for AI-DLC.</strong> Not <code>ai-dlc</code>, not <code>aws-ai-dlc</code> — check the registry yourself, they don't exist. This trips up almost everyone, so it's worth being blunt about: AI-DLC is a methodology, and this course runs it by hand. You install an <em>engine</em>, and AI-DLC is the set of plain files and rituals you point that engine at. AWS does ship an optional reference implementation, a v2 <code>aidlc</code> command installed by its own script rather than npm, that sets up your engine and runs the stages for you. You don't need it here: doing the method by hand is how you see every moving part.</p>
 <p>Three layers are in play here and they have almost nothing to do with each other:</p>
 <table class="bridge">
   <thead><tr><th>Layer</th><th>What you actually do</th><th>Why</th></tr></thead>
   <tbody>
-    <tr><td>The methodology</td><td><b>Nothing.</b> It is already in the repos: <code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>docs/decisions.md</code>, <code>docs/units/</code></td><td>Text files plus human attention. There is no install step and no daemon.</td></tr>
+    <tr><td>The methodology</td><td><b>Nothing, in this course.</b> It is already in the repos: <code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>docs/decisions.md</code>, <code>docs/units/</code></td><td>Text files plus human attention. AWS's optional <code>aidlc</code> CLI automates the same stages; this course doesn't use it.</td></tr>
     <tr><td>An engine (pick one, install globally)</td><td><code>npm i -g @anthropic-ai/claude-code</code> <b>or</b> <code>npm i -g @openai/codex</code></td><td>This is the thing that reads files, writes code, and runs your commands.</td></tr>
     <tr><td>Each repo's own tooling</td><td><code>npm install</code> inside <code>prior-auth-api</code> and inside <code>prior-auth-web</code></td><td>Ordinary app dependencies — TypeScript, Jest, Vite, Vitest. A Python shop would have pytest here and the method would be identical.</td></tr>
   </tbody>
@@ -1640,7 +1640,7 @@ which is the only reason this page exists.</div>
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>Nothing installs AI-DLC. You install an engine; the methodology is the plain files already in each repo — steering file, decision log, units of work.</li>
+    <li>This course installs nothing for AI-DLC: you install an engine, and the methodology is the plain files already in each repo — steering file, decision log, units of work. AWS's optional v2 <code>aidlc</code> CLI automates the same method; you don't need it here.</li>
     <li>Two companion repos, installed separately: <code>prior-auth-api</code> (TypeScript + Jest, 4 tests) and <code>prior-auth-web</code> (React + Vitest, 5 tests).</li>
     <li>The four expected outputs are on this page verbatim: 4 passed, 5 passed, silent typechecks, and Vite on port 5173.</li>
     <li>Both repos are seeded <em>just before</em> their hello-world bolt — the identical "Pending" badges and the missing nurse-review state are the gap, not a defect.</li>
