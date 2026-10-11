@@ -2222,7 +2222,7 @@ codex
 
 <h2>Why the words change</h2>
 <p>M00's bridge table told you what maps to what; this module tells you how each new thing actually runs. The renaming is a commitment device. Call the cycle a "sprint" and the sprint's muscle memory follows — planning poker, mid-cycle status theater, a retro two weeks after the mistake. Call it a <strong>bolt</strong> and the old defaults have nothing to attach to.</p>
-<p>A bolt is not a shorter sprint. It is one complete pass — Inception, Construction, Operations — in hours to days. The phases recur <em>per bolt</em>, not per quarter: every bolt re-plans, builds, and ships-with-context, at whatever size the unit of work demands. And because M02 established that coordination is now the tempo-setter, every ritual inside the bolt exists to make decisions arrive fast — none exist to report status.</p>
+<p>A bolt is not a shorter sprint. AWS defines it as a planned Construction delivery slice over one or more dependency-linked units of work, measured in hours or days rather than weeks: Delivery Planning decides which units travel together, and build-and-test runs once across them. This course runs the simplest case — one unit per bolt, one session per unit — and wraps a short Inception and a close around each one, so every bolt re-plans, builds, and ships-with-context. That wrapping is the course's convention, not AWS's definition. And because M02 established that coordination is now the tempo-setter, every ritual inside the bolt exists to make decisions arrive fast — none exist to report status.</p>
 
 <figure>
 <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline of one bolt from 9:00 to 15:00: Mob Elaboration, AI constructs, Mob Construction, operations and context write">
@@ -2281,11 +2281,11 @@ codex
     </g>
   </g>
 </svg>
-<figcaption>fig 3.1 — a bolt is the whole lifecycle at decision speed, not a shorter sprint</figcaption>
+<figcaption>fig 3.1 — one bolt as this course runs it: one unit, with its own short Inception and close — decision speed, not a shorter sprint</figcaption>
 </figure>
 
 <h2>Units of work: the sizing rule</h2>
-<p>A <strong>unit of work</strong> is the smallest slice of the system sized for exactly one AI construction loop ending in exactly one <em>approval gate</em> — and small enough that the humans at that gate can honestly understand every line. Decisions still happen inside the loop: the AI defers a question mid-construction, a named human answers in minutes, the loop continues. What has to be singular is the gate that closes the unit. That gate is the unit of measure: if a slice needs two sign-offs to be safe, split it; if it can't be reviewed on its own, merge it or re-slice.</p>
+<p>AWS defines a <strong>unit of work</strong> as an independently implementable piece of the solution, decomposed during Units Generation, and its launch post says epics are replaced by units of work. How small to cut one is left to the team. This course's rule: a unit is the smallest slice of the system sized for exactly one AI construction loop ending in exactly one <em>approval gate</em> — and small enough that the humans at that gate can honestly understand every line. Decisions still happen inside the loop: the AI defers a question mid-construction, a named human answers in minutes, the loop continues. What has to be singular is the gate that closes the unit. That gate is the unit of measure: if a slice needs two sign-offs to be safe, split it; if it can't be reviewed on its own, merge it or re-slice.</p>
 <p>M00's Inception transcript stopped one level above the rule: its UW-1 intake, UW-2 <code>ClinicalCriteria</code> scoring, UW-3 review queue, and UW-4 <code>Determination</code> records are epic-sized, and each becomes a capstone bolt in Track 6. Apply the sizing rule to the first of them and the intake epic splits again — UW-1a schema validation, UW-1b eligibility, UW-1c routing handoff. Each of <em>those</em> is one loop, one decider, one reviewable diff.</p>
 
 <aside class="analogy">
@@ -2434,8 +2434,8 @@ codex
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>A bolt is one full Inception → Construction → Operations pass in hours to days — the phases recur per bolt, and the renaming is a deliberate break from sprint muscle memory.</li>
-    <li>A unit of work is sized by its closing approval gate: one AI construction loop, one sign-off that ends it, independently reviewable — decisions taken inside the loop don't split the unit.</li>
+    <li>AWS defines a bolt as a Construction delivery slice over one or more linked units, in hours to days. This course runs the simplest case — one unit per bolt, wrapped in a short Inception and close — and the renaming is a deliberate break from sprint muscle memory.</li>
+    <li>AWS defines a unit of work as an independently implementable piece of the solution (epics become units); this course sizes it by its closing approval gate: one AI construction loop, one sign-off that ends it, independently reviewable — decisions taken inside the loop don't split the unit.</li>
     <li>Mob Elaboration opens the bolt — the team validates AI-drafted requirements live; Mob Construction guards it — understand every line before sign-off.</li>
     <li>Context memory is the artifact chain — plans, decisions, steering updates — that makes bolt N+1 start smarter than bolt N.</li>
   </ul>
