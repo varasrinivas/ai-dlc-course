@@ -4,12 +4,12 @@
 > **Audience:** Dual-track — Engineering Leaders **and** Hands-on Practitioners
 > **Engines:** Claude Code and OpenAI Codex CLI as the AI-DLC execution engines (methodology is AWS's; engines are tool-agnostic)
 > **Domain anchor:** Prior Auth Portal (healthcare Utilization Management — AuthRequest, Member, Provider, ClinicalCriteria, Determination, AuthStatus)
-> **Total modules:** 37 entries — the P00 prelude + P01 setup page + M00 orientation + 34 content modules across 8 tracks
+> **Total modules:** 43 entries — the P00 prelude + P01 setup page + M00 orientation + 40 content modules across 9 tracks
 
 Every module carries an audience tag: `leader` | `practitioner` | `both`.
 Two suggested paths are rendered in M00:
-- **Leader path:** T0 → T1 → T2 → T3 (skim) → T7
-- **Practitioner path:** T0 → T1 (skim) → T2 → T3 → T4 → T5 → T6
+- **Leader path:** T0 → T1 → T2 → T3 (skim) → T7 → M40
+- **Practitioner path:** T0 → T1 (skim) → T2 → T3 → T4 → T5 → T6 → T8
 
 ---
 
@@ -90,6 +90,19 @@ Two suggested paths are rendered in M00:
 | M33 | Migrating a Sprint Team | both | Staged sprint→bolt transition (training-wheels first bolts, dual-tracking); remapping the Jira/Rally board (epic→bolt, story→unit of work, points→bolt lead time); sequencing the first bolt for learning; ceremonies dying by starvation not decree |
 | M34 | Responsible AI in the Lifecycle | both | Responsible AI dimensions mapped to AI-DLC checkpoints; fairness & bias in clinical criteria matching; PHI-safe prompting and context hygiene; transparency & audit trails for AI-authored code; human accountability as the load-bearing control |
 
+## Track 8 — Running AI-DLC on AWS's v2 engine (color: #475569)
+
+The engine as an option, not a replacement. Running intent: re-score pending requests when `ClinicalCriteria` change (guardrail-class: touches the 0.85 threshold path). Workspace: `prior-auth-workspace/`. Every module carries a "verified against aidlc vX" stamp. Plan: `plans/track-8.plan.md`.
+
+| ID  | Title | Audience | Key Concepts |
+|-----|-------|----------|--------------|
+| M35 | Install the Engine, Keep the Method | practitioner | Install and `aidlc doctor`; `aidlc config --harness claude\|codex`; `/aidlc` vs `$aidlc`; onboarding files vs your steering files; hand-run file → v2 file map; Initialization 0.1–0.3 |
+| M36 | The Record: Spaces, Intents, Memory, Audit | practitioner | Intent folders, `aidlc-state.md` vs audit shards, memory layering org → stage, `codekb/`; where `docs/decisions.md` goes now |
+| M37 | Scopes, Depth and the Composer | practitioner | 11 scopes × 3 depths, the adaptive composer, `scope save`, Guard Policy and fences; M10's dial → v2 knobs |
+| M38 | Inception on the Engine | practitioner | Reverse Engineering into `codekb/`, questions files and gates, the always-run stages, the unit DAG, `bolt-plan.md`; Mob Elaboration as the humans answering the file |
+| M39 | Construction on the Engine | practitioner | Per-unit stages, plan approval, walking skeleton, verified checkpoints, unit-major vs stage-major and swarm; why autonomy stays off for the threshold path |
+| M40 | Multi-repo Intents and Teams on the Engine | both | Hub workspace, `repos.json`, `--repo`, per-repo `codekb/`, team mode's single-repo limit, Rally as a human mirror; taught from the multi-repo runbook |
+
 ---
 
 ## Sequencing rationale
@@ -99,3 +112,4 @@ Two suggested paths are rendered in M00:
 3. **Claude Code (T4) before Codex (T5):** the deeper steering/hooks/subagent surface makes concepts concrete; T5 then teaches by contrast, and M22 resolves the "which engine" question deliberately.
 4. **Capstone (T6) after both engines:** learners execute bolts with either engine and compare.
 5. **T7 last but reachable early:** the leader path jumps from T3 to T7 without loss — leader modules never depend on practitioner labs.
+6. **T8 after the hand-run method:** the engine is taught only once learners can run every stage by hand, so they can tell what it automates from what it must not. M40 is the leaders' one entry point.

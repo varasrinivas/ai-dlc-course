@@ -48,6 +48,12 @@ and Codex CLI** as interchangeable engines:
 - Rituals & vocabulary: **bolts** replace sprints; **units of work**; **context memory** carried
   across the lifecycle; **adaptive rigor** (greenfield/brownfield detection, risk-based stage
   selection); **semantic context building** for brownfield; high **semantics-per-token** ratio.
+- Method view vs engine view. Tracks 0–7 teach the method by hand: three phases, plain files,
+  rituals run by people. AWS also ships the method as an engine (`awslabs/aidlc-workflows` v2, the
+  `aidlc` CLI): five phases, 33 stages, 11 scopes × 3 depths, intents under
+  `aidlc/spaces/<space>/intents/`. Track 8 teaches that engine as an **option, not a replacement**:
+  the hand-run tracks stay the way to learn the method, and the engine never moves a sign-off out
+  of human hands.
 - Steering files are one pattern with many names: CLAUDE.md (Claude Code), AGENTS.md (Codex),
   Project Rules (Amazon Q Developer), Steering (Kiro). Say this explicitly when relevant.
 - Evidence (cite as reported by AWS, in each source's own words, with its link). Never call these
@@ -85,6 +91,8 @@ and Codex CLI** as interchangeable engines:
   - **The inspector** — county sign-offs at framing, electrical, occupancy. = validation
     gates and governance.
   - **North crew / South crew** — two crews, same drawings, same house. = Claude Code / Codex.
+  - **The site office** (Track 8 only) — the firm's site-management system: schedules crews,
+    keeps the build book, books walkthroughs, never signs. = AWS's v2 `aidlc` engine.
 
   Track-by-track beats (the house must progress in curriculum order; a module may only
   reference beats already built):
@@ -105,7 +113,22 @@ and Codex CLI** as interchangeable engines:
     takes and the old schedule starves, unread (sprint→bolt team migration)
   - T7 epilogue (M34): the warranty call — a year on, a crack in house nine is traced
     through the build book in one page; the firm pays because the firm signed
-    (provenance, audit trails, accountability stays human). The saga now ends here.
+    (provenance, audit trails, accountability stays human).
+  - T8 coda (M35–M40), set after the warranty call: the firm adopts **the site office**, a
+    site-management system that schedules crews, keeps the build book and books the
+    walkthroughs (= AWS's v2 `aidlc` engine). Meera and Ravi learn what it does for them and
+    the one thing it cannot do: sign. One beat per module, in order:
+    - M35: the site office is installed; the owners check it reads their build book, not a
+      blank one of its own.
+    - M36: its log dates every change and signature; the warranty-call question is asked again,
+      of the log.
+    - M37: it proposes a job size (full permits or the gazebo path); the owners choose.
+    - M38: the design desk's morning questions arrive as the site office's form; the owners
+      still answer them together, at the table.
+    - M39: it offers to roll crews past walkthroughs automatically; Meera keeps the structural
+      walkthrough manual.
+    - M40: three lots on one street share crews; the site office coordinates the lots, and each
+      lot keeps its own build book. The saga ends here.
 
   Rules: the analogy block NEVER replaces the technical explanation — it compresses it after
   the fact. One block per module, 60–120 words, placed after the first or second concept
@@ -183,7 +206,20 @@ open("course/index.html", "w", encoding="utf-8").write(
 3. `/build-lab M0X` → writes the standalone lab to `labs/M0X-lab.md` (must match the in-module lab).
 4. `/validate-module M0X` → 20-point check against these standards.
 5. Human reloads `course/index.html` in a browser. Next session, next module. Build in
-   curriculum order (Track 0 → Track 7).
+   curriculum order (Track 0 → Track 8).
+
+## Track 8 rules (AWS's v2 engine)
+
+- **Real transcripts only.** Like P01, every expected-output block in Track 8 is a transcript of
+  a real `aidlc` run on this machine, on both harnesses. Never write engine output from the docs.
+- **Version stamp.** Each Track 8 module states the engine version it was verified against and the
+  date (e.g. "Verified against aidlc v2.11.0, 2026-10-11"). Re-verify every Track 8 module at each
+  minor release; update the stamp and the transcripts together.
+- **Workspace.** The engine runs in `prior-auth-workspace/`, a hub folder in the kit with the
+  practice repos as siblings (matches `runbook/multi-repo-feature.html`). Never run `aidlc` at
+  the kit root: its `aidlc/` record must not land in the course repo's own tree.
+- **Stance.** The engine is an option, not a replacement (see the method view vs engine view
+  above). Every module names what stays human.
 
 ## Environment
 
