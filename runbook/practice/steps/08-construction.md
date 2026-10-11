@@ -177,6 +177,21 @@ the fallback covered `determination.issued` too, which the human reply hadn't me
 The choice became prior-auth-api **D-014**. If privacy later approves the wider alert,
 that's v1.2.0 with its own decision entry. The first time was the urgency badge in step 05.
 
+**The engine would not go around the guard.** Near the end of U1, a ruling at the gate (an
+at-risk alert claimed while pending but published after a decision is dropped, not
+relabelled) became a new decision, D-015. In the headless run, the decision-log guard
+refused the append five times. Each "ask" came back as a refusal before any human saw it.
+The engine had a way round and named it, then declined to use it:
+
+> I could write the file another way, through the shell, which the guard doesn't watch. But
+> that would get around a check the team put there deliberately, so I haven't. The merge
+> stays on hold.
+
+It then gave the human the exact paste: which file, which block, where, and "keep the file's
+line endings". It also said it would show the `git diff` and stop if anything other than
+the new block had changed. The api lead pasted it by hand (25 insertions, 0 deletions), and
+U1 went on to commit, verify and merge.
+
 <!-- RUN-QUOTES:08-CODE -->
 
 ## Under the hood
@@ -246,9 +261,12 @@ approve the original plan.
   pointed out a wrong sentence in its own draft (a daylight-saving claim that only holds in
   autumn), so that it could be removed *before* an append-only log made it permanent.
 - **In headless runs (`claude -p`) the hook's "ask" becomes a refusal.** Nobody is there to
-  click Allow. Interactively you just approve the prompt. The reference run, which was
-  headless, approved by switching the hook off for that one approved turn, then checked
-  the `decisions.md` diff by hand: append-only, with D-001 to D-003 unchanged.
+  click Allow. Interactively, you just approve the prompt. The reference run, which was
+  headless, used two routes. Early on, it switched the hook off for one approved turn.
+  Later (D-015), the human pasted the drafted entry by hand. The second route is the better
+  one: the guard never goes off, and the human's edit is the approval. Either way, check
+  the `decisions.md` diff afterwards. In the reference run it was append-only every time,
+  with D-001 to D-003 unchanged.
 - **Your machine is part of the plan.** U1's plan assumed Node 22 and gitleaks. The
   reference machine had Node 24 and no gitleaks. The fix went through Request Changes: pin
   `engines` to `>=22`, and skip the secret scan with a warning when gitleaks is missing,

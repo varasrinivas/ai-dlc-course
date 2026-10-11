@@ -173,7 +173,12 @@ Compare with [`reference-run/hub/`](../reference-run/).
   terminal.
 - **`git commit` fails with "Please tell me who you are".** Set
   `git config --global user.name` and `user.email` first.
-- **LF/CRLF warnings on commit.** These are harmless on Windows.
+- **LF/CRLF warnings on commit.** These are harmless in themselves, but on Windows,
+  `core.autocrlf=true` makes Git check files out with CRLF endings. In the reference run,
+  that broke U1's own gate after a checkout: Prettier flagged 84 files, all of them for line
+  endings only. The fix that worked is a one-line `.gitattributes` in each repo:
+  `* text=auto eol=lf`. The notify seed ships with it. For prior-auth-api and prior-auth-web,
+  the engine adds it during Construction (step 08), or you can add it yourself after cloning.
 - **The engine's shell says "The command line is too long".** Your PATH is very long.
   Start the engine from a terminal with a shorter PATH.
 - **Headless `claude -p` ignores the project's permissions.** It needs the workspace
