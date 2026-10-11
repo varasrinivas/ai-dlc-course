@@ -44,7 +44,49 @@ Import `tracking/rally/<intent>/rally-import.csv` into Rally by hand. Paste the 
 
 ## What you'll see
 
-<!-- RUN-QUOTES:07 -->
+From the reference run (stage 2.9 and the phase check).
+
+**The bolt plan matched the runbook's shape, and was more specific.**
+
+```
+| 1 | Bolt 1         | U1 u1-api-urgency-clock | prior-auth-api    |
+| 2 | Bolt 2, first  | U2 u2-notify-service    | prior-auth-notify |
+| 3 | Bolt 2, second | U3 u3-web-urgent-queue  | prior-auth-web    |
+```
+
+The walking skeleton is defined as one observable behaviour, not as a layer:
+
+> A request is submitted as URGENT through the real `submit` entry point, stored in the file
+> store, and read back with its urgency (US1.1, AC1.1.1).
+
+Bolt 1 is broken into milestones. The first one is a **hard stop**:
+
+```
+| M1: skeleton | Baseline run of the existing suite. Enablers: ESLint (with the
+  sibling-import ban), Prettier, coverage (80% over src/), npm run verify, Node pin,
+  lockfile. RequestStore, minimal AuthRequestLifecycle and ApiCommandLine submit. US1.1. |
+  Hard-stop checkpoint. The api lead reviews and the tech lead approves. Evidence:
+  npm run verify output, plus the real-entry-point test. |
+```
+
+Notice the **sibling-import ban** in the lint setup. "Never import code from another repo"
+became a lint rule, not just a sentence in a steering file.
+
+**The phase check counts things.** `verification/phase-check-inception.md` opens with:
+
+```
+Verdict: PASS. There are no GAP or ORPHAN entries, no invalid targets, and no missing
+upstream IDs.
+| FR and FR sub-IDs | 61 | 61 OK |
+| NFR               | 17 | 12 OK | 5 Deferred |
+| US1.1 to US8.4    | 37 | 35 OK | 2 N/A |
+```
+
+Each deferral names the stage that picks it up. For example, NFR14 (coverage and the
+`verify` gate) goes to Build and Test.
+
+**State after the gate:** `aidlc-state.md` now reads `Construction Iteration: unit-major`
+and `Unit Ownership: solo`. That's one unit at a time, with one conductor.
 
 ## Under the hood
 
@@ -85,4 +127,11 @@ about swarm execution and checkpoints. Then keep the default.
 
 ## Common snags
 
-<!-- RUN-SNAGS:07 -->
+- **There's a ledger that overrides locked files.** The phase check cites
+  `inception/gate-decisions.md`. When a gate decision changed something in an artifact that
+  was already approved and frozen, the change is recorded there instead of edited in. Read
+  it alongside the artifacts.
+- **Keep the Rally skill out of the middle of a workflow turn.** `/rally-draft` only reads
+  approved files, so it can run any time after this gate. The reference run ran it after
+  the workflow finished, in its own session, to keep the run's transcript to AI-DLC turns
+  only.

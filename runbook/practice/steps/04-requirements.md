@@ -41,7 +41,61 @@ The decisions this step must produce, with the answers the reference run gave:
 
 ## What you'll see
 
-<!-- RUN-QUOTES:04 -->
+From the reference run (stage 2.3). The questions file had **17 questions** in four
+groups: *The clock*, *Ownership and the local run*, *Reporting*, and *Recording rules and
+quality targets*. The engine had settled the easy questions earlier, so these were the
+hard ones.
+
+**Ownership questions arrived on their own.** Without being asked, the engine put the
+repo-crossing decisions up front, each with a "who owns it" option:
+
+```
+### Q10. Who decides the queue order, and how does prior-auth-web get the queue in the local run?
+A. prior-auth-api owns the order and serves a small local read of the queue (C-1 rows,
+   already ordered), defined in contract v1.1.0. prior-auth-web shows rows in the order it
+   is given and never re-sorts. The countdown is display only ...
+B. prior-auth-api publishes C-1 only; prior-auth-web sorts by the recorded order rule
+```
+
+**It planned around the real code it found in step 03.** The codekb said prior-auth-api has
+no HTTP server. So instead of inventing one, the options were concrete and local:
+
+- events travel as a **JSON-lines file** from api to notify (Q7);
+- the at-risk check is an api **command that takes "now"**, so a test can control the clock (Q5);
+- reports come from an api **export command** (Q12).
+
+**Precision you would not have thought to ask for.** For example:
+
+- Q1: "7 calendar days" became exactly **168 elapsed hours**, with no time-zone dependency.
+- Q2: a determination issued exactly at the due time is **on time** (inclusive), tested at
+  the boundary and 1 ms either side.
+- Q4: a second "mark complete" is **refused** with a typed error, and never restarts the clock.
+
+**New decisions get recorded where they belong.** Q15 decided that the new clock rules go
+into prior-auth-api's `docs/decisions.md` as **D-005 onward**, with D-001 to D-003 untouched.
+
+**The gate, and a frozen file.** The reviewer raised 16 findings. In the audit trail, the
+approval records a disposition for each one, with a fingerprint of the finding and a link
+to the review record:
+
+```
+**Event**: GATE_APPROVED
+**Stage**: requirements-analysis
+**Review Finding Dispositions**: {"dispositions":[{"id":"R-01", ... "status":"Accepted risk",
+  "decided_at_severity":"should-fix", ...
+```
+
+Just before that approval, the engine tried to edit the reviewed `requirements.md` again.
+AI-DLC stopped it:
+
+```
+**Event**: REVIEW_FREEZE_BLOCKED
+**Tool**: Edit
+**Target**: .../inception/requirements-analysis/requirements.md
+```
+
+Once an artifact has been reviewed, the engine can't quietly change it before you decide.
+A change has to go through **Request Changes** and a new review.
 
 ## Under the hood
 
@@ -83,4 +137,11 @@ New rows also land in `audit/`.
 
 ## Common snags
 
-<!-- RUN-SNAGS:04 -->
+- **"Accepted risk" is a real decision, not a formality.** In the reference run, the mob
+  approved with all 16 findings marked *Accepted risk*, 9 of them "should-fix". The audit
+  keeps each one with its fingerprint. When you approve with open findings, read them first;
+  some are cheap to fix now and expensive in Construction.
+- **The questions file has no `## Q` headings at the top level.** Questions are `### Q<n>`
+  under group headings. Search for `### Q` when you scan it.
+- **A permission prompt for an Edit you didn't expect.** That may be the review freeze at
+  work (see above). Check `audit/` for `REVIEW_FREEZE_BLOCKED` before you approve anything.

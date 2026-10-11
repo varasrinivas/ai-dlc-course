@@ -31,14 +31,62 @@ Resume and work the three gates. What the reference run approved:
 |---|---|---|---|
 | U1 `api-urgency-clock` | service | prior-auth-api | urgency, the clock, queue order, both events; **publishes** contract v1.1.0 |
 | U2 `notify-service` | service | prior-auth-notify | notices with status and referenceId only (D-003) |
-| U3 `web-urgent-queue` | ui | prior-auth-web | badge, countdown, URGENT first |
+| U3 `web-urgent-queue` | ui | prior-auth-web | countdown, URGENT first (the runbook's badge was held back by web D-001; see step 05) |
 
 U2 and U3 depend on the **contract**, not on U1's code. That's why they can be built
 against stubs.
 
 ## What you'll see
 
-<!-- RUN-QUOTES:06 -->
+From the reference run (stages 2.6 to 2.8).
+
+**Domain design wrote 13 ADRs, and most of them come from the real code.** A few titles:
+
+```
+ADR-002: DeterminationService stays pure and unchanged
+ADR-004: Local JSON file store behind a RequestStore port
+ADR-005: CLI entry points with an explicit --now
+ADR-008: The web queue read is a loopback GET /queue
+ADR-011: Every cross-repo edge goes through contract v1.1.0 only
+ADR-012: One clock owner
+ADR-013: At-risk alert payload per the compliance reading
+```
+
+ADR-002 is the steering at work: the service that enforces D-001 and D-002 is left alone.
+
+**Units matched the runbook: one per repo.**
+
+```
+| Unit ID | Directory              | Repo              | Kind    | Size | Deployment model |
+| U1      | u1-api-urgency-clock   | prior-auth-api    | service | XL   | CLI commands plus a loopback read; deployed first |
+| U2      | u2-notify-service      | prior-auth-notify | service | M    | A run-and-exit command; deployed second |
+| U3      | u3-web-urgent-queue    | prior-auth-web    | ui      | M    | A Vite single-page app; deployed third |
+```
+
+> **One unit = one repo.** No unit spans two repos. Units coordinate only through contract
+> v1.1.0, published by U1 in `prior-auth-api/contracts/` and pinned by U2 and U3 as
+> committed copies.
+
+The end-to-end script is deliberately **not** a unit. It's the Build and Test check
+(step 09), run from the hub, and it only touches each repo's public commands.
+
+**The contract has five parts**, written as real AsyncAPI and OpenAPI specs:
+`determination.issued` (C-2), `sla.at-risk` (C-3), `GET /queue`, the shared C-1 AuthRequest,
+and the clock-times export. The ownership rules are the part to read slowly:
+
+```
+- Published versions are immutable: a folder is never changed in place.
+- Minor: adding an optional field ... Major: removing, renaming or retyping a field, or
+  adding a status or urgency value.
+- What is sent is guarded by exact allow-list tests on each side:
+  - U2: notices exactly {referenceId, status} ... (prior-auth-notify D-001)
+  - U3: the row model exactly {referenceId, procedureCode, submittedAt, decisionDueAt,
+    status} (prior-auth-web D-001)
+```
+
+The step 02 decision is still being honoured here. The `sla.at-risk` spec carries its
+fallback inline: *"urgency and decisionDueAt are provisional pending the privacy office ...
+If not confirmed before first publication, the payload is {referenceId, status} only."*
 
 ## Under the hood
 
@@ -78,4 +126,10 @@ Then read the engine's answer. Moving ordering into the UI means the API's own c
 
 ## Common snags
 
-<!-- RUN-SNAGS:06 -->
+- **Approving with should-fix findings, again.** Domain Design, Units Generation and
+  Contract Design were each approved with "should-fix" findings recorded as *Accepted
+  risk*. This is a pattern worth noticing in your own run. Each acceptance is a small debt
+  that Construction inherits.
+- **Unit sizes are uneven, and that's honest.** U1 is XL because the API owns the clock,
+  the queue, both events, the export and the contract. Don't split it across repos to
+  balance the sizes; split it into bolts (step 07).
