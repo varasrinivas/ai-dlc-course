@@ -3718,20 +3718,20 @@ codex
 <p class="hook">The compliance officer asks the question every regulated team eventually faces: "Where is your SDLC documented, and how do I know the team actually follows it?" The old answer was a wiki page dated three reorgs ago. The portal team's answer is a folder of stage definitions — plain text files stating what each stage takes in, produces, and requires before exit — plus per-bolt logs showing which stages ran and who signed each exit. The officer reads the "deploy sign-off" stage, then bolt 1's close-out, and checks them against each other in four minutes. A process that is text can be audited, executed, and improved. A process that is habit can only be believed.</p>
 
 <h2>A workflow you can read</h2>
-<p>AI-DLC ships as an <strong>open-source workflow definition</strong>: the stages, their sequencing options, and the heuristics for including them are published files, not folklore. That design choice has three consequences worth naming. <strong>Engines execute it</strong> — Claude Code and Codex read the same stage text, which is half of how this course keeps its two engines interchangeable. <strong>Auditors verify it</strong> — the compliance officer's four-minute check was stage exit criteria against bolt 1's log. <strong>Teams diff it</strong> — a process change is a reviewable text change with a rationale and a date, not a memo that evaporates.</p>
+<p>AI-DLC ships as an <strong>open-source workflow definition</strong>: the stages, their sequencing options, and the heuristics for including them are published files, not folklore. That design choice has three consequences worth naming. <strong>Engines execute it</strong> — AWS's v2 renders one engine-neutral core onto each supported engine, Claude Code and Codex included; in this course's labs, both engines read the same hand-run stage files instead, which is half of how the course keeps them interchangeable. <strong>Auditors verify it</strong> — the compliance officer's four-minute check was stage exit criteria against bolt 1's log. <strong>Teams diff it</strong> — a process change is a reviewable text change with a rationale and a date, not a memo that evaporates.</p>
 <p>Recognize the pattern: this is the steering-file idea operating at methodology scale. The process itself lives in context memory, alongside the decisions it produced.</p>
 
 <h2>Anatomy of a stage</h2>
-<p>A stage definition is six fields: <strong>purpose · trigger heuristic · inputs · activities · outputs · exit criteria.</strong> The trigger heuristic is what M10's dial actually reads — "include when brownfield detected," "include for behavior-change class or above." The exit criterion names what must exist, and who signs, before the stage closes.</p>
-<p>Read two from the standard library. <em>Semantic survey</em> — trigger: brownfield detected; output: a semantic map of the affected estate; exit: map validated by an engineer who knows the system (the whole of M12). <em>Mob Elaboration</em> — trigger: behavior-change class or above; output: approved units of work plus recorded constraints; exit: every artifact dispositioned (M06's rule). The load-bearing field is always the exit: <strong>a stage without a checkable exit is a meeting, not a stage.</strong></p>
+<p>A stage definition is six fields: <strong>purpose · trigger heuristic · inputs · activities · outputs · exit criteria.</strong> The trigger heuristic is what M10's dial actually reads — "include when brownfield detected," "include for behavior-change class or above." The exit criterion names what must exist, and who signs, before the stage closes. This six-field format is the course's teaching model, not AWS's file format. AWS's v2 numbers and names 33 stages (2.1 Reverse Engineering, 2.4 User Stories, and so on), and each declares what it consumes and produces, a lead agent, how it executes, and whether it always runs or is conditional: the same idea, a different schema.</p>
+<p>Read two from the course's library. <em>Semantic survey</em> (AWS's nearest stage: 2.1 Reverse Engineering) — trigger: brownfield detected; output: a semantic map of the affected estate; exit: map validated by an engineer who knows the system (the whole of M12). <em>Mob Elaboration</em> (a team ritual in AWS's method, not a v2 stage; the course gives it a card so it has a checkable exit) — trigger: behavior-change class or above; output: approved units of work plus recorded constraints; exit: every artifact dispositioned (M06's rule). The load-bearing field is always the exit: <strong>a stage without a checkable exit is a meeting, not a stage.</strong></p>
 
 <aside class="analogy">
 <p>In the site office, Ravi finally noticed the laminated sheet every crew consulted: the firm's playbook — every stage it knew how to run, from "anchoring survey" to "wet-stamp inspection," each with one line for when it applies and one for what counts as done. The gazebo's checklist had used four stages; the boathouse, eleven. After the boathouse, the desk added a new card — "ice-load check: any structure on the waterline, signed by the marine engineer" — and pinned the date to it. The playbook wasn't a binder nobody read. It was short, posted, and it grew one earned card at a time.</p>
-<span class="maps-to">maps to → <b>the laminated sheet</b> = the open-source stage library · <b>one line for when it applies</b> = trigger heuristics (M10's dial reads them) · <b>what counts as done</b> = exit criteria · <b>the dated ice-load card</b> = extending the library by reviewed change</span>
+<span class="maps-to">maps to → <b>the laminated sheet</b> = the stage library · <b>one line for when it applies</b> = trigger heuristics (M10's dial reads them) · <b>what counts as done</b> = exit criteria · <b>the dated ice-load card</b> = extending the library by reviewed change</span>
 </aside>
 
 <h2>Extending the library</h2>
-<p>Org-specific needs <strong>extend</strong> the library; they never fork it. The portal team's addition is a <em>PHI review</em> stage — trigger: any change in the guardrail-or-PHI class from M10's policy; outputs: an evidence pack (the decision record, the threshold audit note, an access-scope diff); exit: the compliance owner signs. It sits in the same folder as the standard stages, in the same six-field format, and both engines pick it up the same way.</p>
+<p>Org-specific needs <strong>extend</strong> the library; they never fork it. (AWS's v2 has its own extension points, plugins and saved scopes via <code>scope save</code>, rather than a folder of prose stages; the course's hand-run library makes the same move visible.) The portal team's addition is a <em>PHI review</em> stage — trigger: any change in the guardrail-or-PHI class from M10's policy; outputs: an evidence pack (the decision record, the threshold audit note, an access-scope diff); exit: the compliance owner signs. It sits in the same folder as the standard stages, in the same six-field format, and both engines pick it up the same way.</p>
 <p>Stage definitions are versioned like code. Tightening a trigger heuristic is a reviewed diff with a rationale — the process improves by PR. And one restraint keeps the library honest: <strong>every new stage must earn its trigger.</strong> A library that doubles every quarter is process theater coming back with better formatting; the question for each proposed card is "which real change class needs this, and what checkable thing does it produce?"</p>
 
 <figure>
@@ -3773,11 +3773,11 @@ codex
     <text x="380" y="322" font-size="8.5" fill="var(--accent)">guardrail class → PHI REVIEW included by its trigger</text>
   </g>
 </svg>
-<figcaption>fig 11.1 — the dial selects; the library supplies; org-added stages sit beside the standard ones</figcaption>
+<figcaption>fig 11.1 — the course's stage library: the dial selects; the library supplies; org-added stages sit beside the standard ones</figcaption>
 </figure>
 
 <table class="bridge">
-  <thead><tr><th>Prescribed process (old)</th><th>Stage library (AI-DLC)</th><th>What changed</th></tr></thead>
+  <thead><tr><th>Prescribed process (old)</th><th>Stage library (this course's model)</th><th>What changed</th></tr></thead>
   <tbody>
     <tr><td>Ceremonies fixed for every team</td><td><b>Stages composed per change class</b></td><td>Process fits the risk, not the calendar</td></tr>
     <tr><td>Process documented in a stale wiki</td><td><b>Stage definitions as versioned text</b></td><td>Auditable against per-bolt logs; both engines execute the same text</td></tr>
@@ -3860,8 +3860,8 @@ codex
 <section class="recap">
   <h2>Recap</h2>
   <ul>
-    <li>AI-DLC's workflow is open-source text: stages, sequences, and heuristics are files — executable by engines, auditable by compliance, diffable by teams.</li>
-    <li>A stage is six fields — purpose, trigger, inputs, activities, outputs, exit criteria — and a stage without a checkable exit is a meeting.</li>
+    <li>AI-DLC's workflow is open-source text: stages, sequences, and heuristics are files — executable by engines, auditable by compliance, diffable by teams. AWS's v2 ships 33 numbered stages; this course teaches with its own smaller, hand-run library.</li>
+    <li>In the course's model a stage is six fields — purpose, trigger, inputs, activities, outputs, exit criteria — and a stage without a checkable exit is a meeting.</li>
     <li>M10's dial reads the trigger heuristics written on the stages; selection is mechanical once the risk class is decided.</li>
     <li>Extend, don't fork: org stages like PHI review sit beside the standard ones, versioned and reviewed — and every new stage must earn its trigger.</li>
   </ul>
