@@ -237,6 +237,26 @@ Its reading of the numbers:
 That's a design trade-off between durability and speed. The engine stops and gives it to
 the room, with numbers, rather than choosing.
 
+The room kept the committed design and moved the budget instead: 60 s and 40 s, the
+highest committed runs rounded up. The reason: a recorded durability decision (D-003's
+"flush every outbox entry") is not superseded for speed, when even the fastest
+alternative was still over budget. The new figures became a ledger row, then a decision:
+**D-007**, which supersedes one sentence of D-003 and leaves the rest standing. A
+supersession is a new entry, never an edit to the old one.
+
+**The review found a race the tests missed, and the unit was reopened.** After the build
+passed `verify` (213 tests, 96% line coverage), review-01 found that a run could crash
+when another run's cleanup deleted its lock temp file. The room reopened Code Generation
+for U2 only. Steps 1–20 were kept, and three steps were added: the race fix, D-007, and a
+gate re-run. The fix went test-first, with the red run recorded:
+
+> **Red** (against the old `run-lock.ts`):
+> `lock_temp_removed_by_another_runs_cleanup_is_a_lost_race_and_busy` failed with
+> `expect(received).not.toThrow()`, error message `"ENOENT"`.
+
+The fix itself was four lines. On v2.11.0 this reopen would have hit the review defect
+described under Common snags. On the preview release it went through.
+
 <!-- RUN-QUOTES:08-CODE -->
 
 ## Under the hood
