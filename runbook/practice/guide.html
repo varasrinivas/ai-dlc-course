@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-repo practice guide</title>
+<meta name="description" content="Run the multi-repo Prior Auth feature through AWS AI-DLC v2 yourself: ten step cards, the mob answer sheet, the learning helpers and what the reference run produced.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d9488'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='19' font-weight='700' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Tokens match runbook/multi-repo-feature.html, so the guide reads as part of the course. */
+:root{
+  --paper:#f3f5f8; --panel:#ffffff; --ink:#16202e; --ink-soft:#4b5a6e; --line:#dde3ec;
+  --accent:#0d9488; --t5:#1d4ed8; --warn:#be185d;
+  --tint:#fafbfd; --tint2:#eef1f6; --code-bg:#e7ebf2; --pre:#16202e; --pre-ink:#e6edf7;
+  --radius:10px;
+  --font-display:"Fraunces",serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f141c; --panel:#161d28; --ink:#e3e9f2; --ink-soft:#9aa8bb; --line:#2a3546;
+    --accent:#2dd4bf; --t5:#8ab4ff; --warn:#f472b6;
+    --tint:#131a24; --tint2:#1d2633; --code-bg:#243043; --pre:#0a0e14; --pre-ink:#e6edf7;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f141c; --panel:#161d28; --ink:#e3e9f2; --ink-soft:#9aa8bb; --line:#2a3546;
+  --accent:#2dd4bf; --t5:#8ab4ff; --warn:#f472b6;
+  --tint:#131a24; --tint2:#1d2633; --code-bg:#243043; --pre:#0a0e14; --pre-ink:#e6edf7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.65;font-size:16px}
+a{color:var(--t5)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.top{background:#16202e;color:#e8edf5;padding:34px 16px 30px}
+.top-in{max-width:1180px;margin:0 auto}
+.kicker{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#5eead4}
+.top h1{font-family:var(--font-display);font-weight:700;font-size:clamp(1.7rem,4.4vw,2.6rem);line-height:1.15;margin:10px 0 12px;color:#fff;text-wrap:balance}
+.top p{max-width:760px;color:#c3cede}
+.top a{color:#9ec5ff}
+.facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.fact{border:1px solid #33435a;border-radius:8px;padding:8px 12px;min-width:0}
+.fact b{display:block;font-family:var(--font-display);font-size:1.25rem;color:#fff;line-height:1.2}
+.fact span{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:#9fb0c6}
+.theme{float:right;background:none;border:1px solid #33435a;color:#c3cede;border-radius:6px;padding:4px 10px;font-size:.75rem}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:36px}
+.toc{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:26px 0 30px}
+.toc-h{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+.toc ol{list-style:none;margin:0}
+.toc li{margin:0}
+.toc a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink-soft);font-size:.84rem;padding:5px 8px;border-radius:6px;border-left:3px solid transparent}
+.toc a:hover{background:var(--tint2);color:var(--ink)}
+.toc a.on{color:var(--ink);background:var(--panel);border-left-color:var(--accent)}
+.toc .n{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-soft);min-width:20px}
+.toc .sep{height:1px;background:var(--line);margin:8px 0}
+.main{min-width:0;padding:26px 0 80px}
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  .toc{position:static;max-height:none;padding:16px 0 0}
+  .toc ol{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+  .toc li{flex:0 0 auto}
+  .toc a{border-left:none;border:1px solid var(--line);background:var(--panel);white-space:nowrap}
+  .toc .sep{display:none}
+}
+
+h2{font-family:var(--font-display);font-weight:600;font-size:1.6rem;line-height:1.25;margin:0 0 12px;text-wrap:balance}
+h3{font-family:var(--font-display);font-weight:600;font-size:1.15rem;margin:26px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
+.card > h3:first-child{margin-top:0;padding-top:0;border-top:none}
+h4{font-family:var(--font-display);font-weight:600;font-size:1rem;margin:18px 0 6px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px 22px}
+li{margin:3px 0}
+li > ul,li > ol{margin-bottom:4px}
+pre{background:var(--pre);color:var(--pre-ink);border-radius:var(--radius);padding:16px 18px;overflow-x:auto;font-family:var(--font-mono);font-size:.8rem;line-height:1.6;margin:12px 0;position:relative}
+code{font-family:var(--font-mono);font-size:.85em;background:var(--code-bg);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre code{background:none;padding:0;overflow-wrap:normal;color:inherit}
+blockquote{border-left:3px solid var(--accent);background:var(--tint);padding:10px 16px;margin:12px 0;color:var(--ink-soft);border-radius:0 8px 8px 0}
+blockquote p:last-child{margin-bottom:0}
+.card > blockquote:first-child{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.02em;border-left-color:var(--t5)}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.88rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--tint2);font-weight:600}
+.block{margin:0 0 46px;scroll-margin-top:12px}
+.sec-k{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+@media (max-width:600px){.panel{padding:18px 16px}}
+
+.copy{position:absolute;top:8px;right:8px;background:#2a3a52;color:#dbe6f5;border:none;border-radius:6px;font-size:.7rem;padding:3px 9px;opacity:.85}
+.copy:hover{opacity:1}
+.tabs{margin:12px 0}
+.tabs [role=tablist]{display:flex;gap:4px}
+.tabs [role=tab]{background:var(--tint2);color:var(--ink-soft);border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;padding:5px 12px;font-size:.78rem;font-family:var(--font-mono)}
+.tabs [role=tab][aria-selected=true]{background:var(--pre);color:var(--pre-ink);border-color:var(--pre)}
+.tabs pre{margin-top:0;border-top-left-radius:0}
+footer{color:var(--ink-soft);font-size:.8rem;border-top:1px solid var(--line);padding-top:16px}
+@media print{.toc,.copy,.theme{display:none}.wrap{display:block}.tabs [role=tabpanel][hidden]{display:block}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <button class="theme" type="button" id="theme">Theme</button>
+  <div class="kicker">AI-DLC course · practice kit</div>
+  <h1>Run the multi-repo feature yourself</h1>
+  <p>One Prior Auth feature (urgent requests get a 72-hour decision clock) taken through AWS AI-DLC v2 across
+  <code>prior-auth-api</code>, <code>prior-auth-web</code> and a new <code>prior-auth-notify</code>. This page is the whole
+  kit in one file: the ten step cards, the answer sheet for playing the room, the learning helpers, and what the reference
+  run produced. The <a href="../multi-repo-feature.html">runbook</a> describes the feature; this guide is how you do it.</p>
+  <div class="facts">
+    <div class="fact"><b>10</b><span>step cards</span></div>
+    <div class="fact"><b>3</b><span>repos, 1 hub</span></div>
+    <div class="fact"><b>5 · 33</b><span>phases · stages</span></div>
+    <div class="fact"><b>v2.11</b><span>aidlc engine</span></div>
+  </div>
+</div></header>
+<div class="wrap">
+  <nav class="toc" aria-label="Contents"><div class="toc-h">Contents</div><ol>
+<li><a href="#start"><span class="n">·</span>Start here</a></li>
+<li><a href="#step-01"><span class="n">01</span>Workspace</a></li>
+<li><a href="#step-02"><span class="n">02</span>Intent and scope</a></li>
+<li><a href="#step-03"><span class="n">03</span>Read the repos</a></li>
+<li><a href="#step-04"><span class="n">04</span>Requirements</a></li>
+<li><a href="#step-05"><span class="n">05</span>Stories and Rally</a></li>
+<li><a href="#step-06"><span class="n">06</span>Design, units, contract</a></li>
+<li><a href="#step-07"><span class="n">07</span>Bolt plan</a></li>
+<li><a href="#step-08"><span class="n">08</span>Construction</a></li>
+<li><a href="#step-09"><span class="n">09</span>Build and test</a></li>
+<li><a href="#step-10"><span class="n">10</span>Operate and close</a></li>
+<li class="sep" aria-hidden="true"></li>
+<li><a href="#answers"><span class="n">·</span>Mob answer sheet</a></li>
+<li><a href="#extensions"><span class="n">·</span>Learning helpers</a></li>
+<li class="sep" aria-hidden="true"></li>
+<li><a href="#run-notes"><span class="n">·</span>Reference run notes</a></li>
+  </ol></nav>
+  <main class="main">
+<section class="block" id="start"><h2>Run it yourself: the multi-repo AI-DLC practice kit</h2><div class="panel card"><p>The <a href="../multi-repo-feature.html">multi-repo runbook</a> <em>describes</em> one Prior Auth feature
+going through AWS AI-DLC v2: urgent requests get a 72-hour clock, across three repos.
+This kit is how you <strong>do</strong> it, on your own machine, with Claude Code or Codex CLI.</p>
+<p>Prefer one page? <a href="guide.html"><code>guide.html</code></a> is this whole kit in a single standalone file,
+built from these Markdown files by <code>build-guide.py</code>. Re-run the script after editing a card.</p>
+<p>There is no grading script. The point is to watch the method work:</p>
+<ul>
+<li>the engine asking instead of guessing;</li>
+<li>a reviewer agent finding gaps before you do;</li>
+<li>a plan gate that stops code until a human says yes;</li>
+<li>your answers in step 02 turning up, three stages later, in requirements and code.</li>
+</ul>
+<h3 id="start-what-you-ll-learn">What you'll learn</h3>
+<p>By the end you will have:</p>
+<ul>
+<li>built a v2 <strong>workspace</strong>: a hub that holds the AI-DLC record, with code repos beside it;</li>
+<li>run all <strong>five phases</strong> and <strong>33 stages</strong> at enterprise scope, answering question files
+  and passing human gates;</li>
+<li>seen how <strong>steering files</strong>, the hub's <code>memory/</code>, and an <strong>AI-DLC plugin</strong> keep an engine
+  inside each repo's recorded rules;</li>
+<li>generated code into <strong>two brownfield repos and one greenfield repo</strong>, against a
+  versioned contract, in two <strong>bolts</strong>;</li>
+<li>copied the feature's decisions back into each repo so they outlive the feature.</li>
+</ul>
+<h3 id="start-before-you-start">Before you start</h3>
+<table>
+<thead>
+<tr>
+<th>You need</th>
+<th>Check it</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows 10/11 x64</td>
+<td>—</td>
+<td>The <code>aidlc</code> binary is x64 only</td>
+</tr>
+<tr>
+<td>Git</td>
+<td><code>git --version</code></td>
+<td>Set <code>user.name</code> and <code>user.email</code></td>
+</tr>
+<tr>
+<td>Node.js 20+</td>
+<td><code>node -v</code></td>
+<td>The companion repos' tests</td>
+</tr>
+<tr>
+<td>An engine</td>
+<td><code>claude --version</code> and/or <code>codex --version</code></td>
+<td>Codex must be 0.145.0+</td>
+</tr>
+<tr>
+<td>Engine sign-in</td>
+<td><code>claude</code> / <code>codex login</code></td>
+<td>A Claude subscription or API key; an OpenAI login for Codex</td>
+</tr>
+<tr>
+<td>AWS AI-DLC CLI</td>
+<td><code>aidlc --version</code></td>
+<td>Installed in step 01. <strong>No AWS account needed</strong></td>
+</tr>
+<tr>
+<td>Bun 1.3.8+ (optional)</td>
+<td><code>bun --version</code></td>
+<td>Only to build the plugin in <code>extensions/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Time and cost.</strong> Enterprise scope is thorough: each stage asks questions, confirms a
+summary, runs an AI review, and waits at a gate. Plan on a day, in sittings. The reference
+run's engine usage is in <a href="#run-notes"><code>reference-run/RUN-NOTES.md</code></a>. For a
+faster first pass, use <code>--scope feature</code>: the same 33 stages at standard depth.</p>
+<h3 id="start-the-path">The path</h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Card</th>
+<th>Runbook</th>
+<th>Phase · stages</th>
+<th>You'll learn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td><a href="#step-01">Workspace</a></td>
+<td><a href="../multi-repo-feature.html#s1">§01</a></td>
+<td>setup</td>
+<td>The hub + sibling layout; what <code>aidlc config</code> installs</td>
+</tr>
+<tr>
+<td>02</td>
+<td><a href="#step-02">Intent and scope</a></td>
+<td><a href="../multi-repo-feature.html#s2">§02</a></td>
+<td>0–1 · 0.1–1.7</td>
+<td>Question files, summaries, AI review, the gate</td>
+</tr>
+<tr>
+<td>03</td>
+<td><a href="#step-03">Read the repos</a></td>
+<td><a href="../multi-repo-feature.html#s3">§03</a></td>
+<td>2 · 2.1–2.2</td>
+<td>Reverse engineering into a reusable codekb</td>
+</tr>
+<tr>
+<td>04</td>
+<td><a href="#step-04">Requirements</a></td>
+<td><a href="../multi-repo-feature.html#s4">§04</a></td>
+<td>2 · 2.3</td>
+<td>Mob Elaboration; settle ownership early</td>
+</tr>
+<tr>
+<td>05</td>
+<td><a href="#step-05">Stories and Rally</a></td>
+<td><a href="../multi-repo-feature.html#s5">§05</a></td>
+<td>2 · 2.4–2.5</td>
+<td>A mob of agents; your tracker is a mirror</td>
+</tr>
+<tr>
+<td>06</td>
+<td><a href="#step-06">Design, units, contract</a></td>
+<td><a href="../multi-repo-feature.html#s6">§06</a></td>
+<td>2 · 2.6–2.8</td>
+<td>One unit = one repo; the contract's two forms</td>
+</tr>
+<tr>
+<td>07</td>
+<td><a href="#step-07">Bolt plan</a></td>
+<td><a href="../multi-repo-feature.html#s7">§07</a></td>
+<td>2 · 2.9 + check</td>
+<td>Bolts, the walking skeleton, the phase check</td>
+</tr>
+<tr>
+<td>08</td>
+<td><a href="#step-08">Construction</a></td>
+<td><a href="../multi-repo-feature.html#s8">§08</a></td>
+<td>3 · 3.1–3.5</td>
+<td>Plan approval before code; code lands in the right repo</td>
+</tr>
+<tr>
+<td>09</td>
+<td><a href="#step-09">Build and test</a></td>
+<td><a href="../multi-repo-feature.html#s9">§09</a></td>
+<td>3 · 3.6–3.7</td>
+<td>Testing across the repo boundary</td>
+</tr>
+<tr>
+<td>10</td>
+<td><a href="#step-10">Operate and close</a></td>
+<td><a href="../multi-repo-feature.html#s10">§10</a></td>
+<td>4 · 4.1–4.7</td>
+<td>Contract-order deploys; decisions outlive the feature</td>
+</tr>
+</tbody>
+</table>
+<p>Each card has the same parts:</p>
+<ol>
+<li><strong>Goal</strong></li>
+<li><strong>Who's in the room</strong></li>
+<li><strong>Do it</strong>, with Claude Code and Codex commands</li>
+<li><strong>What you'll see</strong>, quoted from the reference run</li>
+<li><strong>Under the hood</strong>, the files to open</li>
+<li><strong>Before you say Approve</strong></li>
+<li><strong>Try this</strong>, one deliberate experiment</li>
+<li><strong>Files written</strong></li>
+<li><strong>Common snags</strong></li>
+</ol>
+<h3 id="start-what-s-in-this-folder">What's in this folder</h3>
+<pre><code>practice/
+  README.md                 this file
+  steps/                    the ten step cards
+  answers/
+    mob-answer-sheet.md     who owns each decision, and what the reference run answered (and why)
+  seed/
+    prior-auth-notify/      the greenfield repo's starting point (steering + decision log, empty src/)
+    repos.json              declares the three siblings with local urls (offline, no SSH keys)
+    memory-project-steering.md   the &quot;read each repo's rules first&quot; block for the hub's method file
+  rally/rally-import-template.csv
+  extensions/               learning helpers: an AI-DLC plugin, skills, a subagent, a hook
+  reference-run/            what one real run produced, to compare against after each step
+</code></pre>
+<h3 id="start-how-to-use-the-reference-run">How to use the reference run</h3>
+<p>Do each step yourself first. Then open the same files in
+<a href="reference-run/"><code>reference-run/</code></a> and compare. Your run <em>will</em> differ: the engine writes
+new questions each time, and your answers steer everything after them. The useful
+question is not "did I match?" but "where did we diverge, and which answer caused it?"
+<a href="#run-notes"><code>RUN-NOTES.md</code></a> narrates the reference run gate by gate,
+including where the engine surprised us.</p>
+<h3 id="start-source-of-truth">Source of truth</h3>
+<p>AWS facts are checked against <strong>AI-DLC Workflows v2.11.0</strong> (released 2026-10-08), the
+latest stable release on 2026-10-11:
+<a href="https://github.com/awslabs/aidlc-workflows">https://github.com/awslabs/aidlc-workflows</a> and <a href="https://awslabs.github.io/aidlc-workflows/">https://awslabs.github.io/aidlc-workflows/</a>.</p>
+<p>The reference run started on v2.11.0. In the middle of U1 (step 08) it moved to
+<strong>2.11.1-preview.20261011.1</strong>, to get AWS's fix for a defect where a reopened unit could not
+be reviewed again. Step 08's snags give the commands. Everything before that point ran on
+v2.11.0.</p>
+<p>Not from AWS: the Rally mapping, the one-unit-per-repo rule, the steering pointer, the
+ADR copy-over, and the helpers in <code>extensions/</code>. Those are this course's conventions, built
+on AWS's documented extension points.</p></div></section>
+<section class="block" id="step-01"><div class="sec-k">Step 01</div><h2>Build the hub workspace and its three sibling repos</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s1">01 · Workspace setup</a> ·
+Phase: before the lifecycle · Time: 30–40 minutes, once</p>
+</blockquote>
+<h3 id="step-01-goal">Goal</h3>
+<p>Build, by hand, the layout AI-DLC v2 uses for a feature that spans several repos:</p>
+<ul>
+<li>a <strong>hub</strong> folder, which is its own git repo and holds the AI-DLC record;</li>
+<li>the code repos cloned <strong>beside</strong> each other inside it.</li>
+</ul>
+<p>You'll do this by hand instead of running a script, because the layout <em>is</em> the lesson:
+- where each file lives decides who can see it;
+- it decides what gets committed where;
+- it decides what outlives the feature.</p>
+<h3 id="step-01-who-s-in-the-room">Who's in the room</h3>
+<p>The <strong>tech lead</strong>, alone, once per workspace. Nobody approves anything yet.</p>
+<h3 id="step-01-do-it">Do it</h3>
+<p>All commands are Windows PowerShell. <code>$kit</code> is wherever you cloned this course; change it.</p>
+<p><strong>1. Install the tools (once per machine).</strong></p>
+<pre><code class="language-powershell"># AWS's AI-DLC CLI. Run from a normal (not admin) PowerShell window.
+irm https://github.com/awslabs/aidlc-workflows/releases/latest/download/install.ps1 | iex
+# Open a NEW terminal so PATH picks it up, then:
+aidlc --version          # aidlc 2.11.0 (runtime 2.11.0)
+
+# One or both engines
+npm i -g @anthropic-ai/claude-code    # then sign in: claude
+npm i -g @openai/codex                # needs 0.145.0 or newer; sign in: codex login
+</code></pre>
+<p><strong>2. Make three "remote" repos.</strong> In a real team these are on GitHub. Here they're local folders that stand in for GitHub. That way the whole exercise runs offline, and you don't need SSH keys.</p>
+<pre><code class="language-powershell">$kit  = &quot;D:\path\to\ai-dlc-course&quot;          # &lt;- your course clone
+$root = &quot;D:\aidlc-practice&quot;
+mkdir &quot;$root\remotes&quot;
+robocopy &quot;$kit\prior-auth-api&quot; &quot;$root\remotes\prior-auth-api&quot; /E /XD node_modules .claude
+robocopy &quot;$kit\prior-auth-web&quot; &quot;$root\remotes\prior-auth-web&quot; /E /XD node_modules .claude
+robocopy &quot;$kit\runbook\practice\seed\prior-auth-notify&quot; &quot;$root\remotes\prior-auth-notify&quot; /E
+foreach ($r in 'prior-auth-api','prior-auth-web','prior-auth-notify') {
+  git -C &quot;$root\remotes\$r&quot; init -b main
+  git -C &quot;$root\remotes\$r&quot; add -A
+  git -C &quot;$root\remotes\$r&quot; commit -m &quot;seed: $r&quot;
+}
+</code></pre>
+<p><code>prior-auth-notify</code> starts almost empty: steering files, a decision log, and an empty
+<code>src/</code>. It is the <strong>greenfield</strong> repo. The engine writes its code in step 08.</p>
+<p><strong>3. Create the hub and let AI-DLC clone the siblings.</strong></p>
+<pre><code class="language-powershell">mkdir &quot;$root\prior-auth-workspace&quot;; cd &quot;$root\prior-auth-workspace&quot;
+git init -b main
+Copy-Item &quot;$kit\runbook\practice\seed\repos.json&quot; .     # edit the url paths if your $root differs
+aidlc system workspace-sync
+</code></pre>
+<p><code>repos.json</code> declares the repo set. Each entry has a <code>url</code>, because without one AI-DLC
+clones <code>git@github.com:&lt;org&gt;/&lt;name&gt;.git</code> over SSH.</p>
+<p><strong>4. Configure the engine and check the setup.</strong></p>
+<pre><code class="language-powershell"># Claude Code
+aidlc config --harness claude --yes
+aidlc doctor
+</code></pre>
+<pre><code class="language-powershell"># Codex CLI: the same hub can hold both engines
+aidlc config --harness codex --yes
+aidlc doctor
+codex          # first run only: type /hooks, press t to trust all, then Esc
+</code></pre>
+<p><strong>5. Install each repo's dependencies.</strong></p>
+<pre><code class="language-powershell">foreach ($r in 'prior-auth-api','prior-auth-web','prior-auth-notify') {
+  Push-Location $r; npm install; npm test; Pop-Location
+}
+</code></pre>
+<p><strong>6. Teach the hub to respect each repo's rules.</strong> Open
+<code>aidlc\spaces\default\memory\project.md</code>. Paste each block from
+<code>$kit\runbook\practice\seed\memory-project-steering.md</code> under the heading of the same
+name: <em>Way of Working</em>, <em>Forbidden</em>, <em>Mandated</em>. Then commit the hub:</p>
+<pre><code class="language-powershell">git add -A; git commit -m &quot;hub: repos.json, aidlc config, repo steering&quot;
+</code></pre>
+<p><strong>7. (Recommended) Install the learning helpers.</strong> Follow
+<a href="#extensions"><code>extensions/README.md</code></a>. It takes about 10 minutes and gives you:
+- <code>aidlc-coach</code>, which explains where you are;
+- <code>repo-plan-reviewer</code>;
+- the decision-log guard;
+- the <code>prior-auth-pack</code> plugin.</p>
+<h3 id="step-01-what-you-ll-see">What you'll see</h3>
+<p><code>workspace-sync</code> clones the three repos and writes two generated files:</p>
+<pre><code>aidlc workspace-sync: reconciling D:\aidlc-practice\prior-auth-workspace against repos.json (3 repo(s))
+  ✓ cloned prior-auth-api on 'main'
+  ✓ cloned prior-auth-web on 'main'
+  ✓ cloned prior-auth-notify on 'main'
+  ✓ .gitignore managed block → 3 child dir(s)
+  ✓ aidlc.code-workspace → 3 child root(s)
+✓ workspace in sync
+</code></pre>
+<p><code>aidlc doctor</code> before your first chat in the folder:</p>
+<pre><code>0 problems, 3 warnings.
+</code></pre>
+<p>The three warnings are expected:
+- "update cache is absent";
+- "hooks have not run in this project yet" (they run on your first chat);
+- "uncommitted change(s) under aidlc/" (until you commit).</p>
+<h3 id="step-01-under-the-hood">Under the hood</h3>
+<p>Open these and look; nothing here is magic.</p>
+<ul>
+<li><code>.gitignore</code>. A managed block lists <code>/prior-auth-api/</code> and the other two. The hub
+  <strong>never</strong> commits application code; each sibling has its own <code>.git</code>.</li>
+<li><code>aidlc\spaces\default\memory\</code>, which holds <code>org.md</code>, <code>team.md</code>, <code>project.md</code> and <code>phases\</code>.
+  This is the <strong>method</strong>, loaded into every stage of every intent.</li>
+<li><code>.claude\settings.json</code>, AI-DLC's hooks:</li>
+<li><code>plan-approval-guard</code>, <code>state-transition-guard</code> and <code>write-audit-log</code>;</li>
+<li>a <code>Stop</code> hook that keeps the workflow moving;</li>
+<li>the status line.
+  You don't write these; you learn what they do.</li>
+<li><code>.claude\CLAUDE.md</code> starts with <code>@.claude/rules/aidlc.md</code>. That one line is how the
+  method reaches Claude's context.</li>
+<li>On Codex the same onboarding goes to <code>.codex\config.toml</code> as <code>developer_instructions</code>.
+  <code>.codex\onboarding.md</code> holds the same text for you to read.</li>
+</ul>
+<h3 id="step-01-before-you-move-on">Before you move on</h3>
+<ul>
+<li>Do all three repos' <code>npm test</code> runs pass? You're about to ask an engine to change them.
+  You need to know the starting point is green.</li>
+<li>Does <code>project.md</code> have the <em>Repo steering</em> paragraph under <em>Way of Working</em>? Step 02 is
+  where you'll see it working.</li>
+</ul>
+<h3 id="step-01-try-this">Try this</h3>
+<p>Run <code>aidlc doctor --verbose</code> and read the check names. They are the setup's own
+checklist: hooks, harness, runtime, workspace records.</p>
+<h3 id="step-01-files-written">Files written</h3>
+<p><code>repos.json</code> · <code>.gitignore</code> (managed block) · <code>aidlc.code-workspace</code> · <code>.claude/</code> or
+<code>.codex/</code> · <code>aidlc/spaces/default/memory/*</code>.
+Compare with <a href="reference-run/"><code>reference-run/hub/</code></a>.</p>
+<h3 id="step-01-common-snags-hit-during-the-reference-run">Common snags (hit during the reference run)</h3>
+<ul>
+<li><strong><code>aidlc</code> is not recognized.</strong> The installer added it to your <em>user</em> PATH. Open a new
+  terminal.</li>
+<li><strong><code>git commit</code> fails with "Please tell me who you are".</strong> Set
+  <code>git config --global user.name</code> and <code>user.email</code> first.</li>
+<li><strong>LF/CRLF warnings on commit.</strong> These are harmless in themselves, but on Windows,
+  <code>core.autocrlf=true</code> makes Git check files out with CRLF endings. In the reference run,
+  that broke U1's own gate after a checkout: Prettier flagged 84 files, all of them for line
+  endings only. The fix that worked is a one-line <code>.gitattributes</code> in each repo:
+  <code>* text=auto eol=lf</code>. The notify seed ships with it. For prior-auth-api and prior-auth-web,
+  the engine adds it during Construction (step 08), or you can add it yourself after cloning.</li>
+<li><strong>The engine's shell says "The command line is too long".</strong> Your PATH is very long.
+  Start the engine from a terminal with a shorter PATH.</li>
+<li><strong>Headless <code>claude -p</code> ignores the project's permissions.</strong> It needs the workspace
+  trusted first. Open <code>claude</code> interactively in the hub once and accept the trust dialog.</li>
+</ul></div></section>
+<section class="block" id="step-02"><div class="sec-k">Step 02</div><h2>State the intent, pick the scope, get the brief approved</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s2">02 · Intent and scope</a> ·
+Phase 0 Initialization + Phase 1 Ideation · stages 0.1–1.7 · Time: 60–90 minutes</p>
+</blockquote>
+<h3 id="step-02-goal">Goal</h3>
+<p>Describe the work in one paragraph and let AI-DLC turn it into an approved <strong>initiative
+brief</strong>. You'll see three things for the first time:</p>
+<ul>
+<li>the engine creates the intent record by itself;</li>
+<li>it asks questions <strong>in a file</strong>;</li>
+<li>every stage ends at a human gate, with an AI reviewer's findings already on the table.</li>
+</ul>
+<h3 id="step-02-who-s-in-the-room">Who's in the room</h3>
+<ul>
+<li><strong>Product owner:</strong> owns scope and the final say.</li>
+<li><strong>UM director:</strong> owns the clock and the outcome.</li>
+<li><strong>Nurse lead:</strong> owns who is alerted.</li>
+<li><strong>Compliance lead:</strong> owns the regulatory reading and privacy.</li>
+<li><strong>Tech lead:</strong> owns feasibility and team.</li>
+</ul>
+<p>Running solo, you play every seat. Keep
+<a href="#answers"><code>answers/mob-answer-sheet.md</code></a> open, and put the role
+after each answer.</p>
+<h3 id="step-02-do-it">Do it</h3>
+<p>Start the engine <strong>at the hub root</strong> (<code>D:\aidlc-practice\prior-auth-workspace</code>), never inside a
+sibling repo.</p>
+<pre><code class="language-text"># Claude Code: run `claude`, then type
+/aidlc --scope enterprise Urgent prior auth requests get a 72-hour determination clock: urgent requests jump the nurse review queue, providers and members are notified when a determination exists, and an at-risk alert fires before the clock runs out. Spans prior-auth-api, prior-auth-web and a new prior-auth-notify service.
+</code></pre>
+<pre><code class="language-text"># Codex CLI: run `codex`, then type
+$aidlc --scope enterprise Urgent prior auth requests get a 72-hour determination clock: urgent requests jump the nurse review queue, providers and members are notified when a determination exists, and an at-risk alert fires before the clock runs out. Spans prior-auth-api, prior-auth-web and a new prior-auth-notify service.
+</code></pre>
+<p><strong>Name the scope.</strong> With no <code>--scope</code>, AI-DLC v2.11 uses <strong>classic</strong>. Classic skips
+Ideation and Operation, which are the stages this feature needs. Enterprise runs all 33
+stages at comprehensive depth.</p>
+<p>Avoid <code>%</code> in the intent text on Windows.</p>
+<p><strong>Answering.</strong> At each question file the engine offers three ways to answer:</p>
+<ol>
+<li><strong>Guide me</strong> — up to four questions at a time, in chat.</li>
+<li><strong>I'll edit the file</strong> — you fill in <code>[Answer]:</code> tags yourself.</li>
+<li><strong>Chat</strong> — talk it through and let the engine extract the decisions.</li>
+</ol>
+<p>Pick <strong>2</strong> for this step at least once. Open the file in your editor, fill in each <code>[Answer]:</code>
+with a letter and a reason, add the role in brackets, save, and reply <code>done</code>.</p>
+<p>At each gate reply in plain words: <code>Approve</code>, or <code>Request Changes: &lt;what and why&gt;</code>.</p>
+<h3 id="step-02-what-you-ll-see">What you'll see</h3>
+<p>From the reference run. Your wording will differ.</p>
+<p><strong>Initialization runs without a gate.</strong> The engine creates
+<code>aidlc/spaces/default/intents/261011-urgent-auth-clock/</code> and records all three repos in
+<code>intents.json</code>:</p>
+<pre><code class="language-json">{ &quot;slug&quot;: &quot;urgent-auth-clock&quot;, &quot;dirName&quot;: &quot;261011-urgent-auth-clock&quot;,
+  &quot;scope&quot;: &quot;enterprise&quot;,
+  &quot;repos&quot;: [&quot;prior-auth-api&quot;, &quot;prior-auth-notify&quot;, &quot;prior-auth-web&quot;],
+  &quot;status&quot;: &quot;in-flight&quot; }
+</code></pre>
+<p>You never typed <code>--repos</code>. The engine found the siblings on disk.</p>
+<p><strong>The question file cites your steering.</strong> The top of <code>intent-capture-questions.md</code> lists
+its sources. The hub rules you pasted in step 01 are there:</p>
+<pre><code>- [memory:M1] aidlc/spaces/default/memory/project.md#Forbidden: &quot;NEVER change a rule
+  recorded in a repo's docs/decisions.md (e.g. prior-auth-api D-001 ...)&quot;
+</code></pre>
+<p><strong>The engine pushes back when an answer collides with a recorded rule.</strong> In the
+reference run, the room said the at-risk alert should carry the request's urgency. The
+engine stopped and asked a new question before writing anything:</p>
+<blockquote>
+<p>In Q12 you said the at-risk alert should carry whether the request is urgent. That
+conflicts with a recorded rule: notices and event payloads carry status and referenceId
+only (prior-auth-api D-003, decided with privacy office review). [...] recorded rules
+can't be changed in this workflow.</p>
+</blockquote>
+<p>The room's answer distinguished notices <em>to members and providers</em>, which D-003 covers,
+from an alert <em>to nurses</em>. It recorded the decision as pending privacy-office
+confirmation, with a fallback. See the answer sheet.</p>
+<p><strong>A summary to confirm before anything is generated.</strong> The engine restates every answer
+as a list ("Problem and trigger", "Urgency", "Clock start", ...). It asks <strong>Looks correct /
+Request changes</strong> before writing <code>intent-statement.md</code>. Read it as carefully as the
+documents; it is what they will be built from.</p>
+<p><strong>An AI reviewer before the human gate.</strong> At enterprise scope, a product-lead reviewer
+agent reads the output and raises numbered findings. The reference run got six:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Severity</th>
+<th>Finding (short)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-01</td>
+<td>Major</td>
+<td>"Nurses cannot see urgent work today" is stated as fact; no answer said so</td>
+</tr>
+<tr>
+<td>R-02</td>
+<td>Major</td>
+<td>The privacy-office dependency isn't listed as an open question, and there's no fallback</td>
+</tr>
+<tr>
+<td>R-03</td>
+<td>Major</td>
+<td>Standard requests and "clock not started" requests are never measured</td>
+</tr>
+<tr>
+<td>R-04</td>
+<td>Minor</td>
+<td>The rule is already in effect; the text says "will take effect"</td>
+</tr>
+<tr>
+<td>R-05</td>
+<td>Minor</td>
+<td>Jargon with no glossary</td>
+</tr>
+<tr>
+<td>R-06</td>
+<td>Minor</td>
+<td>Nurse lead missing from the stakeholder table</td>
+</tr>
+</tbody>
+</table>
+<p>The engine then gave its own view: it agreed with R-01 and R-02, and said R-03 and R-04
+need facts only the humans have.</p>
+<p>The room replied <strong>Request Changes</strong> with those facts. The engine recorded them as new
+answers Q16–Q19, asked for a fresh confirmation, revised, and sent the result back to the
+reviewer.</p>
+<h3 id="step-02-under-the-hood">Under the hood</h3>
+<ul>
+<li><code>aidlc-state.md</code> in the intent folder holds the current phase, stage and status. Open
+  it between replies and watch it move.</li>
+<li><code>audit/&lt;host&gt;-&lt;clone&gt;.md</code> gets a row for each human turn (the
+  <code>record-human-turn</code> hook) and each gate decision. "Who decided" lives here, not in chat.</li>
+<li><code>ideation/intent-capture/memory.md</code> holds the stage's working notes.</li>
+<li>On Claude Code, the status line shows phase · stage · gate. <code>/aidlc --status</code> prints the
+  same at any time.</li>
+</ul>
+<h3 id="step-02-before-you-say-approve">Before you say Approve</h3>
+<ul>
+<li>Is every statement in <code>intent-statement.md</code> traceable to an answer, a <code>[desc]</code>/<code>[memory]</code>
+  source, or a confirmed assumption? Each line carries a source tag; spot-check three.</li>
+<li>Is each open decision listed with an <strong>owner</strong>?</li>
+<li>Do any of the success metrics allow gaming? For example, a clock that starts "when
+  complete" can be met by never marking requests complete.</li>
+<li>Does anything quietly change a recorded rule (D-001, D-002, D-003)?</li>
+</ul>
+<p>If you installed the helpers, type <code>/aidlc-coach</code> (Claude) or <code>$aidlc-coach</code> (Codex) at
+any gate for a one-minute briefing on what to check.</p>
+<h3 id="step-02-try-this">Try this</h3>
+<p>At the first summary confirmation, reply
+<code>Request changes: the clock starts when the request is received</code>.
+Then watch what happens:
+- the engine reopens the question and updates the summary;
+- later, the requirements in step 04 inherit the new start time;
+- the audit trail records the change.</p>
+<p>Change it back, or don't, and see how far the change travels.</p>
+<h3 id="step-02-then-the-rest-of-ideation-1-2-1-7">Then: the rest of Ideation (1.2–1.7)</h3>
+<p>Market research, feasibility, scope definition, team formation and rough mockups follow
+the same rhythm: questions, a summary, documents, a review, the gate. Stage <strong>1.7
+Approval &amp; Handoff</strong> produces <code>initiative-brief.md</code>. That is the go/no-go.</p>
+<p><strong>Rally:</strong> after 1.7 is approved, a human creates the Rally <strong>Feature</strong> from the brief.
+AI-DLC does not talk to Rally.</p>
+<h3 id="step-02-files-written">Files written</h3>
+<p>All under <code>aidlc/spaces/default/intents/&lt;id&gt;/</code>:</p>
+<ul>
+<li><code>aidlc-state.md</code> and <code>audit/</code></li>
+<li><code>ideation/intent-capture/</code>: <code>intent-statement.md</code>, <code>stakeholder-map.md</code>, <code>intent-capture-questions.md</code></li>
+<li>the rest of <code>ideation/</code>: build-vs-buy, feasibility, scope document, RAID log, team, mockups, <code>initiative-brief.md</code></li>
+</ul>
+<p>Compare with <a href="reference-run/"><code>reference-run/hub/aidlc/</code></a>.</p>
+<h3 id="step-02-common-snags">Common snags</h3>
+<ul>
+<li><strong>"Your answer didn't reach AI-DLC. Please give it once more."</strong> A reply was dropped
+  between the chat and the engine's state tool. Repeat it. If it happens twice, run
+  <code>/aidlc --doctor</code>.</li>
+<li><strong>The engine adds follow-up questions (Q12, Q13, ...).</strong> That's correct behaviour, not a
+  loop: your answer opened a new question. Answer it.</li>
+<li><strong>Enterprise scope is thorough and slow.</strong> Each stage has questions, a summary, a
+  review, and a gate. Budget an hour for Ideation. For a quicker first pass, use <code>feature</code>
+  scope. It runs the same 33 stages at standard depth.</li>
+</ul></div></section>
+<section class="block" id="step-03"><div class="sec-k">Step 03</div><h2>Read every brownfield repo before anyone designs</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s3">03 · Read the repos</a> ·
+Phase 2 Inception · stages 2.1 Reverse Engineering, 2.2 Practices Discovery ·
+Time: 30–45 minutes</p>
+</blockquote>
+<h3 id="step-03-goal">Goal</h3>
+<p>Watch AI-DLC build <strong>semantic context</strong> for code it didn't write. Before any requirement is
+written, the engine scans each existing repo. It writes nine documents per repo into a
+store the <em>next</em> feature can reuse. You, as each repo's lead, check that the documents
+describe the code that is actually there.</p>
+<h3 id="step-03-who-s-in-the-room">Who's in the room</h3>
+<ul>
+<li><strong>api lead:</strong> checks <code>codekb/prior-auth-api/</code>.</li>
+<li><strong>web lead:</strong> checks <code>codekb/prior-auth-web/</code>.</li>
+<li><strong>Tech lead:</strong> approves the practices promoted into the method.</li>
+</ul>
+<h3 id="step-03-do-it">Do it</h3>
+<p>Nothing new to type. After stage 1.7 is approved, the engine moves into Inception by
+itself. If you closed the session, resume:</p>
+<pre><code class="language-text"># Claude Code
+/aidlc
+</code></pre>
+<pre><code class="language-text"># Codex CLI
+$aidlc
+</code></pre>
+<p>At each gate: <code>Approve</code>, or <code>Request Changes: &lt;what the scan got wrong&gt;</code>.</p>
+<h3 id="step-03-what-you-ll-see">What you'll see</h3>
+<p>From the reference run (stage 2.1; nine files per repo, about 2,300 lines across the three).</p>
+<p><strong>The scan said what is <em>not</em> there, which is the point.</strong> prior-auth-api has services and
+entities but no HTTP layer, and its <code>api-documentation.md</code> says so instead of inventing one:</p>
+<pre><code>| HTTP/REST endpoints | Not implemented | 0 |
+... there is no router, controller, HTTP framework, OpenAPI document or request handler
+</code></pre>
+<p><strong>The recorded rules and the known gaps were found.</strong> <code>business-overview.md</code> cites D-001,
+D-002 and D-003. <code>code-quality-assessment.md</code> lists the two seeded gaps by name:
+<code>F-05: Open, undecided re-score rule</code> and <code>F-07: Overloaded PENDING status</code>.</p>
+<p><strong>The web scan described what the app actually calls: nothing yet.</strong></p>
+<pre><code>| GET /auth-requests on prior-auth-api | src/data/sample.ts:3 comment: &quot;Static sample rows
+  until the queue is wired to GET /auth-requests.&quot; | Not implemented: no HTTP client, no
+  fetch, no data-fetching library, no base URL ... |
+</code></pre>
+<p><strong>The greenfield repo was scanned too, and that's a difference from the runbook.</strong> The
+runbook expects nothing to scan in prior-auth-notify. AI-DLC v2.11 wrote its nine files
+anyway. It kept "what the steering commits the service to" apart from "what exists":</p>
+<blockquote>
+<p><strong>No business functionality is implemented.</strong> Everything below under "Committed
+Functionality" is what the steering commits the service to, not behaviour that exists.</p>
+</blockquote>
+<p>The gate offered only <strong>Approve</strong> or <strong>Request Changes</strong>. It pointed the reviewer at
+<code>code-quality-assessment.md</code> and <code>architecture.md</code> in each repo.</p>
+<h3 id="step-03-under-the-hood">Under the hood</h3>
+<ul>
+<li><strong>A two-step pipeline:</strong> a <em>developer</em> agent scans the code, then an <em>architect</em> agent
+  writes the documents. Watch for the <code>Task</code> / subagent calls in the transcript. On
+  Claude Code, <code>/aidlc-replay</code> lists them after the fact.</li>
+<li><strong>Where it lands:</strong> <code>aidlc/spaces/default/codekb/&lt;repo&gt;/</code>. That is the <em>space</em>, not the
+  intent. A later feature that touches prior-auth-api finds this store and reuses it if
+  the code hasn't moved.</li>
+<li><strong>prior-auth-notify is scanned too, even though it's greenfield.</strong> Its codekb records the
+  repo's commitments (from <code>AGENTS.md</code>) as "committed, not built". Check that it never
+  presents a commitment as working code.</li>
+<li><strong>2.2 Practices Discovery</strong> asks three inspector agents to review the draft
+  practices independently: quality, developer, devsecops. After approval, the practices are
+  <strong>promoted</strong> into <code>memory/team.md</code> and <code>memory/project.md</code>. Open <code>project.md</code> before and
+  after; the diff is the lesson.</li>
+</ul>
+<h3 id="step-03-before-you-say-approve">Before you say Approve</h3>
+<p>Open each repo's <code>codekb</code> folder next to the code. For prior-auth-api:</p>
+<ul>
+<li>Does <code>business-overview.md</code> state the three recorded rules (D-001 <code>&gt;=</code> 0.85,
+  D-002 eligibility first, D-003 status and referenceId only)?</li>
+<li>Does <code>code-quality-assessment.md</code> mention the known gap? <code>AuthStatus.PENDING</code> is
+  overloaded, and re-scoring after a determination is undecided.</li>
+<li>Does <code>api-documentation.md</code> describe an API that exists? Today prior-auth-api has
+  <strong>no HTTP layer</strong>: services and entities only. A scan that invents endpoints is wrong.</li>
+</ul>
+<p>For prior-auth-web:</p>
+<ul>
+<li>Does <code>api-documentation.md</code> say what the web app <em>calls</em>? Today it reads static sample
+  rows (<code>src/data/sample.ts</code>) and calls nothing live. This is where contract drift between
+  repos first shows up.</li>
+</ul>
+<h3 id="step-03-try-this">Try this</h3>
+<p>Ask, before approving: <code>What did you NOT read in prior-auth-web, and why?</code>
+The answer tells you how the scan bounded itself. Bounding the scan is a deliberate
+token budget: AI-DLC's "semantics per token" idea.</p>
+<h3 id="step-03-files-written">Files written</h3>
+<ul>
+<li>For each scanned repo, in <code>aidlc/spaces/default/codekb/&lt;repo&gt;/</code>:</li>
+<li><code>business-overview.md</code>, <code>architecture.md</code>, <code>code-structure.md</code></li>
+<li><code>api-documentation.md</code>, <code>component-inventory.md</code>, <code>technology-stack.md</code></li>
+<li><code>dependencies.md</code>, <code>code-quality-assessment.md</code>, <code>reverse-engineering-timestamp.md</code></li>
+<li>From 2.2: the practices draft in the intent's <code>inception/practices-discovery/</code>, promoted into <code>memory/team.md</code> and <code>memory/project.md</code>.</li>
+</ul>
+<h3 id="step-03-common-snags">Common snags</h3>
+<ul>
+<li><strong>Cost spike at the phase boundary.</strong> Moving from Ideation into Inception and running the
+  scans was the most expensive single step of Inception so far: roughly a quarter of all
+  engine usage up to the codekb gate. This is expected for three repos at enterprise depth.</li>
+<li><strong>The codekb is not in the intent folder.</strong> Look in <code>aidlc/spaces/default/codekb/</code>, not
+  under <code>intents/&lt;id&gt;/inception/</code>.</li>
+</ul></div></section>
+<section class="block" id="step-04"><div class="sec-k">Step 04</div><h2>Turn the intent into requirements, one answered question at a time</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s4">04 · Requirements</a> ·
+Phase 2 Inception · stage 2.3 Requirements Analysis (Mob Elaboration) ·
+Time: 45–60 minutes</p>
+</blockquote>
+<h3 id="step-04-goal">Goal</h3>
+<p>This is <strong>Mob Elaboration</strong>, the ritual AI-DLC is best known for. The AI drafts the
+questions, and the room answers them. Every answer lands in a file and in the audit trail.</p>
+<p>The cross-repo questions get settled <strong>here</strong>, while changing your mind is cheap:
+- which repo computes the clock;
+- which repo stores it;
+- which repo emits each event.</p>
+<h3 id="step-04-who-s-in-the-room">Who's in the room</h3>
+<p>The whole mob:
+- the product owner, the UM director and the nurse lead;
+- compliance;
+- all three repo leads.</p>
+<p>If you're alone, read each question aloud and ask "whose call is this?" before answering.</p>
+<h3 id="step-04-do-it">Do it</h3>
+<p>Resume the workflow if needed (<code>/aidlc</code> or <code>$aidlc</code>). When the questions file appears, try
+<strong>Guide Me</strong> this time: the engine asks up to four questions at a time in chat. The file
+stays the source of truth whichever mode you pick.</p>
+<p>The decisions this step must produce, with the answers the reference run gave:</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Reference answer</th>
+<th>Seat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>When does the clock start?</td>
+<td>When the request is <strong>complete</strong>; "clock not started" before that</td>
+<td>UM director + compliance</td>
+</tr>
+<tr>
+<td>Which repo owns the clock?</td>
+<td><strong>prior-auth-api</strong> computes <code>decisionDueAt</code>; web and notify only read it</td>
+<td>api lead</td>
+</tr>
+<tr>
+<td>Queue order</td>
+<td>URGENT first, then <code>decisionDueAt</code> ascending</td>
+<td>Nurse lead</td>
+</tr>
+<tr>
+<td>Events</td>
+<td><code>determination.issued {referenceId, status, issuedAt}</code>; <code>sla.at-risk {referenceId, urgency, decisionDueAt}</code> 24h before due</td>
+<td>api lead + compliance</td>
+</tr>
+<tr>
+<td>Old clients</td>
+<td><code>urgency</code> defaults to STANDARD; <code>decisionDueAt</code> is null until complete</td>
+<td>api lead</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-04-what-you-ll-see">What you'll see</h3>
+<p>From the reference run (stage 2.3). The questions file had <strong>17 questions</strong> in four
+groups: <em>The clock</em>, <em>Ownership and the local run</em>, <em>Reporting</em>, and <em>Recording rules and
+quality targets</em>. The engine had settled the easy questions earlier, so these were the
+hard ones.</p>
+<p><strong>Ownership questions arrived on their own.</strong> Without being asked, the engine put the
+repo-crossing decisions up front, each with a "who owns it" option:</p>
+<pre><code>### Q10. Who decides the queue order, and how does prior-auth-web get the queue in the local run?
+A. prior-auth-api owns the order and serves a small local read of the queue (C-1 rows,
+   already ordered), defined in contract v1.1.0. prior-auth-web shows rows in the order it
+   is given and never re-sorts. The countdown is display only ...
+B. prior-auth-api publishes C-1 only; prior-auth-web sorts by the recorded order rule
+</code></pre>
+<p><strong>It planned around the real code it found in step 03.</strong> The codekb said prior-auth-api has
+no HTTP server. So instead of inventing one, the options were concrete and local:</p>
+<ul>
+<li>events travel as a <strong>JSON-lines file</strong> from api to notify (Q7);</li>
+<li>the at-risk check is an api <strong>command that takes "now"</strong>, so a test can control the clock (Q5);</li>
+<li>reports come from an api <strong>export command</strong> (Q12).</li>
+</ul>
+<p><strong>Precision you would not have thought to ask for.</strong> For example:</p>
+<ul>
+<li>Q1: "7 calendar days" became exactly <strong>168 elapsed hours</strong>, with no time-zone dependency.</li>
+<li>Q2: a determination issued exactly at the due time is <strong>on time</strong> (inclusive), tested at
+  the boundary and 1 ms either side.</li>
+<li>Q4: a second "mark complete" is <strong>refused</strong> with a typed error, and never restarts the clock.</li>
+</ul>
+<p><strong>New decisions get recorded where they belong.</strong> Q15 decided that the new clock rules go
+into prior-auth-api's <code>docs/decisions.md</code> as <strong>D-005 onward</strong>, with D-001 to D-003 untouched.</p>
+<p><strong>The gate, and a frozen file.</strong> The reviewer raised 16 findings. In the audit trail, the
+approval records a disposition for each one, with a fingerprint of the finding and a link
+to the review record:</p>
+<pre><code>**Event**: GATE_APPROVED
+**Stage**: requirements-analysis
+**Review Finding Dispositions**: {&quot;dispositions&quot;:[{&quot;id&quot;:&quot;R-01&quot;, ... &quot;status&quot;:&quot;Accepted risk&quot;,
+  &quot;decided_at_severity&quot;:&quot;should-fix&quot;, ...
+</code></pre>
+<p>Just before that approval, the engine tried to edit the reviewed <code>requirements.md</code> again.
+AI-DLC stopped it:</p>
+<pre><code>**Event**: REVIEW_FREEZE_BLOCKED
+**Tool**: Edit
+**Target**: .../inception/requirements-analysis/requirements.md
+</code></pre>
+<p>Once an artifact has been reviewed, the engine can't quietly change it before you decide.
+A change has to go through <strong>Request Changes</strong> and a new review.</p>
+<h3 id="step-04-under-the-hood">Under the hood</h3>
+<ul>
+<li>The questions follow a fixed shape:</li>
+<li>lettered options;</li>
+<li>a mandatory <code>X. Other (please specify)</code>;</li>
+<li>an <code>[Answer]:</code> tag.</li>
+<li><strong>Step 1b (prior-auth-pack)</strong> is in the stage instructions if you installed the plugin.
+  Open <code>.claude/aidlc-common/stages/inception/requirements-analysis.md</code> and search for
+  <code>prior-auth-pack</code>. That spliced paragraph tells the engine to read each repo's
+  <code>docs/decisions.md</code> and to settle ownership questions now. It's how a team customises
+  the method without forking it.</li>
+<li><code>requirements.md</code> is generated only after you confirm a consolidated summary.</li>
+</ul>
+<h3 id="step-04-before-you-say-approve">Before you say Approve</h3>
+<ul>
+<li>Every <code>[Answer]:</code> is filled in. An empty one is a decision you've silently handed to the
+  engine.</li>
+<li>Each new value or event names <strong>one</strong> owning repo.</li>
+<li>No requirement contradicts a D-id. For example, "auto-approve urgent requests at 0.80"
+  would contradict D-001.</li>
+<li>Each non-functional requirement is measurable, such as "within 72 hours of becoming
+  complete", not "fast".</li>
+</ul>
+<h3 id="step-04-try-this">Try this</h3>
+<p>Answer the clock-owner question with <strong>B</strong>: each consumer computes the due time itself.
+Don't approve; just read the engine's follow-up. Then change it back. You've just seen
+why "one clock, one owner" gets decided in Inception: three repos computing three clocks
+is how deadlines drift.</p>
+<h3 id="step-04-files-written">Files written</h3>
+<p>All in <code>aidlc/spaces/default/intents/&lt;id&gt;/inception/requirements-analysis/</code>:
+- <code>requirements-analysis-questions.md</code>
+- <code>requirements.md</code></p>
+<p>New rows also land in <code>audit/</code>.</p>
+<h3 id="step-04-common-snags">Common snags</h3>
+<ul>
+<li><strong>"Accepted risk" is a real decision, not a formality.</strong> In the reference run, the mob
+  approved with all 16 findings marked <em>Accepted risk</em>, 9 of them "should-fix". The audit
+  keeps each one with its fingerprint. When you approve with open findings, read them first;
+  some are cheap to fix now and expensive in Construction.</li>
+<li><strong>The questions file has no <code>## Q</code> headings at the top level.</strong> Questions are <code>### Q&lt;n&gt;</code>
+  under group headings. Search for <code>### Q</code> when you scan it.</li>
+<li><strong>A permission prompt for an Edit you didn't expect.</strong> That may be the review freeze at
+  work (see above). Check <code>audit/</code> for <code>REVIEW_FREEZE_BLOCKED</code> before you approve anything.</li>
+</ul></div></section>
+<section class="block" id="step-05"><div class="sec-k">Step 05</div><h2>Write the user stories, then mirror the work into Rally</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s5">05 · Stories → Rally</a> ·
+Phase 2 Inception · stages 2.4 User Stories, 2.5 Refined Mockups ·
+Time: 30–45 minutes</p>
+</blockquote>
+<h3 id="step-05-goal">Goal</h3>
+<p>See a <strong>mob of agents</strong> at work: design, developer and quality agents draft stories
+together. Then learn the boundary AI-DLC draws around tools it doesn't own. Rally (or
+Jira) is a <strong>mirror</strong> a human updates at gates, never the source of truth.</p>
+<h3 id="step-05-who-s-in-the-room">Who's in the room</h3>
+<ul>
+<li><strong>Product owner:</strong> approves the stories.</li>
+<li><strong>web lead and nurse lead:</strong> approve the refined mockups.</li>
+<li><strong>Scrum master or PO:</strong> imports to Rally later, in step 07.</li>
+</ul>
+<h3 id="step-05-do-it">Do it</h3>
+<p>Resume (<code>/aidlc</code> or <code>$aidlc</code>) and work the two gates.</p>
+<p>The Rally part happens <strong>after step 07</strong>, once units and the bolt plan are approved. If
+you installed the helpers, type:</p>
+<pre><code class="language-text"># Claude Code
+/rally-draft
+</code></pre>
+<pre><code class="language-text"># Codex CLI
+$rally-draft
+</code></pre>
+<p>Without the helper, paste the runbook's step-05 prompt instead. It reads the approved
+artifacts and writes <code>tracking/rally/&lt;intent&gt;/rally-import.csv</code> and <code>rally-map.md</code>. It
+never calls a Rally API. Then you import the CSV into Rally by hand, and copy the new IDs
+into <code>rally-map.md</code>.</p>
+<table>
+<thead>
+<tr>
+<th>AI-DLC gate (human)</th>
+<th>Rally ScheduleState</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.7 units + 2.9 bolt plan approved</td>
+<td>Defined, with an iteration</td>
+</tr>
+<tr>
+<td>3.5 code-generation plan approved for the unit</td>
+<td>In-Progress</td>
+</tr>
+<tr>
+<td>Unit checkpoint approved</td>
+<td>Completed</td>
+</tr>
+<tr>
+<td>3.6 Build and Test approved + PO acceptance</td>
+<td>Accepted</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-05-what-you-ll-see">What you'll see</h3>
+<p>From the reference run (stages 2.4 and 2.5). Stage 2.4 produced <strong>37 stories in eight
+epics</strong>: urgency, the clock, determination, the nurse queue, the at-risk alert, events and
+notices, reporting, and an end-to-end scripted run. Each story
+was tagged with the unit and repo it would land in, before Units Generation had even run.</p>
+<p><strong>Acceptance criteria you could paste into a test.</strong> For example:</p>
+<pre><code>### US2.3: Urgent requests are due 72 hours after completion (Must, U1 prior-auth-api)
+As Chris (compliance lead), I want an urgent request's due time to be exactly 72 elapsed
+hours after completion, so that we meet CMS-0057-F's expedited window.
+- AC2.3.2 Given URGENT and completeAt 2026-10-31T08:00:00-04:00 (ET, before the US
+  daylight-saving change), then decisionDueAt is ... 2026-11-03T12:00:00Z: 72 elapsed
+  hours, not 72 wall-clock hours.
+- AC2.3.4 The clock code reads no wall time. A test with a fixed injected clock gives the
+  same result whatever the host time zone.
+</code></pre>
+<p><strong>A persona nobody listed.</strong> <code>personas.md</code> added <em>Ivan, Intake Coordinator (new)</em>: the
+person who marks a request complete and so starts the clock. The room's answer that "the
+person confirming the documentation" marks it complete implied a role, and the engine
+named it.</p>
+<p><strong>The recorded rule beat the runbook's own design.</strong> The runbook draws an "Urgent" badge on
+each queue row. prior-auth-web's D-001 says list rows carry reference id, procedure code,
+dates and status, and nothing else. The engine read that strictly:</p>
+<pre><code>### US4.5: See an &quot;Urgent&quot; badge on rows (Could, U3 prior-auth-web, blocked on I-1)
+- Note: this story may be planned only if a new recorded prior-auth-web decision, with
+  privacy-office sign-off, allows it ...
+- AC4.5.1 Without that decision, no row carries urgency in any form: visible text,
+  screen-reader-only text, aria-*, title, data-* attributes or a class name. Urgency shows
+  through queue order only.
+</code></pre>
+<p>The refined mockup followed: <em>"No badge yet: there is no 'Urgent' badge until I-1 is
+settled."</em> Whether the engine was too strict is a fair argument for the room. Either way,
+the place to settle it is a new decision in <code>docs/decisions.md</code> with privacy sign-off, not a
+question file. That is the steering working as designed.</p>
+<p><strong>Refined mockups are more than pictures.</strong> Stage 2.5 wrote <code>mockups.md</code>, plus
+<code>interaction-spec.md</code>, <code>accessibility-checklist.md</code> and <code>design-system-mapping.md</code>. The
+queue screen's first tab stop is "Skip to queue".</p>
+<h3 id="step-05-under-the-hood">Under the hood</h3>
+<ul>
+<li>2.4 runs as a <strong>mob</strong>: several agents draft and critique before you see anything.
+  Run <code>/aidlc-replay</code> afterwards to see who did what.</li>
+<li><code>personas.md</code> is built from the stakeholder map you approved in step 02. A persona you
+  don't recognise came from somewhere; trace it.</li>
+</ul>
+<h3 id="step-05-before-you-say-approve">Before you say Approve</h3>
+<ul>
+<li>Does each story name a persona from <code>personas.md</code>?</li>
+<li>Is every acceptance criterion testable? "Shows due time" is weak. "Shows 'Due in 41h' for a
+  request due 41 hours from now" is testable.</li>
+<li>Does every story fit in one repo? A story that needs api <em>and</em> web is fine at this
+  stage, but units (step 06) will have to split the work.</li>
+<li>Do the mockups show reference ids only on queue rows (web D-001)? In the reference run,
+  this check removed the urgency badge entirely.</li>
+</ul>
+<h3 id="step-05-try-this">Try this</h3>
+<p>Ask the engine: <code>Which acceptance criterion would catch a queue sorted by createdAt
+instead of decisionDueAt?</code> If none would, you've found a missing test before any code exists.</p>
+<h3 id="step-05-files-written">Files written</h3>
+<ul>
+<li>In <code>inception/user-stories/</code>: <code>stories.md</code>, <code>personas.md</code></li>
+<li>In <code>inception/refined-mockups/</code>: the mockups</li>
+<li>Later, after step 07, in <code>tracking/rally/&lt;intent&gt;/</code>: <code>rally-import.csv</code>, <code>rally-map.md</code></li>
+</ul>
+<h3 id="step-05-common-snags">Common snags</h3>
+<ul>
+<li><strong>Stories reference units before units exist.</strong> Labels like "U1 prior-auth-api" come
+  from the scope decided in Ideation. Units Generation (step 06) confirms or changes them.
+  Check that the two agree.</li>
+<li><strong>A design element can vanish because of a recorded rule.</strong> If a mockup is missing
+  something you expected, search the stories for "blocked on" and the open items (I-n)
+  before you assume the engine forgot it.</li>
+</ul></div></section>
+<section class="block" id="step-06"><div class="sec-k">Step 06</div><h2>Design the domain, cut one unit per repo, and agree the contract</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s6">06 · Design, units, contract</a> ·
+Phase 2 Inception · stages 2.6 Domain Design, 2.7 Units Generation, 2.8 Contract Design ·
+Time: 45–60 minutes</p>
+</blockquote>
+<h3 id="step-06-goal">Goal</h3>
+<p>This is the architecture step. You'll approve three things:</p>
+<ol>
+<li><strong>Components</strong>, plus an <strong>ADR log</strong>.</li>
+<li><strong>Units of work.</strong> This is the gate where the repo set and the unit boundaries lock.</li>
+<li><strong>The contract</strong> the units build against.</li>
+</ol>
+<p>Two rules make a multi-repo feature work:</p>
+<ul>
+<li><strong>one unit = one repo</strong>;</li>
+<li><strong>the contract exists in two forms</strong>: a design record in the hub, and versioned code in prior-auth-api.</li>
+</ul>
+<h3 id="step-06-who-s-in-the-room">Who's in the room</h3>
+<ul>
+<li><strong>Architect:</strong> owns domain design and the ADRs.</li>
+<li><strong>Tech lead:</strong> owns units.</li>
+<li><strong>api, web and notify leads:</strong> all three sign off the contract.</li>
+</ul>
+<h3 id="step-06-do-it">Do it</h3>
+<p>Resume and work the three gates. What the reference run approved:</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Kind</th>
+<th>Repo</th>
+<th>Owns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U1 <code>api-urgency-clock</code></td>
+<td>service</td>
+<td>prior-auth-api</td>
+<td>urgency, the clock, queue order, both events; <strong>publishes</strong> contract v1.1.0</td>
+</tr>
+<tr>
+<td>U2 <code>notify-service</code></td>
+<td>service</td>
+<td>prior-auth-notify</td>
+<td>notices with status and referenceId only (D-003)</td>
+</tr>
+<tr>
+<td>U3 <code>web-urgent-queue</code></td>
+<td>ui</td>
+<td>prior-auth-web</td>
+<td>countdown, URGENT first (the runbook's badge was held back by web D-001; see step 05)</td>
+</tr>
+</tbody>
+</table>
+<p>U2 and U3 depend on the <strong>contract</strong>, not on U1's code. That's why they can be built
+against stubs.</p>
+<h3 id="step-06-what-you-ll-see">What you'll see</h3>
+<p>From the reference run (stages 2.6 to 2.8).</p>
+<p><strong>Domain design wrote 13 ADRs, and most of them come from the real code.</strong> A few titles:</p>
+<pre><code>ADR-002: DeterminationService stays pure and unchanged
+ADR-004: Local JSON file store behind a RequestStore port
+ADR-005: CLI entry points with an explicit --now
+ADR-008: The web queue read is a loopback GET /queue
+ADR-011: Every cross-repo edge goes through contract v1.1.0 only
+ADR-012: One clock owner
+ADR-013: At-risk alert payload per the compliance reading
+</code></pre>
+<p>ADR-002 is the steering at work: the service that enforces D-001 and D-002 is left alone.</p>
+<p><strong>Units matched the runbook: one per repo.</strong></p>
+<pre><code>| Unit ID | Directory              | Repo              | Kind    | Size | Deployment model |
+| U1      | u1-api-urgency-clock   | prior-auth-api    | service | XL   | CLI commands plus a loopback read; deployed first |
+| U2      | u2-notify-service      | prior-auth-notify | service | M    | A run-and-exit command; deployed second |
+| U3      | u3-web-urgent-queue    | prior-auth-web    | ui      | M    | A Vite single-page app; deployed third |
+</code></pre>
+<blockquote>
+<p><strong>One unit = one repo.</strong> No unit spans two repos. Units coordinate only through contract
+v1.1.0, published by U1 in <code>prior-auth-api/contracts/</code> and pinned by U2 and U3 as
+committed copies.</p>
+</blockquote>
+<p>The end-to-end script is deliberately <strong>not</strong> a unit. It's the Build and Test check
+(step 09), run from the hub, and it only touches each repo's public commands.</p>
+<p><strong>The contract has five parts</strong>, written as real AsyncAPI and OpenAPI specs:
+<code>determination.issued</code> (C-2), <code>sla.at-risk</code> (C-3), <code>GET /queue</code>, the shared C-1 AuthRequest,
+and the clock-times export. The ownership rules are the part to read slowly:</p>
+<pre><code>- Published versions are immutable: a folder is never changed in place.
+- Minor: adding an optional field ... Major: removing, renaming or retyping a field, or
+  adding a status or urgency value.
+- What is sent is guarded by exact allow-list tests on each side:
+  - U2: notices exactly {referenceId, status} ... (prior-auth-notify D-001)
+  - U3: the row model exactly {referenceId, procedureCode, submittedAt, decisionDueAt,
+    status} (prior-auth-web D-001)
+</code></pre>
+<p>The step 02 decision is still being honoured here. The <code>sla.at-risk</code> spec carries its
+fallback inline: <em>"urgency and decisionDueAt are provisional pending the privacy office ...
+If not confirmed before first publication, the payload is {referenceId, status} only."</em></p>
+<h3 id="step-06-under-the-hood">Under the hood</h3>
+<ul>
+<li><code>domain-design/decisions.md</code> is the <strong>intent's</strong> ADR log. It lives in the hub. In step 10
+  you copy the entries that constrain a repo into that repo's <code>docs/decisions.md</code>. A
+  feature's decisions have to outlive the feature.</li>
+<li>Each unit gets a <strong>kind</strong> (<code>service</code>, <code>ui</code>, <code>spec</code>, ...). The kind decides which
+  Construction documents the unit owes. A <code>ui</code> unit has no infrastructure design.</li>
+<li>With the plugin installed, <strong>Step 2b (prior-auth-pack)</strong> in Units Generation and
+  <strong>Step 4b</strong> in Contract Design carry the two rules above. Find them in the stage files.</li>
+</ul>
+<h3 id="step-06-before-you-say-approve-units-the-one-that-locks">Before you say Approve (units, the one that locks)</h3>
+<ul>
+<li>Does every unit name exactly <strong>one</strong> repo? Reject any unit that spans two repos. During
+  Construction every git operation is anchored to one repo.</li>
+<li>Does <code>unit-of-work-dependency.md</code> show U2 and U3 depending on the contract, not on U1's
+  source?</li>
+<li>Does <code>unit-of-work-story-map.md</code> map every story to a unit? An unmapped story is work
+  nobody will build.</li>
+<li>Does the contract say who <strong>publishes</strong> each element, at which <strong>version</strong>, and who
+  <strong>pins</strong> it?</li>
+<li>Do the event schemas carry no clinical fields? <code>sla.at-risk</code> carrying urgency rests on
+  compliance's reading from step 02. Is that dependency written down?</li>
+</ul>
+<h3 id="step-06-try-this">Try this</h3>
+<p>Before approving units, reply
+<code>Request Changes: put the queue ordering in prior-auth-web so the API stays unchanged</code>.
+Then read the engine's answer. Moving ordering into the UI means the API's own consumers
+(notify, reports) see a different order than nurses do. A good answer names that cost.</p>
+<h3 id="step-06-files-written">Files written</h3>
+<ul>
+<li>In <code>inception/domain-design/</code>: <code>components.md</code>, <code>decisions.md</code></li>
+<li>In <code>inception/units-generation/</code>: <code>unit-of-work.md</code>, <code>unit-of-work-dependency.md</code>, <code>unit-of-work-story-map.md</code></li>
+<li>In <code>inception/contract-design/</code>: <code>contract-summary.md</code></li>
+</ul>
+<h3 id="step-06-common-snags">Common snags</h3>
+<ul>
+<li><strong>Approving with should-fix findings, again.</strong> Domain Design, Units Generation and
+  Contract Design were each approved with "should-fix" findings recorded as <em>Accepted
+  risk</em>. This is a pattern worth noticing in your own run. Each acceptance is a small debt
+  that Construction inherits.</li>
+<li><strong>Unit sizes are uneven, and that's honest.</strong> U1 is XL because the API owns the clock,
+  the queue, both events, the export and the contract. Don't split it across repos to
+  balance the sizes; split it into bolts (step 07).</li>
+</ul></div></section>
+<section class="block" id="step-07"><div class="sec-k">Step 07</div><h2>Plan the bolts and pass the Inception check</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s7">07 · Bolt plan</a> ·
+Phase 2 Inception · stage 2.9 Delivery Planning, then the phase check ·
+Time: 20–30 minutes</p>
+</blockquote>
+<h3 id="step-07-goal">Goal</h3>
+<p>Plan the <strong>bolts</strong>. In AI-DLC v2 a bolt is a delivery slice: one or more units that depend
+on each other, built in hours to days, with a human checkpoint after each unit.</p>
+<p>You'll also pass the <strong>Inception phase check</strong>, the boundary between deciding and
+building. Then Rally gets its stories.</p>
+<h3 id="step-07-who-s-in-the-room">Who's in the room</h3>
+<ul>
+<li><strong>Tech lead:</strong> sequencing.</li>
+<li><strong>Product owner:</strong> the delivery commitment.</li>
+</ul>
+<h3 id="step-07-do-it">Do it</h3>
+<p>Resume and work the gate. What the reference run approved:</p>
+<ul>
+<li><strong>Bolt 1.</strong> U1 <code>api-urgency-clock</code>, starting with a <strong>walking skeleton</strong>: the smallest
+  slice that works end to end, here urgency stored on a request and returned. Then a human
+  checkpoint, then the rest of U1.</li>
+<li><strong>Bolt 2.</strong> U2 <code>notify-service</code>, then U3 <code>web-urgent-queue</code>, <strong>one unit at a time</strong>.
+  This is unit-major, the default for solo work.</li>
+</ul>
+<p>Then, at the hub, draft the Rally import:</p>
+<pre><code class="language-text"># Claude Code
+/rally-draft
+</code></pre>
+<pre><code class="language-text"># Codex CLI
+$rally-draft
+</code></pre>
+<p>Import <code>tracking/rally/&lt;intent&gt;/rally-import.csv</code> into Rally by hand. Paste the new IDs into
+<code>rally-map.md</code>. Commit the hub.</p>
+<h3 id="step-07-what-you-ll-see">What you'll see</h3>
+<p>From the reference run (stage 2.9 and the phase check).</p>
+<p><strong>The bolt plan matched the runbook's shape, and was more specific.</strong></p>
+<pre><code>| 1 | Bolt 1         | U1 u1-api-urgency-clock | prior-auth-api    |
+| 2 | Bolt 2, first  | U2 u2-notify-service    | prior-auth-notify |
+| 3 | Bolt 2, second | U3 u3-web-urgent-queue  | prior-auth-web    |
+</code></pre>
+<p>The walking skeleton is defined as one observable behaviour, not as a layer:</p>
+<blockquote>
+<p>A request is submitted as URGENT through the real <code>submit</code> entry point, stored in the file
+store, and read back with its urgency (US1.1, AC1.1.1).</p>
+</blockquote>
+<p>Bolt 1 is broken into milestones. The first one is a <strong>hard stop</strong>:</p>
+<pre><code>| M1: skeleton | Baseline run of the existing suite. Enablers: ESLint (with the
+  sibling-import ban), Prettier, coverage (80% over src/), npm run verify, Node pin,
+  lockfile. RequestStore, minimal AuthRequestLifecycle and ApiCommandLine submit. US1.1. |
+  Hard-stop checkpoint. The api lead reviews and the tech lead approves. Evidence:
+  npm run verify output, plus the real-entry-point test. |
+</code></pre>
+<p>Notice the <strong>sibling-import ban</strong> in the lint setup. "Never import code from another repo"
+became a lint rule, not just a sentence in a steering file.</p>
+<p><strong>The phase check counts things.</strong> <code>verification/phase-check-inception.md</code> opens with:</p>
+<pre><code>Verdict: PASS. There are no GAP or ORPHAN entries, no invalid targets, and no missing
+upstream IDs.
+| FR and FR sub-IDs | 61 | 61 OK |
+| NFR               | 17 | 12 OK | 5 Deferred |
+| US1.1 to US8.4    | 37 | 35 OK | 2 N/A |
+</code></pre>
+<p>Each deferral names the stage that picks it up. For example, NFR14 (coverage and the
+<code>verify</code> gate) goes to Build and Test.</p>
+<p><strong>State after the gate:</strong> <code>aidlc-state.md</code> now reads <code>Construction Iteration: unit-major</code>
+and <code>Unit Ownership: solo</code>. That's one unit at a time, with one conductor.</p>
+<h3 id="step-07-under-the-hood">Under the hood</h3>
+<ul>
+<li><code>bolt-plan.md</code> groups units <strong>without changing the dependency graph</strong> from step 06.</li>
+<li>AWS v2.11 has a hard limit: <strong>team-owned units need a single-repo intent.</strong> With three
+  repos, one conductor runs Construction and each repo lead reviews at their unit's
+  checkpoint. The engine rejects <code>set-unit-ownership team</code> for this intent.</li>
+<li>Parallel units (U2 and U3 together) need stage-major order with swarm execution. You
+  can ask for it in plain words, but the default is one at a time, and that's what to use
+  the first time.</li>
+<li>The phase check writes <code>verification/phase-check-inception.md</code>. It confirms every
+  Inception stage produced what downstream stages consume.</li>
+</ul>
+<h3 id="step-07-before-you-say-approve">Before you say Approve</h3>
+<ul>
+<li>Is the walking skeleton small enough to finish in one sitting, and does it prove the
+  path end to end?</li>
+<li>Does the plan say what happens if U1's contract changes after U2 or U3 start? Consumers
+  pin a version, so a change means a new version, not a silent edit.</li>
+<li>Read <code>risk-and-sequencing-rationale.md</code>. Do you agree with the <em>reasons</em>, not just the
+  order?</li>
+<li>Does the phase check pass with nothing waived?</li>
+</ul>
+<h3 id="step-07-try-this">Try this</h3>
+<p>Ask the engine: <code>What would change if we ran U2 and U3 in parallel?</code> Read what it says
+about swarm execution and checkpoints. Then keep the default.</p>
+<h3 id="step-07-files-written">Files written</h3>
+<ul>
+<li>In <code>inception/delivery-planning/</code>:</li>
+<li><code>bolt-plan.md</code></li>
+<li><code>risk-and-sequencing-rationale.md</code></li>
+<li><code>team-allocation.md</code></li>
+<li><code>external-dependency-map.md</code></li>
+<li><code>verification/phase-check-inception.md</code></li>
+<li><code>tracking/rally/&lt;intent&gt;/rally-import.csv</code> and <code>rally-map.md</code></li>
+</ul>
+<h3 id="step-07-common-snags">Common snags</h3>
+<ul>
+<li><strong>There's a ledger that overrides locked files.</strong> The phase check cites
+  <code>inception/gate-decisions.md</code>. When a gate decision changed something in an artifact that
+  was already approved and frozen, the change is recorded there instead of edited in. Read
+  it alongside the artifacts.</li>
+<li><strong>Keep the Rally skill out of the middle of a workflow turn.</strong> <code>/rally-draft</code> only reads
+  approved files, so it can run any time after this gate. The reference run ran it after
+  the workflow finished, in its own session, to keep the run's transcript to AI-DLC turns
+  only.</li>
+</ul></div></section>
+<section class="block" id="step-08"><div class="sec-k">Step 08</div><h2>Design, plan, then generate code into the right repo</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s8">08 · Construction</a> ·
+Phase 3 Construction · stages 3.1–3.5, per unit · Time: 2–4 hours across the two bolts</p>
+</blockquote>
+<h3 id="step-08-goal">Goal</h3>
+<p>Watch an approved plan become code. For each unit, in order, the engine writes:</p>
+<ol>
+<li>a functional design;</li>
+<li>NFR requirements, then NFR design;</li>
+<li>infrastructure design, where the unit's kind needs it;</li>
+<li>a <strong>code-generation plan</strong> that you approve before a single line of code.</li>
+</ol>
+<p>Then it generates the code into the <strong>owning sibling repo</strong>, never into the hub. A
+verified <strong>unit checkpoint</strong> closes each unit.</p>
+<h3 id="step-08-who-s-in-the-room">Who's in the room</h3>
+<ul>
+<li><strong>The conductor:</strong> you, at the hub.</li>
+<li><strong>The owning repo lead:</strong> at each plan gate and unit checkpoint. That's the api lead for U1,
+  the notify lead for U2, and the web lead for U3.</li>
+</ul>
+<h3 id="step-08-do-it">Do it</h3>
+<pre><code class="language-text"># Claude Code
+/aidlc
+</code></pre>
+<pre><code class="language-text"># Codex CLI
+$aidlc
+</code></pre>
+<p>At each plan gate, run the reviewer <strong>first</strong>:</p>
+<pre><code class="language-text"># Claude Code: ask for the subagent by name
+Use the repo-plan-reviewer agent on the open code-generation plan.
+</code></pre>
+<pre><code class="language-text"># Codex CLI
+$repo-plan-reviewer
+</code></pre>
+<p>Then reply <code>Approve</code>, or <code>Request Changes: &lt;reason&gt;</code>.</p>
+<p>Give each repo the same branch name, and put the Rally ID in each PR title:</p>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>Branch</th>
+<th>PR title</th>
+<th>Merge order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>prior-auth-api</td>
+<td><code>feat/urgent-auth-72h</code></td>
+<td><code>US#### api-urgency-clock: ...</code></td>
+<td>first; additive, backward compatible</td>
+</tr>
+<tr>
+<td>prior-auth-notify</td>
+<td><code>feat/urgent-auth-72h</code></td>
+<td><code>US#### notify-service: ...</code></td>
+<td>after contract v1.1.0 is published</td>
+</tr>
+<tr>
+<td>prior-auth-web</td>
+<td><code>feat/urgent-auth-72h</code></td>
+<td><code>US#### web-urgent-queue: ...</code></td>
+<td>after api is deployed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-08-what-you-ll-see">What you'll see</h3>
+<p>From the reference run (U1 <code>api-urgency-clock</code>, the first unit of bolt 1).</p>
+<p><strong>Four design stages came before any plan.</strong> Functional Design, NFR Requirements, NFR Design
+and Infrastructure Design each had questions, a review and a gate. Infrastructure Design
+was one question, answered "local only: nothing provisioned, production needs documented
+and deferred to Operation".</p>
+<p><strong>The plan gate.</strong> The engine summarised what you're approving, not just where the file is:</p>
+<pre><code>Approve the code plan for api-urgency-clock?
+- Builds: ... submit with urgency (the walking skeleton first), completion and 72 h due
+  times, scoring and determination, the once-only at-risk alert, the event outbox ... the
+  ordered GET /queue, the export ... and contract v1.1.0.
+- Existing src/domain/* and src/determination/* are unchanged.
+- Tests: TDD, about 175 Jest tests (including the existing 4) ...
+Your approval covers these points:
+- Five new dev dependencies: eslint, typescript-eslint, prettier, ajv, @types/node.
+- Two hard stops: Step 7, the M1 skeleton checkpoint ... Step 21, contract publication ...
+1. Approve Plan   2. Request Changes   3. I'll edit the files
+</code></pre>
+<p>The engine had already run its own repo-rules check: no change to D-001, D-002 or D-003.</p>
+<p><strong>The kit's reviewer found more.</strong> Running <code>repo-plan-reviewer</code> (read-only, in its own
+session) reported <strong>2 conflicts and 9 gaps</strong> the engine's check had passed:</p>
+<pre><code>| 1 | High, conflict | Step 20: &quot;Every object schema is open&quot; | The contract makes the export
+  row a closed schema ... Writing every schema as open breaks the contract version. |
+| 2 | High, conflict | Step 2 ... &quot;awaiting tech lead sign-off at the M1 checkpoint&quot; ...
+  Adding the sign-off later means rewriting those entries. |
+| 3 | High, gap | Steps 4-5 (M1): submit then read prints a view. The C-1 projection and its
+  allow-list come only in Step 15. ... The checkpoint could approve output that leaks
+  member identity. |
+...
+2 conflicts: consider Request Changes
+</code></pre>
+<p>Finding 3 is the kind a human reviewer misses at 6pm. The demo you approve at the first
+checkpoint could have printed <code>memberId</code>.</p>
+<p><strong>The threshold experiment.</strong> Asked to lower <code>AUTO_APPROVE_THRESHOLD</code> to 0.80, the engine
+refused and recorded nothing:</p>
+<blockquote>
+<p>I won't make that change. It would alter a recorded clinical rule, and neither this plan
+nor I can do that. [...] Faster urgent decisions come from the clock, the queue order and
+the at-risk alert this plan builds. [...] I haven't recorded your reply as a plan change.</p>
+</blockquote>
+<p>It offered the legitimate route instead: raise "Should the threshold change?" as an Open
+item for the medical director.</p>
+<p><strong>Request Changes, then sign-offs it wouldn't assume.</strong> After the reviewer's findings went
+back as Request Changes, the revised plan came back with a warning that three of the
+changes undid earlier gate decisions:</p>
+<blockquote>
+<p><strong>G-01</strong> reverses the Contract Design gate's R-01 ... Approving this plan counts as the
+tech lead's co-sign unless you say otherwise.
+<strong>G-12</strong> reverses NFR Requirements Q5, where compliance confirmed that a missing secret
+scan fails verify. You may want compliance to re-confirm this.</p>
+</blockquote>
+<p>The approval reply named who confirmed each reversal. The audit trail now shows it.</p>
+<p><strong>The walking-skeleton checkpoint (M1) came with evidence, not a claim.</strong> After Steps 1–8, the
+engine stopped and pasted output from its own run of the gate, separate from the developer
+agent's:</p>
+<pre><code>=== verify summary ===
+- Node check (engines): passed
+- npm ci: passed
+- typecheck: passed
+- lint + Prettier check: passed
+- build, then tests with coverage: passed
+- npm audit --omit=dev --audit-level=high: passed
+- secret scan (gitleaks): not run (gitleaks not on PATH)
+verify: PASSED
+
+Tests:       39 passed, 39 total
+All files   | % Stmts 93.08 | % Branch 91.42 | % Funcs 92.1 | % Lines 93.45
+
+through the built entry point (node dist/cli/main.js)
+  √ stores_an_urgent_request_and_reads_it_back_with_its_urgency (203 ms)
+</code></pre>
+<p>The skeleton proved the privacy point the reviewer had raised at the plan gate. <code>read</code>
+returns exactly <code>{referenceId, procedureCode, status, urgency, submittedAt}</code>, so <code>memberId</code>
+and <code>providerId</code> never come out.</p>
+<p><strong>It also listed its own shortfalls, unprompted:</strong></p>
+<blockquote>
+<ol>
+<li><strong>Failing-test evidence was recorded per test file, not per behaviour.</strong> [...] Most of
+   the first failures were "not implemented" errors, not the test's own assertion. [...]
+   This falls short of the team's rule that each test is seen failing for the right reason.</li>
+<li><strong>Nothing is committed.</strong> [...]</li>
+<li><strong>36 vulnerabilities in development-only packages</strong> (1 critical). The gate's audit
+   doesn't check development packages, so it doesn't see them.</li>
+</ol>
+</blockquote>
+<p><strong>The api lead re-ran the suite before approving</strong> (39/39, <code>auto_approves_exactly_at_threshold</code>
+green, no diff in <code>src/domain</code>, <code>src/determination</code>, <code>AGENTS.md</code> or <code>CLAUDE.md</code>). The approval
+carried four rulings:</p>
+<ul>
+<li>the test-first shortfall accepted for M1, with per-behaviour failing runs from Step 9 on;</li>
+<li>the two new error names accepted;</li>
+<li>the dev-dependency vulnerabilities recorded as a go-live item;</li>
+<li>the three NFR design choices confirmed.</li>
+</ul>
+<p><strong>Contract publication (Step 21): the second time a recorded rule beat the runbook.</strong> The
+runbook's <code>sla.at-risk</code> event carries <code>urgency</code> and <code>decisionDueAt</code>. The room had allowed
+that only as compliance's reading, pending privacy-office confirmation. Confirmation never
+came, so v1.1.0 shipped the agreed fallback for <strong>both</strong> events. The engine pointed out that
+the fallback covered <code>determination.issued</code> too, which the human reply hadn't mentioned:</p>
+<blockquote>
+<p><code>determination.issued</code> (C-2) is also exactly <code>{referenceId, status}</code>, with no <code>issuedAt</code>.
+[...] Once v1.1.0 is published it can't be edited, so tell me now if you meant C-2 to
+keep <code>issuedAt</code>.</p>
+</blockquote>
+<p>The choice became prior-auth-api <strong>D-014</strong>. If privacy later approves the wider alert,
+that's v1.2.0 with its own decision entry. The first time was the urgency badge in step 05.</p>
+<p><strong>The engine would not go around the guard.</strong> Near the end of U1, a ruling at the gate (an
+at-risk alert claimed while pending but published after a decision is dropped, not
+relabelled) became a new decision, D-015. In the headless run, the decision-log guard
+refused the append five times. Each "ask" came back as a refusal before any human saw it.
+The engine had a way round and named it, then declined to use it:</p>
+<blockquote>
+<p>I could write the file another way, through the shell, which the guard doesn't watch. But
+that would get around a check the team put there deliberately, so I haven't. The merge
+stays on hold.</p>
+</blockquote>
+<p>It then gave the human the exact paste: which file, which block, where, and "keep the file's
+line endings". It also said it would show the <code>git diff</code> and stop if anything other than
+the new block had changed. The api lead pasted it by hand (25 insertions, 0 deletions), and
+U1 went on to commit, verify and merge.</p>
+<!-- RUN-QUOTES:08-CODE -->
+
+<h3 id="step-08-under-the-hood">Under the hood</h3>
+<ul>
+<li><strong>Plan approval is enforced by a hook, not by goodwill.</strong> AI-DLC's
+  <code>plan-approval-guard</code> (PreToolUse) blocks code edits in the unit's repo until the plan
+  gate is approved. It is the one switch only a human can turn off.</li>
+<li><strong>The design lives in the hub, the code in the repo.</strong> Design artifacts go to
+  <code>construction/&lt;unit&gt;/&lt;stage&gt;/</code>. Code goes to the sibling repo, and each git operation is
+  anchored to that one repo.</li>
+<li><strong>The engine reads the repo's own steering when it plans.</strong> Look for the
+  <strong>Repo rules honoured</strong> section in <code>code-generation-plan.md</code>. It comes from the
+  <code>prior-auth-pack</code> overlay.</li>
+<li><strong>The decision-log guard.</strong> If the engine ever tries to edit
+  <code>prior-auth-*/docs/decisions.md</code>, you get an <em>ask</em> prompt from the hook you installed.
+  Steering <em>asks</em> the engine not to; the hook makes the tool stop.</li>
+<li><strong>Sensors run as the code is written.</strong> The built-in <code>type-check</code> and <code>linter</code> sensors
+  run on every <code>.ts</code> write and leave <code>SENSOR_PASSED</code> / <code>SENSOR_FAILED</code> rows in <code>audit/</code>.</li>
+</ul>
+<h3 id="step-08-before-you-say-approve-each-code-generation-plan">Before you say Approve (each code-generation plan)</h3>
+<ul>
+<li>Does the plan touch exactly one repo?</li>
+<li>Does it cite <strong>D-001</strong> and keep <code>auto_approves_exactly_at_threshold</code> green? Does it cite
+  <strong>D-003</strong>, with no clinical fields in any event or notice?</li>
+<li>Are the tests named as snake_case sentences that state the rule, for example
+  <code>urgent_sorts_first</code> and <code>due_at_is_72h_from_complete</code>?</li>
+<li>Does U2 or U3 pin the contract version instead of importing api source?</li>
+<li>Does the walking skeleton (U1, first) really stop at "urgency stored and returned"?</li>
+</ul>
+<h3 id="step-08-before-you-say-approve-each-unit-checkpoint">Before you say Approve (each unit checkpoint)</h3>
+<p>In the owning repo, run the gates yourself and read the real output:</p>
+<pre><code class="language-powershell">cd prior-auth-api      # or prior-auth-notify / prior-auth-web
+npm test
+npm run typecheck
+git log --oneline -5
+</code></pre>
+<h3 id="step-08-try-this">Try this</h3>
+<p>At U1's plan gate, reply:</p>
+<pre><code class="language-text">Request Changes: set AUTO_APPROVE_THRESHOLD to 0.80 so urgent requests clear faster
+</code></pre>
+<p>The engine should refuse, quote D-001, and say what a real change needs: a recorded
+decision with medical director sign-off. That refusal is the steering working. Then
+approve the original plan.</p>
+<h3 id="step-08-files-written">Files written</h3>
+<ul>
+<li>In the hub, for each unit, under <code>construction/&lt;unit&gt;/</code>: <code>functional-design/</code>, <code>nfr-requirements/</code>, <code>nfr-design/</code>, and
+  <code>code-generation/</code>. The last holds <code>code-generation-plan.md</code>, <code>code-summary.md</code>, <code>traceability.json</code> and <code>source-manifest.json</code>.</li>
+<li>In the repos:</li>
+<li><code>prior-auth-api/src/**</code> and <code>prior-auth-api/contracts/*</code> (U1)</li>
+<li><code>prior-auth-notify/src/**</code> (U2)</li>
+<li><code>prior-auth-web/src/**</code> (U3)</li>
+</ul>
+<h3 id="step-08-common-snags">Common snags</h3>
+<ul>
+<li><strong>The decision-log guard fired, and the engine didn't treat it as an error.</strong> When U1's
+  developer agent tried to append D-005 to D-013 to <code>prior-auth-api/docs/decisions.md</code>, the
+  kit's hook stopped it. The engine paused and showed the exact text to be appended. It also
+  pointed out a wrong sentence in its own draft (a daylight-saving claim that only holds in
+  autumn), so that it could be removed <em>before</em> an append-only log made it permanent.</li>
+<li><strong>In headless runs (<code>claude -p</code>) the hook's "ask" becomes a refusal.</strong> Nobody is there to
+  click Allow. Interactively, you just approve the prompt. The reference run, which was
+  headless, used two routes. Early on, it switched the hook off for one approved turn.
+  Later (D-015), the human pasted the drafted entry by hand. The second route is the better
+  one: the guard never goes off, and the human's edit is the approval. Either way, check
+  the <code>decisions.md</code> diff afterwards. In the reference run it was append-only every time,
+  with D-001 to D-003 unchanged.</li>
+<li><strong>Your machine is part of the plan.</strong> U1's plan assumed Node 22 and gitleaks. The
+  reference machine had Node 24 and no gitleaks. The fix went through Request Changes: pin
+  <code>engines</code> to <code>&gt;=22</code>, and skip the secret scan with a warning when gitleaks is missing,
+  recorded as a go-live gap. Don't install tools mid-gate to make a plan true; change the
+  plan.</li>
+<li><strong><code>aidlc-state.md</code> stays on "functional-design" through all of a unit's design stages.</strong>
+  Use <code>/aidlc --status</code>, or the stage folders under <code>construction/&lt;unit&gt;/</code>, to see where
+  you really are.</li>
+<li><strong>Headless runs need one reply per stretch of work.</strong> With <code>claude -p</code>, each reply ends
+  the session, and with it the developer agent working in the background. The engine
+  resumes from the branch on the next reply ("Steps 9–12 were committed before the last
+  session ended"), so no work is lost, but U1 took several "continue" replies. In an
+  interactive session the agent keeps going until the next stop.</li>
+<li><strong>Make the line-ending fix before a unit's review, never after.</strong> On Windows,
+  <code>core.autocrlf=true</code> checked the files out with CRLF, and Prettier failed 84 of them. The
+  fix (<code>.gitattributes</code> with <code>* text=auto eol=lf</code>) landed <em>after</em> U1's review had said
+  READY. Reviews are bound to fingerprints of the source, so the change made the review
+  stale, and U1 had to be reopened. Put <code>.gitattributes</code> in every repo in step 01 (the
+  notify seed has it), and run the repo's <code>verify</code> once before the first plan gate.</li>
+<li><strong>On v2.11.0, a reopened unit can't get a new review.</strong> After the reopen, every review
+  request came back <code>REVIEW_RECOVERY_SPENT</code>. The reopen had kept the unit's old review
+  attempt, and that attempt's one recovery review was already used. The engine stopped
+  and reported it as a likely defect; it did not work around it. AWS fixed it upstream
+  (commit <code>4b99953</code>, "after a jump or reopen a Unit names its first review request"), in
+  the v2.11.1 preview releases. The reference run switched the hub, mid-workflow, from
+  then on:</li>
+</ul>
+<p><code>powershell
+  aidlc config --channel preview
+  aidlc update --channel preview     # 2.11.0 -&gt; 2.11.1-preview.20261011.1; 2.11.0 is kept
+  aidlc config --yes                 # in the hub: "Your open work ... carries on."
+  aidlc engine plugin sync
+  aidlc engine runtime compile       # doctor flagged the runtime graph as stale</code></p>
+<p>The next review got a new attempt key and came back READY, and U1 went on to its
+  checkpoint. To go back: <code>aidlc config --pin 2.11.0 --yes</code>. Back up <code>aidlc/</code> and
+  <code>.claude/</code> before you switch. If you're on a newer stable release, you won't hit this.</p>
+<!-- RUN-SNAGS:08 --></div></section>
+<section class="block" id="step-09"><div class="sec-k">Step 09</div><h2>Test across the repo boundary, not just inside each repo</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s9">09 · Build and test</a> ·
+Phase 3 Construction · stages 3.6 Build and Test, 3.7 CI Pipeline ·
+Time: 30–60 minutes</p>
+</blockquote>
+<h3 id="step-09-goal">Goal</h3>
+<p>Each repo's own tests passing is necessary but not enough. A multi-repo feature breaks
+at the seams. This step proves three things:</p>
+<ol>
+<li><strong>The provider serves the contract.</strong></li>
+<li><strong>Each consumer accepts it</strong>, including when an old client leaves fields out.</li>
+<li><strong>One end-to-end path works</strong>: an URGENT request goes to the top of the queue, gets a
+   determination, and produces a notice that carries status and referenceId only.</li>
+</ol>
+<h3 id="step-09-who-s-in-the-room">Who's in the room</h3>
+<ul>
+<li><strong>QA lead:</strong> owns the test results.</li>
+<li><strong>Repo leads:</strong> each confirms their repo's suite.</li>
+<li><strong>Product owner:</strong> acceptance, which is the trigger for Rally Accepted.</li>
+</ul>
+<h3 id="step-09-do-it">Do it</h3>
+<p>Resume (<code>/aidlc</code> or <code>$aidlc</code>). Build and Test runs <strong>once</strong>, after all units. Then run the
+gates yourself in each repo before approving:</p>
+<pre><code class="language-powershell">foreach ($r in 'prior-auth-api','prior-auth-notify','prior-auth-web') {
+  Push-Location $r; npm test; npm run typecheck; Pop-Location
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Proves</th>
+<th>Lives in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Provider contract test</td>
+<td>api serves exactly contract v1.1.0</td>
+<td>prior-auth-api tests</td>
+</tr>
+<tr>
+<td>Consumer contract tests</td>
+<td>web and notify accept v1.1.0, including <code>urgency</code> absent</td>
+<td>each consumer repo</td>
+</tr>
+<tr>
+<td>End-to-end path</td>
+<td>URGENT → top of queue → determination → notice (status and referenceId only)</td>
+<td><code>construction/build-and-test/test-results.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-09-what-you-ll-see">What you'll see</h3>
+<!-- RUN-QUOTES:09 -->
+
+<h3 id="step-09-under-the-hood">Under the hood</h3>
+<ul>
+<li><code>build-instructions.md</code> records how to build and test each repo. A teammate can follow it
+  without asking you.</li>
+<li>3.7 CI Pipeline is conditional. It writes <code>construction/ci-pipeline/quality-gates.md</code> and
+  a pipeline definition per repo. In this practice run nothing is pushed.</li>
+<li>The Construction <strong>phase check</strong> confirms every unit's checkpoint was verified, not just
+  claimed.</li>
+</ul>
+<h3 id="step-09-before-you-say-approve">Before you say Approve</h3>
+<ul>
+<li>Is the test output in <code>test-results.md</code> <strong>pasted</strong>, not summarised? "All tests pass"
+  without the runner's output is a claim, not evidence.</li>
+<li>Does the original <code>auto_approves_exactly_at_threshold</code> test still pass in prior-auth-api?</li>
+<li>Is there a consumer test where <code>urgency</code> is <strong>absent</strong>? That proves old clients keep
+  working.</li>
+<li>Does the end-to-end path check the notice payload has <strong>no</strong> clinical fields?</li>
+</ul>
+<h3 id="step-09-try-this">Try this</h3>
+<p>In prior-auth-notify, add <code>score</code> to one notice by hand, temporarily, and run <code>npm test</code>.
+Something should fail and name D-001 (D-003 in prior-auth-api). If nothing fails, the
+privacy rule has no test. That's a finding worth raising at this gate. Revert your edit.</p>
+<h3 id="step-09-files-written">Files written</h3>
+<ul>
+<li>In <code>construction/build-and-test/</code>: <code>build-instructions.md</code>, <code>test-results.md</code></li>
+<li>In <code>construction/ci-pipeline/</code>: <code>quality-gates.md</code></li>
+<li>The Construction phase check, under <code>verification/</code></li>
+</ul>
+<h3 id="step-09-common-snags">Common snags</h3>
+<!-- RUN-SNAGS:09 --></div></section>
+<section class="block" id="step-10"><div class="sec-k">Step 10</div><h2>Deploy in contract order, watch the clock, copy decisions back</h2><div class="panel card"><blockquote>
+<p>Runbook section: <a href="../multi-repo-feature.html#s10">10 · Operate and close</a> ·
+Phase 4 Operation · stages 4.1–4.7, then close-out · Time: 45–60 minutes</p>
+</blockquote>
+<h3 id="step-10-goal">Goal</h3>
+<p>Operation is where the record proves its value. You will:</p>
+<ol>
+<li><strong>Deploy in contract order</strong>: api, then notify, then web.</li>
+<li><strong>Define the SLO and the alarm</strong> that guard the 72-hour clock.</li>
+<li><strong>Close out</strong>: copy each decision that constrains a repo into that repo's own
+   <code>docs/decisions.md</code>, so it outlives the feature.</li>
+</ol>
+<p><strong>This practice run has no cloud.</strong> "Deploy" means:</p>
+<ul>
+<li>build and test each repo in order;</li>
+<li>run the local smoke path;</li>
+<li>record it in <code>deployment-log.md</code> as a local run.</li>
+</ul>
+<p>The engine will ask about environments and infrastructure. The answer is "local only:
+document what production would need, provision nothing".</p>
+<h3 id="step-10-who-s-in-the-room">Who's in the room</h3>
+<ul>
+<li><strong>Release owner:</strong> approves each deploy.</li>
+<li><strong>On-call:</strong> owns the incident runbook.</li>
+<li><strong>UM director:</strong> owns the SLO.</li>
+<li><strong>Tech lead and PO:</strong> close-out.</li>
+</ul>
+<h3 id="step-10-do-it">Do it</h3>
+<p>Resume (<code>/aidlc</code> or <code>$aidlc</code>) and work the Operation gates. Then do the close-out by
+hand, or ask the engine to do it at the hub:</p>
+<pre><code class="language-text"># Claude Code or Codex CLI, at the hub
+Copy each ADR from the intent's inception/domain-design/decisions.md that constrains a
+repo into that repo's docs/decisions.md as a new numbered entry, linking back to the
+intent path. Append only; never edit an existing entry.
+</code></pre>
+<p>With the decision-log guard installed, Claude Code asks you to confirm each edit to a
+<code>decisions.md</code>. That's the hook doing its job. Approve the appends; refuse anything that
+rewrites an existing entry.</p>
+<p>Finally:</p>
+<pre><code class="language-powershell">git add -A; git commit -m &quot;close-out: urgent-auth-clock&quot;     # in the hub
+# and in each repo that received a decision
+</code></pre>
+<p>In Rally, the Feature moves to <strong>Accepted</strong>.</p>
+<h3 id="step-10-what-you-ll-see">What you'll see</h3>
+<!-- RUN-QUOTES:10 -->
+
+<h3 id="step-10-under-the-hood">Under the hood</h3>
+<ul>
+<li>Operation's seven stages are conditional. Enterprise scope runs all of them, each in
+  its own folder:</li>
+<li><code>operation/deployment-pipeline/</code></li>
+<li><code>operation/deployment-execution/</code></li>
+<li><code>operation/observability-setup/</code></li>
+<li><code>operation/incident-response/</code></li>
+<li>and the rest.</li>
+<li><code>/aidlc-session-cost</code> and <code>/aidlc-outcomes-pack</code> summarise the whole run. The second one
+  writes <code>OUTCOMES.md</code>, a shareable record of what was built and decided.</li>
+<li>The intent stays in the hub, and <code>intents.json</code> marks it complete. The next feature that
+  touches prior-auth-api reuses <code>codekb/prior-auth-api/</code> if the code hasn't moved past it.</li>
+</ul>
+<h3 id="step-10-before-you-say-approve">Before you say Approve</h3>
+<ul>
+<li>Deploy order: api first. Its change is additive, so the old web and notify keep working.</li>
+<li>The SLO is measured from "request complete", the same start as the requirement. A
+  different start would make the SLO measure something else.</li>
+<li>Does <code>runbooks.md</code> say what on-call does when <code>sla.at-risk</code> fires: who looks, what they
+  check, when they escalate?</li>
+<li>Close-out: is each copied decision <strong>new</strong> (D-005 and up in api), with a link back to the
+  intent path?</li>
+</ul>
+<h3 id="step-10-try-this">Try this</h3>
+<p>Run <code>/aidlc-outcomes-pack</code> (Claude) or <code>$aidlc-outcomes-pack</code> (Codex) and read
+<code>OUTCOMES.md</code> as if you were the medical director. Can you tell, without opening any code,
+that D-001 never moved? If not, that's feedback for the method file.</p>
+<h3 id="step-10-files-written">Files written</h3>
+<ul>
+<li>In <code>operation/</code>:</li>
+<li><code>deployment-pipeline/rollback-runbook.md</code></li>
+<li><code>deployment-execution/deployment-log.md</code></li>
+<li><code>observability-setup/slo-config.md</code></li>
+<li><code>incident-response/runbooks.md</code></li>
+<li>In the repos: new entries in <code>prior-auth-api/docs/decisions.md</code> and <code>prior-auth-notify/docs/decisions.md</code></li>
+</ul>
+<h3 id="step-10-common-snags">Common snags</h3>
+<!-- RUN-SNAGS:10 --></div></section>
+<section class="block" id="answers"><h2>Mob answer sheet — who decides what, and what the runbook decided</h2><div class="panel card"><p>AI-DLC asks questions in files and stops at gates. In a real team a <strong>room</strong> answers: a
+product owner, the UM director, a nurse lead, compliance, three repo leads. Running this
+alone, you play every seat. This sheet gives you each seat's brief and the answers the
+reference run gave, with the reasoning.</p>
+<p><strong>This is not an answer key.</strong> Your run's questions will be worded differently and
+numbered differently: the engine writes them fresh each time from your intent and your
+earlier answers. Use the sheet to know <em>who would own a question</em> and <em>what a defensible
+answer sounds like</em>. Then try one answer differently on purpose, and watch how the
+requirements, units and code change downstream. That is the most useful experiment in this
+kit.</p>
+<p>Every answer below carries the role that gave it, in brackets. Put the role in your answers
+too. The engine copies it into the audit trail, and a later reviewer can see who decided.</p>
+<hr />
+<h3 id="answers-the-room">The room</h3>
+<table>
+<thead>
+<tr>
+<th>Seat</th>
+<th>Owns</th>
+<th>Typical question they answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Product owner (PO)</strong></td>
+<td>Scope, priority, what v1 leaves out</td>
+<td>"What should this first version deliberately leave out?"</td>
+</tr>
+<tr>
+<td><strong>UM director</strong></td>
+<td>The clinical operations outcome; the clock</td>
+<td>"When does the 72-hour clock start?"</td>
+</tr>
+<tr>
+<td><strong>Nurse lead</strong></td>
+<td>How nurses work the queue; who is alerted</td>
+<td>"Who receives the at-risk alert?"</td>
+</tr>
+<tr>
+<td><strong>Compliance lead</strong></td>
+<td>The regulatory reading; privacy sign-offs (with the privacy office)</td>
+<td>"Does the alert payload break D-003?"</td>
+</tr>
+<tr>
+<td><strong>api lead</strong></td>
+<td>prior-auth-api: rules, clocks, statuses, the published contract</td>
+<td>"Which repo computes decisionDueAt?"</td>
+</tr>
+<tr>
+<td><strong>web lead</strong></td>
+<td>prior-auth-web: what appears on screens</td>
+<td>"What does the urgency badge show?"</td>
+</tr>
+<tr>
+<td><strong>notify lead</strong></td>
+<td>prior-auth-notify: delivery of notices</td>
+<td>"What does a notice contain?"</td>
+</tr>
+<tr>
+<td><strong>Tech lead</strong></td>
+<td>Units, bolts, sequencing, the walking skeleton</td>
+<td>"One unit per repo, or split the api work?"</td>
+</tr>
+</tbody>
+</table>
+<p>Rules every seat follows, whatever the question:</p>
+<ul>
+<li><strong>Recorded decisions don't move from a question file.</strong> Each repo's
+  <code>docs/decisions.md</code> holds them: prior-auth-api D-001 (<code>&gt;=</code> 0.85 auto-approves), D-002
+  (eligibility outranks score), D-003 (notices carry status and referenceId only), and
+  prior-auth-web D-001 (list rows carry the reference id only). If a question would change
+  one, answer "out of scope: needs a recorded decision with sign-off".</li>
+<li><strong>Ownership questions get settled in Inception, not Construction.</strong> For every new value
+  or event, name the one repo that computes it, stores it, and emits it.</li>
+<li><strong>"Not yet defined" is a legitimate answer.</strong> Pick it, name an owner, and the engine
+  carries it as an open question instead of inventing a default.</li>
+</ul>
+<hr />
+<h3 id="answers-phase-1-ideation-runbook-step-02">Phase 1 — Ideation (runbook step 02)</h3>
+<h4>1.1 Intent Capture</h4>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Answer given in the reference run</th>
+<th>Seat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Problem</td>
+<td>Regulatory: CMS-0057-F requires expedited (urgent) decisions within 72 hours from 2026-01-01 for MA, Medicaid and exchange lines. Compliance owns the exact reading.</td>
+<td>UM director, confirmed by compliance</td>
+</tr>
+<tr>
+<td>Who marks urgent</td>
+<td>The provider, at submission; v1 takes it as-is. No nurse downgrade in v1.</td>
+<td>UM director</td>
+</tr>
+<tr>
+<td>Clock start</td>
+<td>When the request is <strong>complete</strong>. An incomplete request shows "clock not started", and the provider is told what is missing.</td>
+<td>UM director, confirmed by compliance</td>
+</tr>
+<tr>
+<td>Primary customer</td>
+<td>Members are the reason. Nurse reviewers are the primary v1 user.</td>
+<td>PO</td>
+</tr>
+<tr>
+<td>Success metrics</td>
+<td>100% of urgent determinations within 72h of becoming complete; zero misses a month. Standard requests: 100% within 7 calendar days. "Clock not started" requests reported weekly by age; provider told what's missing within 1 business day.</td>
+<td>UM director</td>
+</tr>
+<tr>
+<td>Why now</td>
+<td>The CMS-0057-F timeframes are already in effect. Current exposure is unknown, so it's an open question for compliance.</td>
+<td>PO / compliance</td>
+</tr>
+<tr>
+<td>Stakeholders</td>
+<td>Nurses and supervisor, nurse lead, medical director and clinical policy group, privacy office, provider relations, compliance. Not benefits operations (eligibility doesn't change).</td>
+<td>PO</td>
+</tr>
+<tr>
+<td>Final say</td>
+<td>PO, with compliance signing off the regulatory reading</td>
+<td>UM director</td>
+</tr>
+<tr>
+<td>At-risk alert goes to</td>
+<td>The assigned nurse <strong>and</strong> the nurse supervisor, 24h before decisionDueAt</td>
+<td>Nurse lead</td>
+</tr>
+<tr>
+<td>Standard requests</td>
+<td>One clock for every request: standard gets a 7-calendar-day due date, notices and the at-risk alert. Only queue priority is urgent-only.</td>
+<td>PO + UM director</td>
+</tr>
+<tr>
+<td>Left out of v1</td>
+<td>Real notification channels (v1 writes notices to an outbox through one delivery adapter; channels stay with provider relations); re-scoring after a determination (open in prior-auth-api); new member-facing screens</td>
+<td>PO</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The moment worth noticing.</strong> Saying "the alert carries urgency" made the engine stop and
+ask whether that breaks prior-auth-api D-003. Nobody told it to check; the steering rule in
+<code>memory/project.md</code> and the plugin overlay did. The answer the room gave:</p>
+<blockquote>
+<p>D-003 covers notices <strong>to members and providers</strong>. The at-risk alert goes only to nurses
+inside the authenticated workflow, so it may carry referenceId, urgency and
+decisionDueAt, never clinical content. This is compliance's reading, pending privacy
+office confirmation. Fallback if privacy declines: the alert carries referenceId and
+status only, and urgency is seen on the authenticated screen.</p>
+</blockquote>
+<p><strong>At the review gate.</strong> The product-lead reviewer agent raised 3 major and 3 minor findings.
+The room fixed the ones that needed facts only a human had (fallback, standard-request
+target, current exposure) with <strong>Request Changes</strong>, rather than approving with open findings.</p>
+<h4>1.2–1.7 Market research, feasibility, scope, team, mockups, approval</h4>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Answer</th>
+<th>Seat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build vs buy</td>
+<td>Build: the clock and queue order live in prior-auth-api, which we own. No vendor UM product is in scope.</td>
+<td>Tech lead</td>
+</tr>
+<tr>
+<td>Feasibility</td>
+<td>Feasible in two bolts; no new infrastructure; runs locally for this practice run</td>
+<td>Tech lead</td>
+</tr>
+<tr>
+<td>Scope</td>
+<td>Three repos: prior-auth-api (brownfield), prior-auth-web (brownfield), prior-auth-notify (greenfield, empty)</td>
+<td>PO</td>
+</tr>
+<tr>
+<td>Team</td>
+<td>One conductor runs Construction; each repo lead reviews their unit (team-owned units need a single-repo intent in v2.11)</td>
+<td>Tech lead</td>
+</tr>
+<tr>
+<td>Rough mockups</td>
+<td>Queue: urgency badge plus countdown on each row, URGENT rows first and then by due time; reference id only per web D-001</td>
+<td>web lead + nurse lead</td>
+</tr>
+<tr>
+<td>Initiative brief (1.7)</td>
+<td>Approve → create the Rally Feature (by hand)</td>
+<td>PO (sponsor)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="answers-phase-2-inception-runbook-steps-03-07">Phase 2 — Inception (runbook steps 03–07)</h3>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Answer the reference run gave</th>
+<th>Seat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1 Reverse Engineering</td>
+<td>Approve each repo's codekb after its lead checks it. The web lead checks <code>api-documentation.md</code> describes what the web app <em>calls</em> (today: static sample rows; no live API yet).</td>
+<td>api lead, web lead</td>
+</tr>
+<tr>
+<td>2.2 Practices Discovery</td>
+<td>Promote: TypeScript strict; snake_case sentence test names; cite D-ids in code <code>// (D-00n)</code>; plan before code; one unit = one repo</td>
+<td>Tech lead</td>
+</tr>
+<tr>
+<td>2.3 Requirements — clock start</td>
+<td><strong>B</strong>: when the request is complete. Incomplete shows "clock not started".</td>
+<td>UM director + compliance</td>
+</tr>
+<tr>
+<td>2.3 Requirements — clock owner</td>
+<td><strong>A</strong>: prior-auth-api computes <code>decisionDueAt</code>; web and notify only read it. One clock, one owner.</td>
+<td>api lead (whole room agrees)</td>
+</tr>
+<tr>
+<td>2.3 Requirements — clock math</td>
+<td>URGENT: <code>completeAt + 72h</code>. STANDARD: <code>completeAt + 7 calendar days</code>.</td>
+<td>UM director</td>
+</tr>
+<tr>
+<td>2.3 Requirements — queue order</td>
+<td>URGENT first, then <code>decisionDueAt</code> ascending (not createdAt)</td>
+<td>Nurse lead</td>
+</tr>
+<tr>
+<td>2.3 Requirements — events</td>
+<td><code>determination.issued {referenceId, status, issuedAt}</code>; <code>sla.at-risk {referenceId, urgency, decisionDueAt}</code> fires 24h before due if no determination</td>
+<td>api lead + compliance</td>
+</tr>
+<tr>
+<td>2.3 Requirements — backward compatibility</td>
+<td><code>urgency</code> defaults to STANDARD; <code>decisionDueAt</code> is null until complete; old clients keep working</td>
+<td>api lead</td>
+</tr>
+<tr>
+<td>2.4 User Stories</td>
+<td>Approve when each story names a persona from the stakeholder map and has testable acceptance criteria</td>
+<td>PO</td>
+</tr>
+<tr>
+<td>2.5 Refined Mockups</td>
+<td>Badge text "Urgent"; countdown "Due in 41h" / "Overdue 3h" / "Clock not started"</td>
+<td>web lead + nurse lead</td>
+</tr>
+<tr>
+<td>2.6 Domain Design</td>
+<td>Approve; the ADR log must record "one clock owner" and "alert payload per compliance reading"</td>
+<td>Architect</td>
+</tr>
+<tr>
+<td>2.7 Units Generation</td>
+<td>Three units, <strong>one per repo</strong>: U1 <code>api-urgency-clock</code> (prior-auth-api), U2 <code>notify-service</code> (prior-auth-notify), U3 <code>web-urgent-queue</code> (prior-auth-web). Reject any unit that spans two repos.</td>
+<td>Tech lead</td>
+</tr>
+<tr>
+<td>2.8 Contract Design</td>
+<td>C-1 AuthRequest gains <code>urgency</code> + <code>decisionDueAt</code>; C-2 <code>determination.issued</code>; C-3 <code>sla.at-risk</code>. Version <strong>v1.1.0</strong>, published by U1 into <code>prior-auth-api/contracts/</code>; U2 and U3 pin it.</td>
+<td>api, web and notify leads</td>
+</tr>
+<tr>
+<td>2.9 Delivery Planning</td>
+<td>Bolt 1: U1, with a walking skeleton first (urgency stored and returned), checkpoint, then the rest. Bolt 2: U2 then U3, one unit at a time (unit-major, solo).</td>
+<td>Tech lead + PO</td>
+</tr>
+<tr>
+<td>After 2.9</td>
+<td>Run the <code>rally-draft</code> skill, import the CSV by hand, fill <code>rally-map.md</code></td>
+<td>PO / scrum master</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="answers-phase-3-construction-runbook-steps-08-09">Phase 3 — Construction (runbook steps 08–09)</h3>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>What the room checks before "Approve"</th>
+<th>Seat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Functional / NFR design per unit</td>
+<td>The unit names exactly one repo; it cites the D-ids it depends on</td>
+<td>Owning repo lead</td>
+</tr>
+<tr>
+<td>Infrastructure design</td>
+<td><strong>This practice run has no cloud.</strong> Answer: "local only: Node processes and files; document what production would need, provision nothing".</td>
+<td>Tech lead</td>
+</tr>
+<tr>
+<td>Code-generation plan</td>
+<td>Run <code>repo-plan-reviewer</code> first. Approve only if: D-001's test <code>auto_approves_exactly_at_threshold</code> stays; no clinical fields in events or notices; nothing imported across repos; contract version pinned</td>
+<td>Owning repo lead</td>
+</tr>
+<tr>
+<td>Unit checkpoint</td>
+<td><code>npm test</code> and <code>npm run typecheck</code> output pasted and green in the owning repo</td>
+<td>Owning repo lead</td>
+</tr>
+<tr>
+<td>3.6 Build and Test</td>
+<td>Provider contract test (api serves v1.1.0); consumer tests in web and notify (including <code>urgency</code> absent); one end-to-end path recorded</td>
+<td>QA lead</td>
+</tr>
+<tr>
+<td>3.7 CI pipeline</td>
+<td>A local script or a GitHub Actions file per repo is fine; nothing is pushed</td>
+<td>Tech lead</td>
+</tr>
+</tbody>
+</table>
+<p>Testing a "try this": at any code-generation plan gate, reply
+<code>Request Changes: set AUTO_APPROVE_THRESHOLD to 0.80 so more urgent requests auto-approve</code>.
+The engine should refuse and quote D-001. That refusal is the steering working.</p>
+<hr />
+<h3 id="answers-phase-4-operation-runbook-step-10">Phase 4 — Operation (runbook step 10)</h3>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Answer for this practice run</th>
+<th>Seat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deployment pipeline / environment</td>
+<td>Local only. Deploy order is still api → notify → web, because the contract is additive.</td>
+<td>Release owner</td>
+</tr>
+<tr>
+<td>Deployment execution</td>
+<td>Build and test each repo, then run the local smoke test. Record it in <code>deployment-log.md</code> as a local run, not a production deploy.</td>
+<td>Release owner</td>
+</tr>
+<tr>
+<td>Observability</td>
+<td>SLO: share of URGENT requests determined within 72h of becoming complete. Early warning: the <code>sla.at-risk</code> alarm.</td>
+<td>UM director + on-call</td>
+</tr>
+<tr>
+<td>Incident response</td>
+<td>Runbook entry for "sla.at-risk fired": who looks, what they check, when to escalate</td>
+<td>On-call</td>
+</tr>
+<tr>
+<td>Close-out</td>
+<td>Copy each ADR that constrains a repo into that repo's <code>docs/decisions.md</code> as a new entry linking back to the intent (the decision-log guard will ask you to confirm each edit; that's expected)</td>
+<td>Tech lead + PO</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="answers-where-the-reference-run-left-this-sheet">Where the reference run left this sheet</h3>
+<p>The sheet is what the room planned to say. In three places the run went differently, and
+each time it was the recorded decisions, not the sheet, that won. Expect the same in your
+run. When it happens, write the new decision down; don't force the sheet.</p>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>The sheet said</th>
+<th>What happened, and why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.4–2.5 stories and mockups</td>
+<td>An "Urgent" badge on each queue row</td>
+<td>Dropped. prior-auth-web D-001 says list rows carry the reference id, procedure code, dates and status only. US4.5 is parked behind open item I-1 (a new web decision with privacy sign-off). Urgency shows through queue order only.</td>
+</tr>
+<tr>
+<td>U1 code generation, Step 21</td>
+<td><code>sla.at-risk {referenceId, urgency, decisionDueAt}</code>; <code>determination.issued</code> adds <code>issuedAt</code></td>
+<td>The privacy office had not confirmed the reading before first publication, so the fallback agreed in Ideation applied. Contract v1.1.0 publishes both events as <code>{referenceId, status}</code> only. Recorded as prior-auth-api <strong>D-014</strong>.</td>
+</tr>
+<tr>
+<td>U1 code generation, gate Q-1</td>
+<td>Nothing</td>
+<td>A race the sheet never imagined: an alert claimed while pending but published after a nurse decides. The room answered "drop it, never relabel it". Recorded as prior-auth-api <strong>D-015</strong>, which the decision-log guard made a human paste by hand.</td>
+</tr>
+</tbody>
+</table></div></section>
+<section class="block" id="extensions"><h2>Learning helpers for a first AI-DLC run</h2><div class="panel card"><p>AI-DLC v2.11 already installs a lot when you run <code>aidlc config</code>. Learn those parts first.
+The helpers in this folder only fill the gaps this feature and a first-timer hit.</p>
+<h3 id="extensions-what-ai-dlc-already-gives-you-don-t-add-these">What AI-DLC already gives you (don't add these)</h3>
+<table>
+<thead>
+<tr>
+<th>You want</th>
+<th>Already there</th>
+<th>Where to look</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"No code before the plan is approved"</td>
+<td><code>plan-approval-guard</code> hook (PreToolUse)</td>
+<td><code>.claude/settings.json</code> → <code>hooks</code>; Codex: <code>.codex/hooks.json</code></td>
+</tr>
+<tr>
+<td>"Where am I in the lifecycle?"</td>
+<td>Status line; <code>/aidlc --status</code></td>
+<td>bottom of the Claude Code screen</td>
+</tr>
+<tr>
+<td>A record of who decided what</td>
+<td><code>record-human-turn</code> + <code>write-audit-log</code> hooks</td>
+<td><code>intents/&lt;id&gt;/audit/</code></td>
+</tr>
+<tr>
+<td>Keep the workflow moving between gates</td>
+<td><code>continue-workflow</code> Stop hook</td>
+<td><code>.claude/settings.json</code> → <code>Stop</code></td>
+</tr>
+<tr>
+<td>Automatic checks on what the AI writes</td>
+<td>6 sensors (required sections, upstream coverage, traceability, type-check, linter, claim sources)</td>
+<td><code>.claude/sensors/</code></td>
+</tr>
+<tr>
+<td>What happened, and what it cost</td>
+<td><code>/aidlc-replay</code>, <code>/aidlc-session-cost</code>, <code>/aidlc-outcomes-pack</code></td>
+<td>type them at the hub</td>
+</tr>
+<tr>
+<td>Run one stage on its own</td>
+<td><code>/aidlc-&lt;stage&gt;</code> runners, e.g. <code>/aidlc-domain-design</code></td>
+<td><code>.claude/skills/</code></td>
+</tr>
+</tbody>
+</table>
+<p>We considered three more helpers and rejected them:</p>
+<ul>
+<li><strong>A plan-gate hook and a status-line banner:</strong> they would duplicate the table above.</li>
+<li><strong>A Stop hook that runs <code>npm test</code>:</strong> it would fire every turn, and it fights AI-DLC's
+  own <code>continue-workflow</code> Stop hook.</li>
+<li><strong>The <code>feature-dev</code> plugin:</strong> it runs a competing stage flow.</li>
+</ul>
+<h3 id="extensions-what-this-folder-adds">What this folder adds</h3>
+<table>
+<thead>
+<tr>
+<th>Helper</th>
+<th>Mechanism</th>
+<th>Engines</th>
+<th>What it teaches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prior-auth-pack</code></td>
+<td><strong>AI-DLC plugin</strong>: overlays + knowledge</td>
+<td>both</td>
+<td>How a team customises the method without forking it</td>
+</tr>
+<tr>
+<td><code>aidlc-coach</code></td>
+<td>Skill, read-only</td>
+<td>both</td>
+<td>What each stage is for and what to check before Approve</td>
+</tr>
+<tr>
+<td><code>repo-plan-reviewer</code></td>
+<td>Subagent (Claude) / skill (Codex), read-only</td>
+<td>both</td>
+<td>Reviewing an AI plan against a repo's recorded decisions</td>
+</tr>
+<tr>
+<td><code>rally-draft</code></td>
+<td>Skill, writes only <code>tracking/rally/</code></td>
+<td>both</td>
+<td>Where AI-DLC stops and your tracker begins</td>
+</tr>
+<tr>
+<td>Decision-log guard</td>
+<td>PreToolUse hook returning <code>ask</code></td>
+<td>Claude Code</td>
+<td>Steering <em>asks</em>; a hook <em>enforces</em></td>
+</tr>
+</tbody>
+</table>
+<h4>1. The <code>prior-auth-pack</code> plugin</h4>
+<p><code>prior-auth-pack/</code> uses AWS's plugin format (<code>.aidlc-plugin/plugin.json</code>). It changes
+<strong>five core stages</strong> without editing them. Each file in <code>contributions/</code> names a target
+stage and a step anchor, and the composer splices its paragraph into that stage:</p>
+<table>
+<thead>
+<tr>
+<th>Contribution</th>
+<th>Spliced after</th>
+<th>Says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inception/requirements-analysis.md</code></td>
+<td>Step 1</td>
+<td>Read each repo's <code>AGENTS.md</code> and <code>docs/decisions.md</code>; settle cross-repo ownership now</td>
+</tr>
+<tr>
+<td><code>inception/units-generation.md</code></td>
+<td>Step 2</td>
+<td>One unit = one repo</td>
+</tr>
+<tr>
+<td><code>inception/contract-design.md</code></td>
+<td>Step 4</td>
+<td>The contract is two artifacts; events carry no clinical content</td>
+</tr>
+<tr>
+<td><code>construction/functional-design.md</code></td>
+<td>Step 1</td>
+<td>Read the owning repo's steering first</td>
+</tr>
+<tr>
+<td><code>construction/code-generation.md</code></td>
+<td>Step 1</td>
+<td>Add a <strong>Repo rules honoured</strong> section to the plan, citing D-ids</td>
+</tr>
+</tbody>
+</table>
+<p><code>knowledge/</code> gives the developer, architect and product agents a one-page Prior Auth
+domain primer.</p>
+<p><strong>Build and install.</strong> Authoring tools need Bun 1.3.8+ (<code>npm i -g bun</code>). Run these
+from the hub:</p>
+<pre><code class="language-powershell">$P = &quot;&lt;course&gt;\runbook\practice\extensions\prior-auth-pack&quot;
+bun .claude\tools\aidlc-plugin-validate.ts $P
+bun .claude\tools\aidlc-plugin-build.ts $P claude &quot;D:\aidlc-practice\plugins\prior-auth-pack\claude&quot;
+bun .claude\tools\aidlc-plugin-build.ts $P codex  &quot;D:\aidlc-practice\plugins\prior-auth-pack\codex&quot;
+</code></pre>
+<p>Then install the plugin.</p>
+<p>Claude Code:</p>
+<pre><code class="language-powershell">claude plugin marketplace add D:\aidlc-practice\plugins\prior-auth-pack\claude --scope project
+claude plugin install aidlc-prior-auth-pack@aidlc-plugins --scope project
+aidlc engine plugin sync     # or just start a new Claude session; its SessionStart hook composes
+aidlc engine plugin list     # prior-auth-pack  0.1.0  0.1.0  current
+</code></pre>
+<p>Codex CLI (0.162) needs one extra step. It reads a marketplace from
+<code>.agents/plugins/marketplace.json</code>, but AWS's builder writes <code>.codex-plugin/marketplace.json</code>.
+So wrap the build output in a small marketplace folder:</p>
+<pre><code class="language-powershell">$M = &quot;D:\aidlc-practice\plugins\codex-marketplace&quot;
+New-Item -ItemType Directory &quot;$M\.agents\plugins&quot; -Force | Out-Null
+Copy-Item -Recurse D:\aidlc-practice\plugins\prior-auth-pack\codex &quot;$M\prior-auth-pack&quot;
+$m = Get-Content &quot;$M\prior-auth-pack\.codex-plugin\marketplace.json&quot; -Raw | ConvertFrom-Json
+$m.plugins[0].source = @{ source = &quot;local&quot;; path = &quot;./prior-auth-pack&quot; }
+$m | ConvertTo-Json -Depth 5 | Set-Content &quot;$M\.agents\plugins\marketplace.json&quot;
+
+codex plugin marketplace add $M
+codex plugin add aidlc-prior-auth-pack@aidlc-plugins
+$env:AIDLC_HARNESS_DIR = &quot;.codex&quot;; $env:AIDLC_HARNESS_NAME = &quot;codex&quot;
+aidlc engine plugin sync     # or start Codex and trust the plugin's hook in /hooks
+aidlc engine plugin list     # prior-auth-pack  0.1.0  0.1.0  current
+</code></pre>
+<p>Without that step, <code>codex plugin marketplace add</code> fails with "marketplace root does not
+contain a supported manifest".</p>
+<p><strong>See it work.</strong> Search the composed stage files for the plugin name:</p>
+<pre><code class="language-powershell">Select-String -Path .claude\aidlc-common\stages\*\*.md -Pattern &quot;prior-auth-pack&quot; | Select-Object -First 5
+</code></pre>
+<p>Each splice is wrapped in a <code>&lt;!-- plugin:prior-auth-pack:... --&gt;</code> sentinel with a content
+hash, so re-composing never duplicates it. After <code>aidlc update</code>, run
+<code>aidlc engine plugin sync</code> again.</p>
+<blockquote>
+<p><strong>Snag (2.11.0, Windows).</strong> <code>aidlc engine plugin validate</code> from the packaged binary
+fails with "does not resolve to a core stage slug" and "compose-hook template is
+unavailable". It looks for its data inside the binary. Run the <code>.ts</code> tools with Bun
+as above instead.</p>
+</blockquote>
+<h4>2. Skills: <code>aidlc-coach</code>, <code>repo-plan-reviewer</code>, <code>rally-draft</code></h4>
+<p>The same <code>SKILL.md</code> files work on both engines; only the folder differs.</p>
+<pre><code class="language-powershell">$X = &quot;&lt;course&gt;\runbook\practice\extensions&quot;
+# Claude Code
+Copy-Item -Recurse &quot;$X\skills\aidlc-coach&quot;,&quot;$X\skills\rally-draft&quot; .claude\skills\
+Copy-Item &quot;$X\claude\agents\repo-plan-reviewer.md&quot; .claude\agents\
+# Codex CLI (skills live in .agents/skills/)
+New-Item -ItemType Directory .agents\skills -Force | Out-Null
+Copy-Item -Recurse &quot;$X\skills\aidlc-coach&quot;,&quot;$X\skills\rally-draft&quot;,&quot;$X\skills\repo-plan-reviewer&quot; .agents\skills\
+# The Rally template the rally-draft skill looks for
+New-Item -ItemType Directory tracking\rally -Force | Out-Null
+Copy-Item &quot;&lt;course&gt;\runbook\practice\rally\rally-import-template.csv&quot; tracking\rally\
+</code></pre>
+<p>How to use them:</p>
+<ul>
+<li><code>/aidlc-coach</code> / <code>$aidlc-coach</code>: at any question file or gate. It reads <code>aidlc-state.md</code>
+  and explains the stage. It never answers for you.</li>
+<li><code>repo-plan-reviewer</code>: before every code-generation plan gate in step 08.</li>
+<li>Claude: "Use the repo-plan-reviewer agent on the open code-generation plan."</li>
+<li>Codex: <code>$repo-plan-reviewer</code></li>
+<li><code>/rally-draft</code> / <code>$rally-draft</code>: after step 07. It has <code>disable-model-invocation</code>, so
+  it runs only when you type it.</li>
+</ul>
+<p>The plan reviewer is a <strong>subagent</strong> on Claude Code. It runs in its own context with only
+<code>Read, Grep, Glob</code>, so it physically cannot edit the plan it reviews. On Codex it is a
+skill with the same prompt, and read-only is an instruction, not a tool limit.</p>
+<h4>3. The decision-log guard (Claude Code)</h4>
+<pre><code class="language-powershell">New-Item -ItemType Directory .claude\kit-hooks -Force | Out-Null
+Copy-Item &quot;$X\claude\hooks\guard-decisions.ps1&quot; .claude\kit-hooks\
+Copy-Item &quot;$X\claude\settings.local.json.example&quot; .claude\settings.local.json   # merge by hand if you already have one
+</code></pre>
+<p>Restart Claude Code. Whenever the engine tries to Edit or Write any
+<code>prior-auth-*\docs\decisions.md</code>, you get a permission prompt with the reason. It
+returns <strong>ask</strong>, not deny, because step 10 legitimately appends decisions.</p>
+<p>Why <code>settings.local.json</code>? <code>aidlc config</code> owns <code>.claude/settings.json</code> and refreshes it on
+upgrade. Your local file is never touched.</p>
+<p><strong>Limit:</strong> the hook watches the Edit and Write tools. A shell command that rewrites the
+file would get past it. The plugin's code-generation overlay and the repo steering cover
+that case by instruction, and you cover it at the gate.</p>
+<p><strong>Codex:</strong> AI-DLC trusts its own Codex hooks through <code>/hooks</code>, but this kit doesn't ship a
+Codex version of this guard. On Codex the same protection comes from the repo steering
+(<code>AGENTS.md</code>), the plugin overlay, and your review at the plan gate.</p></div></section>
+<section class="block" id="run-notes"><h2>Reference run notes</h2><div class="panel card"><p>The reference run is still in progress. Its gate-by-gate notes will appear here when it is committed to <code>reference-run/</code>.</p></div></section>
+<footer>Built 2026-10-12 from the Markdown in <code>runbook/practice/</code> by <code>build-guide.py</code>.
+Edit the Markdown, then re-run the script; don't edit this page by hand.</footer>
+  </main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('theme');
+  // Session-only, like the course: no browser storage.
+  btn.addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+
+  // Claude Code / Codex CLI blocks that sit side by side become tabs.
+  function engine(pre){var t=pre.textContent.trimStart(); return t.indexOf('# Claude Code')===0?'Claude Code':t.indexOf('# Codex CLI')===0?'Codex CLI':null;}
+  var n=0;
+  document.querySelectorAll('.card pre').forEach(function(pre){
+    if(!pre.isConnected||pre.closest('.tabs')||engine(pre)!=='Claude Code') return;
+    var next=pre.nextElementSibling;
+    if(!next||next.tagName!=='PRE'||engine(next)!=='Codex CLI') return;
+    var box=document.createElement('div'); box.className='tabs';
+    var list=document.createElement('div'); list.setAttribute('role','tablist');
+    box.appendChild(list); pre.parentNode.insertBefore(box,pre);
+    [pre,next].forEach(function(p,i){
+      var id='tab'+(++n), tab=document.createElement('button');
+      tab.type='button'; tab.setAttribute('role','tab'); tab.id=id+'-t'; tab.textContent=engine(p);
+      tab.setAttribute('aria-controls',id); tab.setAttribute('aria-selected',i===0?'true':'false');
+      p.id=id; p.setAttribute('role','tabpanel'); p.setAttribute('aria-labelledby',id+'-t'); if(i) p.hidden=true;
+      list.appendChild(tab); box.appendChild(p);
+      tab.addEventListener('click',function(){
+        list.querySelectorAll('[role=tab]').forEach(function(t){t.setAttribute('aria-selected',t===tab?'true':'false');});
+        box.querySelectorAll('[role=tabpanel]').forEach(function(q){q.hidden=q!==p;});
+      });
+    });
+  });
+
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copy';
+    b.addEventListener('click',function(){
+      var text=pre.querySelector('code')?pre.querySelector('code').textContent:pre.textContent;
+      navigator.clipboard.writeText(text).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy';},1200);});
+    });
+    pre.appendChild(b);
+  });
+
+  // The tabs above changed the layout, so the browser's jump to #anchor missed. Jump again.
+  function toHash(){var t=location.hash&&document.getElementById(decodeURIComponent(location.hash.slice(1))); if(t) t.scrollIntoView({behavior:'instant'});}
+  toHash(); if(document.fonts) document.fonts.ready.then(toHash);
+
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  var obs=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id);}); } });
+  },{rootMargin:'-20% 0px -70% 0px'});
+  document.querySelectorAll('section.block').forEach(function(s){obs.observe(s);});
+})();
+</script>
+</body>
+</html>

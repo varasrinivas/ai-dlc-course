@@ -4,6 +4,9 @@ The [multi-repo runbook](../multi-repo-feature.html) *describes* one Prior Auth 
 going through AWS AI-DLC v2: urgent requests get a 72-hour clock, across three repos.
 This kit is how you **do** it, on your own machine, with Claude Code or Codex CLI.
 
+Prefer one page? [`guide.html`](guide.html) is this whole kit in a single standalone file,
+built from these Markdown files by `build-guide.py`. Re-run the script after editing a card.
+
 There is no grading script. The point is to watch the method work:
 
 - the engine asking instead of guessing;
