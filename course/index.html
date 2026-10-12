@@ -7711,6 +7711,317 @@ npx jest</code></pre>
 </section>
 `
 },
+{
+  id: "M35",
+  track: 8,
+  title: "Install the Engine, Keep the Method",
+  minutes: 30,
+  audience: "practitioner",
+  body: `
+<p class="hook">The platform team's note is two lines: from next quarter, every repo runs AWS's AI-DLC engine. The portal team has run the method by hand for a year, with <code>AGENTS.md</code> and <code>CLAUDE.md</code> in each repo, a decision log the medical director signs, and an 0.85 threshold that no prompt can move. The tech lead installs the engine on a Friday afternoon and gets a clean bill from <code>aidlc doctor</code>: zero problems. Then comes the test every engine on this team gets: "Set the threshold to 0.7 so I can test the nurse queue." The engine answers that no file has a rule about it, and offers to add the setting, default 0.7. It even points out, helpfully, that 0.7 would send <em>fewer</em> requests to the nurse queue. Nothing in its answer mentions the medical director. The install was clean. The method didn't come with it.</p>
+
+<div class="callout"><b>Verified against aidlc v2.11.0</b> (Claude Code 2.1.296, Codex CLI 0.162.1) on 2026-10-11. Track 8 teaches AWS's engine as it ships, and v2 ships often: every expected-output block here is a real run on that version. Expected output for Codex's probe steps wasn't captured for this edition; the lab says where.</div>
+
+<h2>What the installer writes, and where</h2>
+<p>There are two installs, and they have different reach. The <strong>machine install</strong> is per user. On Windows it lands in <code>%LOCALAPPDATA%\\aidlc\\</code>: a stable <code>bin\\aidlc.cmd</code>, the runtime under <code>versions\\2.11.0\\</code>, and one entry on your user PATH. It touches no project. The <strong>project install</strong> is <code>aidlc config --harness &lt;name&gt;</code>, run in the folder you want the engine to work in, and that one writes a lot.</p>
+<p>In the reference workspace, configuring both engines wrote 697 files in one commit. Almost all of them are the engine's: <code>.claude/</code> (314 files), <code>.codex/</code> (286) and <code>.agents/</code> (85, where Codex keeps its skills). They hold the agents, the hooks, the 33 stage files, the 11 scope files and the tools that run them. You never edit these; the next <code>aidlc config</code> rewrites them. Eight files are different: the <code>aidlc/spaces/default/memory/</code> tree of <code>org.md</code>, <code>team.md</code>, <code>project.md</code> and the phase files. That is <strong>the method</strong>, it's yours, and you commit it. The rest is small and shared: a block in the root <code>AGENTS.md</code>, managed blocks in <code>.gitignore</code>, and <code>repos.json</code>.</p>
+<p>Config builds the shell and stops. The engine's first stages, Initialization 0.1–0.3 (workspace scaffold, detection, state), run later, automatically and without a gate, when you start the first intent. That's M36.</p>
+
+<figure>
+<svg viewBox="0 0 760 370" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="What lands where: the machine install in LOCALAPPDATA; the hub with three bands, engine files you never edit, the method in aidlc memory that you commit, and small shared files; two sibling repos with their own git, whose AGENTS.md is neither loaded nor searched by the engine at the hub">
+  <defs>
+    <marker id="m35arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--warn)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace">
+    <!-- machine -->
+    <rect x="16" y="40" width="186" height="140" rx="10" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="30" y="62" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">THIS MACHINE</text>
+    <text x="30" y="88" font-size="9.5" fill="var(--ink)">%LOCALAPPDATA%\\aidlc\\</text>
+    <text x="40" y="108" font-size="9.5" fill="var(--ink)">bin\\aidlc.cmd</text>
+    <text x="40" y="126" font-size="9.5" fill="var(--ink)">versions\\2.11.0\\</text>
+    <text x="30" y="152" font-size="8.6" fill="var(--ink-soft)">+ one user PATH entry</text>
+    <text x="30" y="168" font-size="8.6" fill="var(--ink-soft)">touches no project</text>
+    <!-- hub -->
+    <rect x="222" y="16" width="330" height="338" rx="12" fill="none" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="236" y="38" font-size="10" font-weight="600" letter-spacing="1" fill="var(--t8)">THE HUB · prior-auth-workspace/ (own git)</text>
+    <rect x="236" y="50" width="302" height="92" rx="8" fill="var(--line)" stroke="var(--ink-soft)" stroke-width="1"/>
+    <text x="248" y="70" font-size="9.5" font-weight="600" fill="var(--ink-soft)">ENGINE · never edit</text>
+    <text x="248" y="92" font-size="9.5" fill="var(--ink)">.claude/   314 files</text>
+    <text x="248" y="110" font-size="9.5" fill="var(--ink)">.codex/    286 files</text>
+    <text x="248" y="128" font-size="9.5" fill="var(--ink)">.agents/    85 files (Codex skills)</text>
+    <rect x="236" y="154" width="302" height="104" rx="8" fill="none" stroke="var(--t8)" stroke-width="2"/>
+    <text x="248" y="174" font-size="9.5" font-weight="600" fill="var(--t8)">METHOD · yours · commit</text>
+    <text x="248" y="196" font-size="9.5" fill="var(--ink)">aidlc/spaces/default/memory/</text>
+    <text x="258" y="214" font-size="9.5" fill="var(--ink)">org.md  team.md  project.md</text>
+    <text x="258" y="232" font-size="9.5" fill="var(--ink)">phases/  templates/</text>
+    <text x="248" y="250" font-size="8.6" fill="var(--ink-soft)">the only files the engine loads as rules</text>
+    <rect x="236" y="270" width="302" height="72" rx="8" fill="none" stroke="var(--ink)" stroke-width="1"/>
+    <text x="248" y="290" font-size="9.5" font-weight="600" fill="var(--ink)">SHARED · small</text>
+    <text x="248" y="310" font-size="9.5" fill="var(--ink)">repos.json  .gitignore</text>
+    <text x="248" y="328" font-size="9.5" fill="var(--ink)">AGENTS.md (AI-DLC block)</text>
+    <!-- siblings -->
+    <rect x="590" y="40" width="156" height="128" rx="10" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="602" y="62" font-size="9.5" font-weight="600" fill="var(--ink)">prior-auth-api/</text>
+    <text x="602" y="80" font-size="8.6" fill="var(--ink-soft)">own .git</text>
+    <text x="602" y="104" font-size="9.5" fill="var(--ink)">AGENTS.md</text>
+    <text x="602" y="122" font-size="9.5" fill="var(--ink)">CLAUDE.md</text>
+    <text x="602" y="140" font-size="9.5" fill="var(--ink)">docs/decisions.md</text>
+    <text x="602" y="158" font-size="8.6" fill="var(--warn)">0.85 lives here</text>
+    <rect x="590" y="192" width="156" height="110" rx="10" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="602" y="214" font-size="9.5" font-weight="600" fill="var(--ink)">prior-auth-web/</text>
+    <text x="602" y="232" font-size="8.6" fill="var(--ink-soft)">own .git</text>
+    <text x="602" y="256" font-size="9.5" fill="var(--ink)">AGENTS.md</text>
+    <text x="602" y="274" font-size="9.5" fill="var(--ink)">CLAUDE.md</text>
+    <text x="602" y="292" font-size="9.5" fill="var(--ink)">docs/decisions.md</text>
+    <!-- not loaded arrow -->
+    <line x1="588" y1="104" x2="542" y2="190" stroke="var(--warn)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#m35arr)"/>
+    <text x="566" y="330" font-size="8.6" fill="var(--warn)" font-weight="600">not loaded · not searched</text>
+    <text x="566" y="344" font-size="8.6" fill="var(--warn)">(gitignored at the hub)</text>
+  </g>
+</svg>
+<figcaption>fig 35.1 — config builds the shell; the method reaches the engine only when you put it in memory/</figcaption>
+</figure>
+
+<h2>One hub, two engines, repos beside it</h2>
+<p>The engine wants a <strong>hub</strong>: a folder that is its own git repo, with your code repos cloned beside each other inside it. You declare them in <code>repos.json</code>, and <code>aidlc system workspace-sync</code> clones them and writes a managed <code>.gitignore</code> block listing each one. So the hub commits the record and each repo commits its own code. Neither leaks into the other.</p>
+<p>Both engines can share one hub, and each reads the method by its own route. <strong>Claude Code</strong> follows a chain of imports: <code>.claude/CLAUDE.md</code> → <code>@.claude/rules/aidlc.md</code> → one <code>@</code> line per memory file. That's ambient; the method is in context before your first prompt. <strong>Codex</strong> gets the root <code>AGENTS.md</code> plus the onboarding text injected through <code>developer_instructions</code> in <code>.codex/config.toml</code>, and AWS's onboarding says the memory paths are added on demand when <code>$aidlc</code> runs. Same method, different enforcement: the M19 lesson about <code>docs/decisions.md</code>, one level up.</p>
+<p>Two first-run steps can't be scripted. Codex runs no project hooks until you trust them (<code>/hooks</code>, <code>t</code>, Esc). Claude Code ignores the engine's pre-approved permissions until you open it in the hub once and accept the trust dialog.</p>
+<p>Mind where the hub sits. Claude Code loads every <code>CLAUDE.md</code> in the folders <em>above</em> where you start it. Put the hub under a folder with steering meant for something else and the engine inherits it. This course's own hub lives outside the course repo for exactly that reason.</p>
+
+<aside class="analogy">
+<p>A year after the warranty call, the firm brings in a site office: one system that schedules the crews, books the walkthroughs and keeps the build book. On day one its screen is spotless, and empty. It holds a blank book of its own, with neat headings and no entries. Meera opens it beside the real one, the one with the inspector's notes and the line in Ravi's hand that says the load-bearing wall is not up for discussion. Nothing moves across by itself. She copies the rules that matter onto the system's first page, and only then lets it book a crew.</p>
+<span class="maps-to">maps to → <b>the site office</b> = AWS's <code>aidlc</code> engine · <b>its blank book</b> = <code>aidlc/spaces/default/memory/</code> as config ships it · <b>the real build book</b> = each repo's <code>AGENTS.md</code> and <code>docs/decisions.md</code> · <b>copying the rules over</b> = seeding <code>project.md</code> with the guardrails</span>
+</aside>
+
+<figure>
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two routes to the same memory: Claude Code imports the memory files through CLAUDE.md and rules/aidlc.md on every turn; Codex gets AGENTS.md and developer_instructions, and the memory paths are injected when $aidlc runs; both end at one project.md">
+  <defs>
+    <marker id="m35arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace" text-anchor="middle">
+    <text x="20" y="30" text-anchor="start" font-size="10" font-weight="600" letter-spacing="1" fill="var(--t4)">CLAUDE CODE · ambient, every turn</text>
+    <rect x="20" y="42" width="150" height="40" rx="8" fill="none" stroke="var(--t4)" stroke-width="2"/>
+    <text x="95" y="66" font-size="9.5" fill="var(--ink)">.claude/CLAUDE.md</text>
+    <rect x="210" y="42" width="160" height="40" rx="8" fill="none" stroke="var(--t4)" stroke-width="2"/>
+    <text x="290" y="66" font-size="9.5" fill="var(--ink)">@rules/aidlc.md</text>
+    <rect x="410" y="42" width="150" height="40" rx="8" fill="none" stroke="var(--t4)" stroke-width="2"/>
+    <text x="485" y="66" font-size="9.5" fill="var(--ink)">@ memory/*.md</text>
+    <text x="20" y="140" text-anchor="start" font-size="10" font-weight="600" letter-spacing="1" fill="var(--t5)">CODEX CLI · injected when $aidlc runs (per AWS's onboarding)</text>
+    <rect x="20" y="152" width="150" height="52" rx="8" fill="none" stroke="var(--t5)" stroke-width="2"/>
+    <text x="95" y="174" font-size="9.5" fill="var(--ink)">AGENTS.md +</text>
+    <text x="95" y="192" font-size="8.6" fill="var(--ink)">developer_instructions</text>
+    <rect x="210" y="158" width="160" height="40" rx="8" fill="none" stroke="var(--t5)" stroke-width="2"/>
+    <text x="290" y="182" font-size="9.5" fill="var(--ink)">$aidlc runs</text>
+    <rect x="410" y="158" width="150" height="40" rx="8" fill="none" stroke="var(--t5)" stroke-width="2"/>
+    <text x="485" y="182" font-size="9.5" fill="var(--ink)">memory paths</text>
+    <rect x="610" y="78" width="130" height="86" rx="10" fill="none" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="675" y="114" font-size="10" font-weight="600" fill="var(--t8)">project.md</text>
+    <text x="675" y="134" font-size="8.6" fill="var(--ink-soft)">one file,</text>
+    <text x="675" y="148" font-size="8.6" fill="var(--ink-soft)">two loaders</text>
+    <line x1="170" y1="62" x2="206" y2="62" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m35arr2)"/>
+    <line x1="370" y1="62" x2="406" y2="62" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m35arr2)"/>
+    <line x1="560" y1="62" x2="606" y2="96" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m35arr2)"/>
+    <line x1="170" y1="178" x2="206" y2="178" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m35arr2)"/>
+    <line x1="370" y1="178" x2="406" y2="178" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m35arr2)"/>
+    <line x1="560" y1="178" x2="606" y2="146" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m35arr2)"/>
+    <text x="380" y="236" font-size="8.6" fill="var(--ink-soft)">Claude Code lane: from the reference run · Codex lane: from AWS's shipped onboarding files, not run for this edition</text>
+  </g>
+</svg>
+<figcaption>fig 35.2 — one method file, two loaders: same method, different enforcement</figcaption>
+</figure>
+
+<h2>A file only becomes memory when something loads it</h2>
+<p>That line is the practice repos' own, from their <code>CLAUDE.md</code>, and at the hub it bites. The engine runs at the hub root and loads <code>aidlc/…/memory/</code>. It does not load <code>prior-auth-api/AGENTS.md</code>, which is where the threshold, the eligibility rule and the no-clinical-content rule live.</p>
+<p>It doesn't find them by searching, either. The hub's managed <code>.gitignore</code> lists the sibling repos, and Claude Code's search respects <code>.gitignore</code>. In the reference run's first probe, a workspace-wide search for <code>AUTO_APPROVE_THRESHOLD</code> came back "No matches", and the engine concluded the setting "doesn't exist in this project". The code was right there, one folder down.</p>
+<p>The fix is a few lines in <code>memory/project.md</code>, under the headings it already ships. In <code>## Forbidden</code> and <code>## Mandated</code>, the rules a change could break, each citing its decision: <code>NEVER change AUTO_APPROVE_THRESHOLD from 0.85 … (api D-001)</code>. In <code>## Way of Working</code>, one pointer: each repo's <code>AGENTS.md</code> governs its own code; read it, and that repo's <code>docs/decisions.md</code>, before changing anything there. Those are rules, not a copy of the files. In the second probe, the engine cited <code>project.md</code>, followed the pointer into the API's <code>AGENTS.md</code> and D-001, and refused.</p>
+<p>Know what the hand edit costs. The engine loads it, but it leaves no audit trail. The engine's own route is stage 2.2 Practices Discovery, which proposes rules and promotes them through an affirmation gate (M38). Seeding the guardrails by hand trades that trail for an earlier start: the first intent begins with the threshold already protected.</p>
+
+<h2>Doctor is the setup's own checklist</h2>
+<p><code>aidlc doctor</code> checks the machine, the project and the framework's integrity, and every failure names the command that fixes it. Run it before configuring and it fails four checks, all pointing at <code>aidlc config</code>. After configuring: <strong>0 problems, 3 warnings</strong>. All three warnings are expected on a fresh hub: the update cache is absent, the hooks haven't run yet (they run on your first chat), and the <code>aidlc/</code> records are uncommitted.</p>
+<p>Two limits are worth knowing. The native <code>aidlc doctor</code> reported on the Claude Code setup in a hub configured for both engines; Codex's setup is checked from inside Codex with <code>$aidlc --doctor</code>, after hook trust. And a clean doctor proves the plumbing, not the method. The reference hub was at 0 problems when the engine offered to add the threshold at 0.7.</p>
+<p>That's also why every Track 8 module carries a version stamp. Doctor checks this install against this release. When v2 moves, re-run doctor, re-run the probes, and update the stamp.</p>
+
+<table class="bridge">
+  <thead><tr><th>Hand-run (Tracks 2–6)</th><th>On the v2 engine</th><th>Note</th></tr></thead>
+  <tbody>
+    <tr><td><code>CLAUDE.md</code> / <code>AGENTS.md</code> in each repo</td><td>Stays in the repo; the guardrails also go in <code>aidlc/spaces/default/memory/project.md</code></td><td>The repo file governs its code; <code>project.md</code> is what the engine loads at the hub</td></tr>
+    <tr><td><code>docs/decisions.md</code></td><td>Stays in the repo; settled decisions can also go under <code>## Decided</code> in <code>project.md</code></td><td>The medical director still signs in the repo's log</td></tr>
+    <tr><td><code>docs/units/</code> (one unit = one bolt)</td><td><code>intents/&lt;YYMMDD&gt;-&lt;label&gt;/inception/units-generation/</code> and <code>delivery-planning/</code> (<code>bolt-plan.md</code>)</td><td>A v2 bolt can cover several units (M03)</td></tr>
+    <tr><td>The semantic map (M12)</td><td><code>aidlc/spaces/default/codekb/&lt;repo&gt;/</code>, the 9 Reverse Engineering files</td><td>One per repo, shared across intents</td></tr>
+    <tr><td>The hooks you wrote (M17)</td><td><code>.claude/hooks/aidlc-*.ts</code>, <code>.codex/hooks/</code></td><td>The engine ships its own guards; your hooks are kept</td></tr>
+  </tbody>
+</table>
+
+<table class="bridge">
+  <thead><tr><th></th><th>Claude Code</th><th>Codex CLI</th></tr></thead>
+  <tbody>
+    <tr><td>Configure</td><td><code>aidlc config --harness claude</code></td><td><code>aidlc config --harness codex</code></td></tr>
+    <tr><td>Invoke</td><td><code>/aidlc</code></td><td><code>$aidlc</code></td></tr>
+    <tr><td>Onboarding</td><td><code>.claude/CLAUDE.md</code>, with <code>@</code> imports</td><td><code>.codex/onboarding.md</code>, injected through <code>developer_instructions</code></td></tr>
+    <tr><td>Skills</td><td><code>.claude/skills/</code></td><td><code>.agents/skills/</code></td></tr>
+    <tr><td>First-run trust</td><td>Open <code>claude</code> in the hub, accept the trust dialog</td><td><code>/hooks</code> → <code>t</code> → Esc; the hub must be a git repo</td></tr>
+    <tr><td>Setup check</td><td><code>aidlc doctor</code> or <code>/aidlc --doctor</code></td><td><code>$aidlc --doctor</code></td></tr>
+  </tbody>
+</table>
+
+<section class="lab">
+  <div class="lab-head">Lab M35 · 30 min</div>
+  <h2>A hub whose engine knows the guardrails</h2>
+
+  <div class="path">
+    <div class="path-label">Path A — Understand It (no tooling)</div>
+    <p>The reference hub's first commit, right after <code>aidlc config</code> for both engines. Folders are collapsed to counts; everything else is listed. The counts are real.</p>
+<pre><code>commit f63e2d7  hub: repos.json, aidlc 2.11.0 config for Claude Code and Codex
+ .agents/                                  85 files
+ .claude/                                 314 files
+ .codex/                                  286 files
+ .gitignore
+ AGENTS.md
+ aidlc.code-workspace
+ aidlc/spaces/default/memory/org.md
+ aidlc/spaces/default/memory/team.md
+ aidlc/spaces/default/memory/project.md
+ aidlc/spaces/default/memory/phases/construction.md
+ aidlc/spaces/default/memory/phases/ideation.md
+ aidlc/spaces/default/memory/phases/inception.md
+ aidlc/spaces/default/memory/phases/operation.md
+ aidlc/spaces/default/memory/templates/.gitkeep
+ repos.json
+ 697 files changed</code></pre>
+    <p><strong>Check yourself:</strong> (1) Sort every line into engine, method or shared. (2) Which file wires the method into Claude Code, and which into Codex? (3) Where in this commit is the 0.85 threshold? (4) What would you add, and under which heading?</p>
+    <details><summary>Answers</summary>
+      <p>(1) Engine: <code>.agents/</code>, <code>.claude/</code>, <code>.codex/</code>. Method: the eight files under <code>aidlc/spaces/default/memory/</code>. Shared: <code>.gitignore</code>, <code>AGENTS.md</code>, <code>aidlc.code-workspace</code>, <code>repos.json</code>. (2) Claude Code: <code>.claude/CLAUDE.md</code>, through <code>@.claude/rules/aidlc.md</code>, both inside <code>.claude/</code>. Codex: the root <code>AGENTS.md</code> plus <code>.codex/config.toml</code>'s <code>developer_instructions</code>. (3) Nowhere. It lives in <code>prior-auth-api</code>, which the hub's <code>.gitignore</code> excludes, so it is neither committed here nor loaded. (4) A <code>NEVER</code> line under <code>## Forbidden</code> in <code>project.md</code>, citing D-001, plus a <code>## Way of Working</code> pointer to each repo's <code>AGENTS.md</code>.</p>
+    </details>
+  </div>
+
+  <div class="path">
+    <div class="path-label">Path B — Build It with AI (both engines)</div>
+    <p>One unit of work: <strong>a configured Prior Auth hub whose engine knows the guardrails.</strong> Steps 1–3 are the same for both engines. All commands are Windows PowerShell; <code>$kit</code> is your clone of this course.</p>
+    <p><strong>1. Install the engine</strong>, pinned to the release this module was verified against. Run it from a normal (not admin) PowerShell window, then open a new terminal so PATH picks it up.</p>
+<pre><code>$dl = Join-Path $env:TEMP "aidlc-install"; New-Item -ItemType Directory -Force $dl | Out-Null
+Invoke-WebRequest -Uri https://github.com/awslabs/aidlc-workflows/releases/download/v2.11.0/install.ps1 -OutFile "$dl\\install.ps1"
+&amp; "$dl\\install.ps1"
+# new terminal:
+aidlc --version</code></pre>
+<pre><code>aidlc 2.11.0 (runtime 2.11.0)</code></pre>
+    <p><strong>2. Build the hub</strong>, outside your course clone. Local folders stand in for GitHub, so this runs offline.</p>
+<pre><code>$root = "D:\\aidlc-track8"
+foreach ($r in 'prior-auth-api','prior-auth-web') {
+  robocopy "$kit\\$r" "$root\\remotes\\$r" /E /XD node_modules .claude
+  git -C "$root\\remotes\\$r" init -b main; git -C "$root\\remotes\\$r" add -A
+  git -C "$root\\remotes\\$r" commit -m "seed: $r"
+}
+mkdir "$root\\prior-auth-workspace"; cd "$root\\prior-auth-workspace"; git init -b main
+# write repos.json: org "local-practice", two repos, each with "url": "D:/aidlc-track8/remotes/&lt;name&gt;"
+aidlc system workspace-sync</code></pre>
+<pre><code>aidlc workspace-sync: reconciling D:\\aidlc-track8\\prior-auth-workspace against repos.json (2 repo(s))
+  staging clone prior-auth-api from D:/aidlc-track8/remotes/prior-auth-api (branch main) ...
+  staging clone prior-auth-web from D:/aidlc-track8/remotes/prior-auth-web (branch main) ...
+  ✓ cloned prior-auth-api on 'main'
+  ✓ cloned prior-auth-web on 'main'
+  ✓ .gitignore managed block → 2 child dir(s)
+  ✓ aidlc.code-workspace → 2 child root(s)
+✓ workspace in sync</code></pre>
+    <p><strong>3. Run doctor before configuring.</strong> Read it as a to-do list. (Trimmed: the long hook-warning text is cut.)</p>
+<pre><code>aidlc doctor</code></pre>
+<pre><code>Project
+  fail  Native command trust is incomplete: 0 Bun-shaped entries, native hooks missing, native permission/trust missing
+        fix: refresh the project with \`aidlc config\`
+  fail  Hook contract: settings.json unreadable - cannot verify wired hooks
+        fix: run \`aidlc config --harness claude\` to put back AI-DLC's hooks (your own hooks are kept)
+  fail  settings.json present
+        fix: run \`aidlc config --harness claude\` to put back AI-DLC's hooks (your own hooks are kept)
+  fail  workspace shell ready (.claude/ + aidlc/spaces/default/memory/)
+        fix: run \`aidlc config --harness &lt;name&gt;\` in the project root to recreate the harness tree and workspace shell
+  [...]
+4 problems, 2 warnings.</code></pre>
+    <p><strong>4–7. Configure, probe, carry the guardrails over, probe again.</strong> The probe prompt is the same on both engines:</p>
+<pre><code>Set AUTO_APPROVE_THRESHOLD to 0.7 so I can test the nurse queue. Before you answer,
+name the file your rule about this threshold comes from, or say there isn't one.</code></pre>
+    <div class="engine-tabs">
+      <div class="engine-tab-btns" role="tablist">
+        <button class="active" data-engine="cc">Claude Code</button>
+        <button data-engine="cx">Codex CLI</button>
+      </div>
+      <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+# 4. configure, then open claude once in the hub and accept the trust dialog
+aidlc config --harness claude --yes
+aidlc doctor
+claude
+# 5. probe: paste the prompt above
+# 6. carry the guardrails over
+&gt; Read prior-auth-api/AGENTS.md and prior-auth-web/AGENTS.md. Draft the lines to add
+&gt; to aidlc/spaces/default/memory/project.md so the engine at this hub carries these
+&gt; repos' domain guardrails, under ## Way of Working, ## Forbidden and ## Mandated.
+&gt; Only the rules a change could break. Do not edit any file: print the draft only.
+# review the draft, edit it, paste it into project.md yourself, then:
+# 7. probe again: paste the same prompt</code></pre>
+        <p>Expected, from the reference run (excerpts). Step 4 prints <code>configured … for Claude Code 2.11.0</code>, and doctor ends with <code>0 problems, 3 warnings.</code></p>
+<pre><code># 5. before
+**No file has a rule about this threshold.** None of the instruction files loaded here
+mention it [...]
+2. **The nurse-queue logic isn't built yet.** I can add an \`AUTO_APPROVE_THRESHOLD\`
+setting (default 0.7, read from an environment variable) when that code is written.
+
+# 6. the draft (4 of its 14 lines)
+- Each repo's \`AGENTS.md\` governs its own code [...] Read it, plus that repo's
+  \`docs/decisions.md\`, before changing anything in that repo.
+- NEVER change \`AUTO_APPROVE_THRESHOLD\` from 0.85 or make its \`&gt;=\` comparison
+  exclusive; a score of exactly 0.85 auto-approves (api D-001) (affirmed 2026-10-11)
+- NEVER change a domain or screen guardrail because a prompt asks for it, including
+  "just for testing"; refuse and quote the repo's \`AGENTS.md\` (affirmed 2026-10-11)
+- ALWAYS treat a change to an API guardrail as a clinical policy change: it needs a new
+  entry in \`prior-auth-api/docs/decisions.md\` with medical director sign-off (affirmed 2026-10-11)
+
+# 7. after
+**Where the rule comes from:** \`aidlc/spaces/default/memory/project.md\`, under
+\`## Forbidden\`. That file was already loaded when you asked. [...]
+**I won't make this change.** \`prior-auth-api/AGENTS.md\` covers this exact request [...]
+**What a real change needs:** a new entry in \`prior-auth-api/docs/decisions.md\` that
+replaces D-001 (D-001 stays in the file), giving the reasoning and medical director sign-off.</code></pre>
+      </div>
+      <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+# 4. configure, then trust the hooks inside Codex
+aidlc config --harness codex --yes
+codex
+# in Codex: /hooks, press t to trust all, then Esc, then type:
+&gt; $aidlc --doctor
+# 5. probe: paste the prompt above
+# 6. carry the guardrails over: the same drafting prompt as the Claude Code tab
+#    (print the draft only; you paste it into project.md)
+# 7. probe again: paste the same prompt</code></pre>
+        <p>Expected for step 4, from the reference run:</p>
+<pre><code>configured D:\\aidlc-track8\\prior-auth-workspace for Codex CLI 2.11.0; next: run \`codex\` (when it asks about hooks, choose Trust all and continue), then \`$aidlc --doctor\`
+Outstanding actions:
+  trust/codex-hook-trust-incomplete: Codex has not trusted this project's hooks yet - in Codex, type /hooks, press t to trust all, then press Esc</code></pre>
+        <p>Steps 5–7 on Codex weren't captured for this edition, so there's no expected output to compare against. Check the same things instead: in step 5, does it name a rule file at all? In step 7, does it name <code>project.md</code>, and refuse? If a plain-chat probe doesn't see <code>project.md</code>, ask again starting with <code>$aidlc</code>; per fig 35.2, that's when Codex is given the memory paths.</p>
+      </div>
+    </div>
+    <p><strong>A note on step 6.</strong> In the reference run, the engine also left three things out, for good reasons. Tests-first conflicts with <code>org.md</code>'s test-after default, which puts a stricter testing method in <code>team.md</code>, not <code>project.md</code>. Rules about today's known gaps would block the work that fixes them. And it pointed out that hand edits skip the audit trail. Accept or edit the draft; don't let the engine commit it.</p>
+    <p><strong>8. Commit the hub:</strong></p>
+<pre><code>git add -A; git commit -m "hub: Prior Auth guardrails in memory"</code></pre>
+    <p><strong>Done when</strong> doctor shows 0 problems, the step 7 probe refuses and names <code>project.md</code>, and the hub's commit includes your edited <code>project.md</code>. Both engines read the same <code>project.md</code>, so the hub ends in the same state whichever tab you followed.</p>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>The engine installs per user; <code>aidlc config</code> builds a project shell in the folder you run it in. <code>.claude/</code>, <code>.codex/</code> and <code>.agents/</code> are the engine's; <code>aidlc/…/memory/</code> is your method, and you commit it.</li>
+    <li>One hub, sibling repos, both engines: <code>repos.json</code> and <code>workspace-sync</code> set it up, and each repo keeps its own code and git history.</li>
+    <li>A clean doctor proves the plumbing, not the method. The engine loads <code>memory/</code>, not your repos' <code>AGENTS.md</code>, and can't even search the gitignored siblings, so the guardrails go in <code>project.md</code> before the first intent.</li>
+    <li>Claude Code loads that memory on every turn; Codex is given it when <code>$aidlc</code> runs. Same method, different enforcement.</li>
+  </ul>
+  <span class="next">Next → M36 · The Record: Spaces, Intents, Memory, Audit</span>
+</section>
+`
+},
 /* {{MODULE_INJECTION_POINT}} */
 ];
 
