@@ -137,3 +137,17 @@ The engine should refuse and quote D-001. That refusal is the steering working.
 | Observability | SLO: share of URGENT requests determined within 72h of becoming complete. Early warning: the `sla.at-risk` alarm. | UM director + on-call |
 | Incident response | Runbook entry for "sla.at-risk fired": who looks, what they check, when to escalate | On-call |
 | Close-out | Copy each ADR that constrains a repo into that repo's `docs/decisions.md` as a new entry linking back to the intent (the decision-log guard will ask you to confirm each edit; that's expected) | Tech lead + PO |
+
+---
+
+## Where the reference run left this sheet
+
+The sheet is what the room planned to say. In three places the run went differently, and
+each time it was the recorded decisions, not the sheet, that won. Expect the same in your
+run. When it happens, write the new decision down; don't force the sheet.
+
+| Where | The sheet said | What happened, and why |
+|---|---|---|
+| 2.4–2.5 stories and mockups | An "Urgent" badge on each queue row | Dropped. prior-auth-web D-001 says list rows carry the reference id, procedure code, dates and status only. US4.5 is parked behind open item I-1 (a new web decision with privacy sign-off). Urgency shows through queue order only. |
+| U1 code generation, Step 21 | `sla.at-risk {referenceId, urgency, decisionDueAt}`; `determination.issued` adds `issuedAt` | The privacy office had not confirmed the reading before first publication, so the fallback agreed in Ideation applied. Contract v1.1.0 publishes both events as `{referenceId, status}` only. Recorded as prior-auth-api **D-014**. |
+| U1 code generation, gate Q-1 | Nothing | A race the sheet never imagined: an alert claimed while pending but published after a nurse decides. The room answered "drop it, never relabel it". Recorded as prior-auth-api **D-015**, which the decision-log guard made a human paste by hand. |

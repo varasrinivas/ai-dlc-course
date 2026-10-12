@@ -100,6 +100,11 @@ AWS facts are checked against **AI-DLC Workflows v2.11.0** (released 2026-10-08)
 latest stable release on 2026-10-11:
 <https://github.com/awslabs/aidlc-workflows> and <https://awslabs.github.io/aidlc-workflows/>.
 
+The reference run started on v2.11.0. In the middle of U1 (step 08) it moved to
+**2.11.1-preview.20261011.1**, to get AWS's fix for a defect where a reopened unit could not
+be reviewed again. Step 08's snags give the commands. Everything before that point ran on
+v2.11.0.
+
 Not from AWS: the Rally mapping, the one-unit-per-repo rule, the steering pointer, the
 ADR copy-over, and the helpers in `extensions/`. Those are this course's conventions, built
 on AWS's documented extension points.

@@ -280,4 +280,29 @@ approve the original plan.
   resumes from the branch on the next reply ("Steps 9–12 were committed before the last
   session ended"), so no work is lost, but U1 took several "continue" replies. In an
   interactive session the agent keeps going until the next stop.
+- **Make the line-ending fix before a unit's review, never after.** On Windows,
+  `core.autocrlf=true` checked the files out with CRLF, and Prettier failed 84 of them. The
+  fix (`.gitattributes` with `* text=auto eol=lf`) landed *after* U1's review had said
+  READY. Reviews are bound to fingerprints of the source, so the change made the review
+  stale, and U1 had to be reopened. Put `.gitattributes` in every repo in step 01 (the
+  notify seed has it), and run the repo's `verify` once before the first plan gate.
+- **On v2.11.0, a reopened unit can't get a new review.** After the reopen, every review
+  request came back `REVIEW_RECOVERY_SPENT`. The reopen had kept the unit's old review
+  attempt, and that attempt's one recovery review was already used. The engine stopped
+  and reported it as a likely defect; it did not work around it. AWS fixed it upstream
+  (commit `4b99953`, "after a jump or reopen a Unit names its first review request"), in
+  the v2.11.1 preview releases. The reference run switched the hub, mid-workflow, from
+  then on:
+
+  ```powershell
+  aidlc config --channel preview
+  aidlc update --channel preview     # 2.11.0 -> 2.11.1-preview.20261011.1; 2.11.0 is kept
+  aidlc config --yes                 # in the hub: "Your open work ... carries on."
+  aidlc engine plugin sync
+  aidlc engine runtime compile       # doctor flagged the runtime graph as stale
+  ```
+
+  The next review got a new attempt key and came back READY, and U1 went on to its
+  checkpoint. To go back: `aidlc config --pin 2.11.0 --yes`. Back up `aidlc/` and
+  `.claude/` before you switch. If you're on a newer stable release, you won't hit this.
 <!-- RUN-SNAGS:08 -->
