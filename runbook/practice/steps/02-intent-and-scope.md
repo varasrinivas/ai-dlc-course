@@ -157,6 +157,10 @@ Market research, feasibility, scope definition, team formation and rough mockups
 the same rhythm: questions, a summary, documents, a review, the gate. Stage **1.7
 Approval & Handoff** produces `initiative-brief.md`. That is the go/no-go.
 
+A stage can be skipped. The reference run skipped Market Research (1.2) at the engine's
+suggestion: there was nothing to buy, since the clock lives in a repo the team owns.
+`ideation/market-research/` holds only `memory.md`, and the brief records "build".
+
 **Rally:** after 1.7 is approved, a human creates the Rally **Feature** from the brief.
 AI-DLC does not talk to Rally.
 
@@ -166,7 +170,7 @@ All under `aidlc/spaces/default/intents/<id>/`:
 
 - `aidlc-state.md` and `audit/`
 - `ideation/intent-capture/`: `intent-statement.md`, `stakeholder-map.md`, `intent-capture-questions.md`
-- the rest of `ideation/`: build-vs-buy, feasibility, scope document, RAID log, team, mockups, `initiative-brief.md`
+- the rest of `ideation/`: feasibility (with the RAID log), scope document, team, rough mockups, and `approval-handoff/initiative-brief.md`. Build-vs-buy appears only if Market Research runs.
 
 Compare with [`reference-run/hub/aidlc/`](../reference-run/).
 

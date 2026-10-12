@@ -21,6 +21,7 @@ OUT = HERE / "guide.html"
 # (anchor id, short label for the contents list, source file relative to practice/)
 SECTIONS = [
     ("start", "Start here", "README.md"),
+    ("begin", "Before you begin", "walkthrough/00-before-you-begin.md"),
     *[(f"step-{p.name[:2]}", None, f"steps/{p.name}") for p in sorted((HERE / "steps").glob("[0-9][0-9]-*.md"))],
     ("answers", "Mob answer sheet", "answers/mob-answer-sheet.md"),
     ("extensions", "Learning helpers", "extensions/README.md"),
@@ -69,12 +70,44 @@ def render(sec_id, src, anchors):
     # The section owns the h2; the file's own headings move down one level.
     body = re.sub(r"<(/?)h([2-5])>", lambda h: f"<{h.group(1)}h{int(h.group(2)) + 1}>", body)
     body = re.sub(
-        r"<h3>(.+?)</h3>",
-        lambda h: f'<h3 id="{sec_id}-{slug(re.sub("<[^>]+>", "", h.group(1)))}">{h.group(1)}</h3>',
+        r"<h([34])>(.+?)</h\1>",
+        lambda h: f'<h{h.group(1)} id="{sec_id}-{slug(re.sub("<[^>]+>", "", h.group(2)))}">{h.group(2)}</h{h.group(1)}>',
         body,
     )
     body = rewrite_links(body, src, anchors)
     return title, body
+
+
+def walkthrough_for(sec_id, src, anchors):
+    """Split walkthrough/NN-*.md into its h3 parts: {"background": html, "in-the-reference-workspace": html}."""
+    wt = f"walkthrough/{posixpath.basename(src)}"
+    if not src.startswith("steps/") or not (HERE / wt).exists():
+        return {}
+    _, body = render(sec_id, wt, anchors)
+    parts = re.split(r'(?=<h3 id=")', body)
+    out = {}
+    for p in parts:
+        m = re.match(r'<h3 id="[^"]*?-(background|in-the-reference-workspace)"', p)
+        if m:
+            label = "Background" if m.group(1) == "background" else "In the reference workspace"
+            out[m.group(1)] = re.sub(r"^<h3 ", f'<h3 class="wt" data-wt="{label}" ', p)
+    return out
+
+
+def merge_walkthrough(sec_id, body, wt):
+    # Background opens the card; the real workspace goes right after "Do it".
+    if "background" in wt:
+        body = wt["background"] + body
+    if "in-the-reference-workspace" in wt:
+        ws = wt["in-the-reference-workspace"]
+        if not re.sub(r"<h3.*?</h3>|<!--.*?-->|\s", "", ws, flags=re.S):
+            wt["in-the-reference-workspace"] = ws + (
+                "<p><em>The reference run hasn't reached this step yet. Its real workspace, "
+                "commands and output will appear here when it does.</em></p>")
+        anchor = f'<h3 id="{sec_id}-what-you-ll-see"'
+        body = body.replace(anchor, wt["in-the-reference-workspace"] + anchor, 1) if anchor in body \
+            else body + wt["in-the-reference-workspace"]
+    return body
 
 
 def main():
@@ -86,6 +119,7 @@ def main():
     toc, parts = [], []
     for sec_id, label, src in present:
         title, body = render(sec_id, src, anchors)
+        body = merge_walkthrough(sec_id, body, walkthrough_for(sec_id, src, anchors))
         is_step = sec_id.startswith("step-")
         num = sec_id[5:] if is_step else ""
         label = label or names.get(src, title)
@@ -201,6 +235,9 @@ li > ul,li > ol{margin-bottom:4px}
 pre{background:var(--pre);color:var(--pre-ink);border-radius:var(--radius);padding:16px 18px;overflow-x:auto;font-family:var(--font-mono);font-size:.8rem;line-height:1.6;margin:12px 0;position:relative}
 code{font-family:var(--font-mono);font-size:.85em;background:var(--code-bg);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
 pre code{background:none;padding:0;overflow-wrap:normal;color:inherit}
+pre{max-height:36em;overflow-y:auto}
+h3.wt{color:var(--accent)}
+h4{scroll-margin-top:12px}
 blockquote{border-left:3px solid var(--accent);background:var(--tint);padding:10px 16px;margin:12px 0;color:var(--ink-soft);border-radius:0 8px 8px 0}
 blockquote p:last-child{margin-bottom:0}
 .card > blockquote:first-child{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.02em;border-left-color:var(--t5)}
@@ -231,7 +268,8 @@ footer{color:var(--ink-soft);font-size:.8rem;border-top:1px solid var(--line);pa
   <p>One Prior Auth feature (urgent requests get a 72-hour decision clock) taken through AWS AI-DLC v2 across
   <code>prior-auth-api</code>, <code>prior-auth-web</code> and a new <code>prior-auth-notify</code>. This page is the whole
   kit in one file: the ten step cards, the answer sheet for playing the room, the learning helpers, and what the reference
-  run produced. The <a href="../multi-repo-feature.html">runbook</a> describes the feature; this guide is how you do it.</p>
+  run produced. Each step shows what the workspace, the commands and the engine really looked like, quoted from a real run,
+  so you can follow it without the <a href="../multi-repo-feature.html">runbook</a> open beside you.</p>
   <div class="facts">
     <div class="fact"><b>10</b><span>step cards</span></div>
     <div class="fact"><b>3</b><span>repos, 1 hub</span></div>

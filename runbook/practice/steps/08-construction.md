@@ -197,7 +197,8 @@ U1 went on to commit, verify and merge.
 ## Under the hood
 
 - **Plan approval is enforced by a hook, not by goodwill.** AI-DLC's
-  `plan-approval-guard` (PreToolUse) blocks code edits in the unit's repo until the plan
+  plan-approval guard (`.claude\hooks\aidlc-plan-approval-guard.ts`, run by the
+  `guard-tool-call` PreToolUse hook) blocks code edits in the unit's repo until the plan
   gate is approved. It is the one switch only a human can turn off.
 - **The design lives in the hub, the code in the repo.** Design artifacts go to
   `construction/<unit>/<stage>/`. Code goes to the sibling repo, and each git operation is

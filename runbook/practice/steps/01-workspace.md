@@ -139,9 +139,13 @@ Open these and look; nothing here is magic.
   **never** commits application code; each sibling has its own `.git`.
 - `aidlc\spaces\default\memory\`, which holds `org.md`, `team.md`, `project.md` and `phases\`.
   This is the **method**, loaded into every stage of every intent.
-- `.claude\settings.json`, AI-DLC's hooks:
-  - `plan-approval-guard`, `state-transition-guard` and `write-audit-log`;
-  - a `Stop` hook that keeps the workflow moving;
+- `.claude\settings.json`, AI-DLC's hooks. Each one calls `aidlc engine hook <name>`:
+  - one PreToolUse hook, `guard-tool-call`, in front of every read, edit, shell and agent
+    call. It runs the guards whose scripts you'll find in `.claude\hooks\`:
+    `aidlc-plan-approval-guard.ts`, `aidlc-state-transition-guard.ts`,
+    `aidlc-review-freeze.ts` and `aidlc-reviewer-scope.ts`;
+  - PostToolUse hooks such as `write-audit-log` and `run-sensors` after every write;
+  - a `Stop` hook, `continue-workflow`, that keeps the workflow moving;
   - the status line.
   You don't write these; you learn what they do.
 - `.claude\CLAUDE.md` starts with `@.claude/rules/aidlc.md`. That one line is how the
