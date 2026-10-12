@@ -192,6 +192,51 @@ line endings". It also said it would show the `git diff` and stop if anything ot
 the new block had changed. The api lead pasted it by hand (25 insertions, 0 deletions), and
 U1 went on to commit, verify and merge.
 
+### U2 notify-service (greenfield)
+
+**The engine asked for changes to its own plan.** Before the plan gate, the engine ran the
+kit's `repo-plan-reviewer`. It found no broken rule, but a list of should-fix items: wrong
+step numbers in the ledger mapping, three missing tests, and two tests that wouldn't work
+as written. The engine owned them and recommended against approval:
+
+> It found these should-fix items, all my errors: [...]
+> I recommend **Request Changes**. I'd apply items 1–5 as listed and take your rulings on
+> P-1, P-2, P-3 and P-4.
+
+The room sent it back with four rulings, and approved revision 2.
+
+**The guard held for the decision log a second time.** U2's plan appends five decisions,
+D-002 to D-006, to prior-auth-notify's `docs/decisions.md`. This time the engine planned
+for the headless guard from the start: it drafted the entries into a pending file and made
+"the notify lead pastes them by hand" a gate question (P-3). Claude Code's own safety check
+also refused when an assistant outside the engine tried to write the entries. The paste
+went ahead only once the human said so. The diff: 130 insertions, 0 deletions.
+
+**A budget missed, measured instead of relaxed.** Notify has a 10-second budget per run.
+The first build missed it by a wide margin. The ruling was that the budget isn't relaxed
+before measured numbers exist. The engine timed two alternative designs, and a combination,
+as throw-away spikes, and wrote each result down as soon as it had it:
+
+> None of B, C or B+C meets 10 s. [...] Every number below was measured; none is
+> estimated. The budget is unchanged and Steps 17–20 haven't started.
+
+```
+| Design                | N-02 run 1 / run 2  | N-03 run 1 / run 2  | Budget | Behaviour tests |
+| Committed (`6c6016d`) | 53,369 / 58,037 ms  | 39,140 / 31,031 ms  | ✗      | 211/211         |
+| **C**                 | **30,276 / 30,289 ms** | **15,184 / 15,134 ms** | ✗ | 211/211         |
+| B                     | 67,239 / 62,763 ms  | 43,755 / 29,418 ms  | ✗      | 208/211         |
+| B+C                   | 37,908 / 38,344 ms  | 17,807 / 18,122 ms  | ✗      | 208/211         |
+```
+
+Its reading of the numbers:
+
+> **Flushing each outbox entry sets the floor.** N-02 writes 4,000 entries; at about 6.5 ms
+> each, that is roughly 26 s on its own (arithmetic from the per-write cost, not a
+> measurement).
+
+That's a design trade-off between durability and speed. The engine stops and gives it to
+the room, with numbers, rather than choosing.
+
 <!-- RUN-QUOTES:08-CODE -->
 
 ## Under the hood
