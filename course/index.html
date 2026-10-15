@@ -8317,6 +8317,282 @@ add 'aidlc/spaces/default/intents/intents.json'</code></pre>
 </section>
 `
 },
+{
+  id: "M37",
+  track: 8,
+  title: "Scopes, Depth and the Composer",
+  minutes: 25,
+  audience: "practitioner",
+  body: `
+<p class="hook">A developer on the portal team looks at the parked re-score intent and its 33-stage plan and proposes starting over as <code>bugfix</code>: "It's one function that re-runs the scorer. Nine stages, not thirty-three." The tech lead runs <code>/aidlc --status</code> and finds a different problem: <code>Guard Policy: off (from scope feature)</code>. The work that touches the 0.85 line is running with the engine's change checks lowered, because that's what <code>feature</code> ships with. Nobody chose it. The engine took it from the scope, and the scope was one word typed in M36. Whether the plan should be smaller or bigger is the second question. The first is who decides how careful this work has to be, and where that decision is written down.</p>
+
+<div class="callout"><b>Verified against aidlc v2.11.0</b> (Claude Code 2.1.300) on 2026-10-15. Every engine excerpt comes from one real run in the reference hub, resuming the intent M36 parked. The team's replies were typed by the course author acting as the portal team. Codex wasn't run for this edition; the settings it reads are the same files.</div>
+
+<h2>Scope picks the stages; depth picks the detail</h2>
+<p>A <strong>scope</strong> is a file in <code>.claude/scopes/</code> that marks each of the 33 stages EXECUTE or SKIP. Eleven ship with the engine, and it prints them all:</p>
+<pre><code>aidlc engine gen scope-table
+| Scope          | Depth         | TestStrategy | EXECUTE / Total |
+| bugfix         | Minimal       | (default)    | 9 / 33          |
+| classic        | Standard      | (default)    | 18 / 33         |
+| enterprise     | Comprehensive | (default)    | 33 / 33         |
+| express        | Minimal       | (default)    | 10 / 33         |
+| feature        | Standard      | (default)    | 33 / 33         |
+| infra          | Standard      | (default)    | 13 / 33         |
+| mvp            | Standard      | (default)    | 23 / 33         |
+| poc            | Minimal       | (default)    | 8 / 33          |
+| refactor       | Minimal       | (default)    | 10 / 33         |
+| security-patch | Minimal       | (default)    | 10 / 33         |
+| workshop       | Standard      | Minimal      | 26 / 33         |</code></pre>
+<p><strong>Depth</strong> (Minimal, Standard, Comprehensive) sets how much each stage writes, not whether it runs. <code>feature</code> and <code>enterprise</code> run the same 33 stages. They differ in depth and in one setting the table doesn't show: <code>enterprise</code> is the only scope whose Guard Policy defaults to <code>strict</code>. The other ten default to <code>off</code>.</p>
+<p>The developer's <code>bugfix</code> runs Initialization, Reverse Engineering, Requirements, Code Generation, Build and Test, and two deployment stages. It has no Functional Design, which is where the rules for the threshold path would be pinned down before any code changes.</p>
+<p>Each scope also carries the settings that <code>--status</code> lists with their source: sensors, learnings, summary confirmation, plan approval and collaborators, each on or off, plus the review mode. Any of them can be changed for one intent, and the agent never lowers one on its own: a person has to ask.</p>
+<p>M10 taught rigor as a dial a human sets. A scope is AWS's preset position for that dial, and depth is a second knob. Neither one is the dial's regulatory input. That's Guard Policy, in section 3.</p>
+
+<h2>The composer proposes; a person approves</h2>
+<p><code>/aidlc compose "&lt;task&gt;"</code> sends the plan to a composer agent. It scans the workspace without changing it and scores five things: intent ambiguity, structural uncertainty, verification entropy, risk and unresolved assumptions. Then it proposes a grid with a reason for every SKIP. A validator checks the grid before you see it. In the reference run the composer's first grid failed that check (Approval Handoff needed Scope Definition's output), and the composer put the stage back.</p>
+<p>Asked whether the re-score plan was the right size, it answered: "No, the plan isn't the right size. It has too many stages overall and puts too few of them where the risk is." It scored risk 0.80 (HIGH) and sized the change Standard at 42/100. It proposed skipping 16 stages, mostly launch and operations work. It kept Reverse Engineering and Functional Design although its own first screen had marked them SKIP, "because the risk is high." It also suggested raising Guard Policy to strict.</p>
+<p>Then it stopped at a gate: <strong>Approve</strong>, <strong>Edit the plan</strong>, or <strong>Reject</strong>. The team asked for the reasons, then edited: keep User Stories and Delivery Planning. The composer revalidated (19 run, 14 skip) and the team approved. On a running intent the composer can only skip or add stages that haven't started. Market Research was already in progress, so it stayed. Scope and depth stay as they were.</p>
+<p>The audit records that answer differently from a stage gate. There's no <code>GATE_APPROVED</code>: a <code>HUMAN_TURN</code> is followed by <code>RECOMPOSED</code>, which lists the 14 skipped stages. For a new task, a custom plan's gate adds "Approve and save as scope", which runs <code>aidlc engine scope save</code> so the shape can be used again. The engine sums up the arrangement in one line: "The composer proposes; the human decides; the deterministic validator guards."</p>
+
+<aside class="analogy">
+<p>Ravi asks the site office to schedule a deck off the lake cottage. By morning it has proposed the gazebo path: no structural drawings, one walkthrough at the end, and a short reason for every step it left out. The reasons are good ones. Meera reads the job sheet and stops at one line: the deck bolts onto the cottage's old load-bearing wall. She crosses out "gazebo path" and writes "full permits". Then she pins a note in the build book: anything that touches a load-bearing wall takes the full route, whoever asks. The office reschedules without argument. It sizes jobs well. Which size a job gets stays with the owners.</p>
+<span class="maps-to">maps to → <b>the gazebo path</b> = a small scope (<code>bugfix</code>, <code>express</code>) · <b>full permits</b> = a full plan with Guard Policy strict · <b>the job sheet</b> = the composer's proposal and its gate · <b>the note in the build book</b> = <code>strict</code> under <code>## Guard Policy</code> in <code>memory/project.md</code> · <b>whoever asks</b> = it holds against any one person's chat request</span>
+</aside>
+
+<figure>
+<svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart of the eleven stock scopes by stages run out of 33: enterprise 33 and feature 33 (same stages, different depth and Guard Policy), workshop 26, mvp 23, classic 18, infra 13, express, refactor and security-patch 10, bugfix 9, poc 8. Only enterprise defaults to Guard Policy strict. Below, the running intent after the composer: 19 stages.">
+  <g font-family="JetBrains Mono, monospace">
+    <text x="16" y="24" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">SCOPE</text>
+    <text x="160" y="24" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">STAGES THAT RUN, OF 33</text>
+    <text x="600" y="24" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">DEPTH · GUARD DEFAULT</text>
+    <line x1="160" y1="32" x2="160" y2="318" stroke="var(--ink-soft)" stroke-width="1"/>
+    <line x1="560" y1="32" x2="560" y2="318" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="2 3"/>
+
+    <text x="16" y="50" font-size="10" font-weight="600" fill="var(--ink)">enterprise</text>
+    <rect x="160" y="39" width="400" height="14" rx="3" fill="none" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="170" y="50" font-size="9" fill="var(--ink)">33</text>
+    <text x="600" y="50" font-size="9.5" font-weight="600" fill="var(--t8)">Comprehensive · strict</text>
+    <text x="16" y="76" font-size="10" font-weight="600" fill="var(--ink)">feature</text>
+    <rect x="160" y="65" width="400" height="14" rx="3" fill="none" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="170" y="76" font-size="9" fill="var(--ink)">33 · the same stages as enterprise; depth and Guard Policy differ</text>
+    <text x="600" y="76" font-size="9.5" fill="var(--ink)">Standard · off</text>
+    <path d="M566,42 L572,42 L572,76 L566,76" fill="none" stroke="var(--t8)" stroke-width="1.5"/>
+    <text x="16" y="102" font-size="10" fill="var(--ink)">workshop</text>
+    <rect x="160" y="91" width="315" height="14" rx="3" fill="var(--ink-soft)" opacity="0.35"/>
+    <text x="481" y="102" font-size="9" fill="var(--ink-soft)">26</text>
+    <text x="600" y="102" font-size="9.5" fill="var(--ink-soft)">Standard · off</text>
+    <text x="16" y="128" font-size="10" fill="var(--ink)">mvp</text>
+    <rect x="160" y="117" width="279" height="14" rx="3" fill="var(--ink-soft)" opacity="0.35"/>
+    <text x="445" y="128" font-size="9" fill="var(--ink-soft)">23</text>
+    <text x="600" y="128" font-size="9.5" fill="var(--ink-soft)">Standard · off</text>
+    <text x="16" y="154" font-size="10" fill="var(--ink)">classic</text>
+    <rect x="160" y="143" width="218" height="14" rx="3" fill="var(--ink-soft)" opacity="0.35"/>
+    <text x="384" y="154" font-size="9" fill="var(--ink-soft)">18</text>
+    <text x="600" y="154" font-size="9.5" fill="var(--ink-soft)">Standard · off</text>
+    <text x="16" y="180" font-size="10" fill="var(--ink)">infra</text>
+    <rect x="160" y="169" width="158" height="14" rx="3" fill="var(--ink-soft)" opacity="0.35"/>
+    <text x="324" y="180" font-size="9" fill="var(--ink-soft)">13</text>
+    <text x="600" y="180" font-size="9.5" fill="var(--ink-soft)">Standard · off</text>
+    <text x="16" y="206" font-size="10" fill="var(--ink)">express</text>
+    <rect x="160" y="195" width="121" height="14" rx="3" fill="var(--ink-soft)" opacity="0.35"/>
+    <text x="287" y="206" font-size="9" fill="var(--ink-soft)">10</text>
+    <text x="600" y="206" font-size="9.5" fill="var(--ink-soft)">Minimal · off</text>
+    <text x="16" y="232" font-size="10" fill="var(--ink)">refactor</text>
+    <rect x="160" y="221" width="121" height="14" rx="3" fill="var(--ink-soft)" opacity="0.35"/>
+    <text x="287" y="232" font-size="9" fill="var(--ink-soft)">10</text>
+    <text x="600" y="232" font-size="9.5" fill="var(--ink-soft)">Minimal · off</text>
+    <text x="16" y="258" font-size="10" fill="var(--ink)">security-patch</text>
+    <rect x="160" y="247" width="121" height="14" rx="3" fill="var(--ink-soft)" opacity="0.35"/>
+    <text x="287" y="258" font-size="9" fill="var(--ink-soft)">10</text>
+    <text x="600" y="258" font-size="9.5" fill="var(--ink-soft)">Minimal · off</text>
+    <text x="16" y="284" font-size="10" font-weight="600" fill="var(--ink)">bugfix</text>
+    <rect x="160" y="273" width="109" height="14" rx="3" fill="var(--ink-soft)" opacity="0.6"/>
+    <text x="275" y="284" font-size="9" fill="var(--ink)">9 · the developer's proposal: no Functional Design</text>
+    <text x="600" y="284" font-size="9.5" fill="var(--ink-soft)">Minimal · off</text>
+    <text x="16" y="310" font-size="10" fill="var(--ink)">poc</text>
+    <rect x="160" y="299" width="97" height="14" rx="3" fill="var(--ink-soft)" opacity="0.35"/>
+    <text x="263" y="310" font-size="9" fill="var(--ink-soft)">8</text>
+    <text x="600" y="310" font-size="9.5" fill="var(--ink-soft)">Minimal · off</text>
+
+
+    <line x1="16" y1="326" x2="744" y2="326" stroke="var(--ink-soft)" stroke-width="1"/>
+    <text x="16" y="348" font-size="10" font-weight="600" fill="var(--t8)">running intent</text>
+    <rect x="160" y="337" width="242" height="14" rx="3" fill="none" stroke="var(--t8)" stroke-width="2" stroke-dasharray="5 3"/>
+    <text x="408" y="348" font-size="9" fill="var(--ink)">19 · feature, after the composer and the team's edit</text>
+    <text x="16" y="372" font-size="8.6" fill="var(--ink-soft)">Real: aidlc engine gen scope-table and aidlc engine graph scope bugfix, reference hub, 2026-10-15.</text>
+  </g>
+</svg>
+<figcaption>fig 37.1 — scope picks the stages, depth picks the detail; only one scope ships with Guard Policy strict</figcaption>
+</figure>
+
+<h2>Guard Policy: who can lower the checks</h2>
+<p>Guard Policy decides what happens when something a person already approved changes afterwards. The engine defines the three modes in its source. Under <code>strict</code>, a changed input "is asked about once, naming what changed". Under <code>relaxed</code>, it is recorded, told to the person in one line, and the work continues; plan approval and review freeze stand aside. <code>off</code> also lowers state transition and reviewer read scope. No mode "removes a gate, alters a reviewer's verdict, deletes evidence, or lets an agent answer for the human."</p>
+<p>The engine's instructions to the agent add a twist. When a person asks in their own words to turn a check off, the agent does it in the same turn and must "never refuse". So on any scope but <code>enterprise</code>, the threshold path is one sentence in chat away from running with its checks lowered. That's a design choice, not a bug: the person holds the key.</p>
+<p>The lock is a line in team memory. Any memory layer that declares <code>strict</code> "wins over both" the scope and the intent "and cannot be flipped from chat". The team added this to <code>project.md</code>:</p>
+<pre><code>## Guard Policy
+- **Mode**: strict
+- Why: this project owns the 0.85 auto-approve path and the eligibility rule; a changed input there reopens approval, whoever asks (affirmed 2026-10-15)</code></pre>
+<p><code>--status</code> changed at once to <code>Guard Policy: strict (from project.md)</code>. Then someone asked the agent to "turn the guards off for this piece of work". The agent tried, as its instructions say, and the engine refused: "Your team set Guard Policy to strict in …project.md (section: Guard Policy), so it stays strict for everyone on this repo." The audit logged the refusal as <code>ERROR_LOGGED</code>. This is M17's lock, built into the engine: a rule the team agrees once, which one prompt can't undo. Read the policy from <code>--status</code>. The state file still says <code>off (from scope feature)</code>, because memory wins only when the policy is resolved.</p>
+
+<figure>
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Where Guard Policy comes from: the scope default (feature: off), the intent's own line in aidlc-state.md (off), any memory layer that says strict (project.md: strict, which wins), and one person in chat asking to turn the guards off, which is refused and logged as ERROR_LOGGED. Status shows strict from project.md. Beside it, what each mode does.">
+  <defs>
+    <marker id="m37arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace">
+    <rect x="16" y="20" width="330" height="44" rx="8" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="28" y="38" font-size="9" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">SCOPE DEFAULT</text>
+    <text x="28" y="55" font-size="9.5" fill="var(--ink)">feature: off</text>
+    <line x1="181" y1="64" x2="181" y2="80" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m37arr)"/>
+    <rect x="16" y="84" width="330" height="44" rx="8" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="28" y="102" font-size="9" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">THE INTENT'S LINE · aidlc-state.md</text>
+    <text x="28" y="119" font-size="9.5" fill="var(--ink)">off (from scope feature)</text>
+    <line x1="181" y1="128" x2="181" y2="144" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m37arr)"/>
+    <rect x="16" y="148" width="330" height="52" rx="8" fill="none" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="28" y="166" font-size="9" font-weight="600" letter-spacing="1" fill="var(--t8)">MEMORY · any layer saying strict wins</text>
+    <text x="28" y="186" font-size="9.5" fill="var(--ink)">project.md  - **Mode**: strict</text>
+    <line x1="181" y1="200" x2="181" y2="216" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m37arr)"/>
+    <rect x="16" y="220" width="330" height="52" rx="8" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="28" y="238" font-size="9" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">ONE PERSON, IN CHAT</text>
+    <text x="28" y="258" font-size="9.5" fill="var(--ink)">"turn the guards off" → refused</text>
+    <text x="16" y="296" font-size="9.5" font-weight="600" fill="var(--t8)">--status: Guard Policy: strict (from project.md)</text>
+    <text x="16" y="314" font-size="8.6" fill="var(--ink-soft)">the refusal is logged as ERROR_LOGGED</text>
+
+    <text x="384" y="38" font-size="9" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">WHAT EACH MODE DOES</text>
+    <line x1="384" y1="46" x2="744" y2="46" stroke="var(--ink-soft)" stroke-width="1"/>
+    <text x="384" y="70" font-size="10" font-weight="600" fill="var(--t8)">strict</text>
+    <text x="460" y="70" font-size="9" fill="var(--ink)">a changed input is asked about again</text>
+    <text x="460" y="86" font-size="9" fill="var(--ink-soft)">every fence holds</text>
+    <text x="384" y="118" font-size="10" font-weight="600" fill="var(--ink)">relaxed</text>
+    <text x="460" y="118" font-size="9" fill="var(--ink)">recorded, told in one line, work continues</text>
+    <text x="460" y="134" font-size="9" fill="var(--ink-soft)">plan approval, review freeze stand aside</text>
+    <text x="384" y="166" font-size="10" font-weight="600" fill="var(--ink)">off</text>
+    <text x="460" y="166" font-size="9" fill="var(--ink)">as relaxed, and also lowers</text>
+    <text x="460" y="182" font-size="9" fill="var(--ink-soft)">state transition, reviewer read scope</text>
+    <line x1="384" y1="200" x2="744" y2="200" stroke="var(--ink-soft)" stroke-width="1"/>
+    <text x="384" y="222" font-size="9" fill="var(--ink)">In every mode: human presence stays up.</text>
+    <text x="384" y="240" font-size="9" fill="var(--ink)">No mode removes a gate or lets an agent</text>
+    <text x="384" y="256" font-size="9" fill="var(--ink)">answer for the person.</text>
+  </g>
+</svg>
+<figcaption>fig 37.2 — the scope suggests; the team's memory decides; one chat line can't undo it</figcaption>
+</figure>
+
+<table class="bridge">
+  <thead><tr><th>M10's dial</th><th>On the v2 engine</th><th>Note</th></tr></thead>
+  <tbody>
+    <tr><td>Blast radius, regulatory exposure</td><td>Guard Policy</td><td>The threshold path is regulatory: strict, whatever the size</td></tr>
+    <tr><td>Reversibility</td><td>Plan approval, review freeze</td><td>The checks <code>relaxed</code> and <code>off</code> lower first</td></tr>
+    <tr><td>Novelty</td><td>Composer: intent ambiguity, structural uncertainty</td><td>Scored, and shown when you ask</td></tr>
+    <tr><td>Size</td><td>Scope: stages run, of 33</td><td><code>bugfix</code> 9 … <code>feature</code> 33</td></tr>
+    <tr><td>"A human sets the dial"</td><td>The composer's gate</td><td>Approve / Edit the plan / Reject</td></tr>
+    <tr><td>"The skip decision is logged"</td><td><code>RECOMPOSED</code> in the audit</td><td>Lists every stage skipped</td></tr>
+    <tr><td>M17's lock</td><td><code>## Guard Policy</code> strict in <code>memory/</code></td><td>Holds against a chat request</td></tr>
+  </tbody>
+</table>
+
+<section class="lab">
+  <div class="lab-head">Lab M37 · 25 min</div>
+  <h2>Size the re-score, then lock its guard</h2>
+
+  <div class="path">
+    <div class="path-label">Path A — Understand It (no tooling)</div>
+    <p>Use the scope table and fig 37.2 above, and four Prior Auth changes, three of them from M10:</p>
+<pre><code>T-101  Fix "elligible" → "eligible" in an outreach log message.
+T-102  Set AUTO_APPROVE_THRESHOLD to 0.82 for imaging requests.
+T-103  Implement the ClinicalCriteria scoring engine.
+RI     The running intent: re-score pending AuthRequests when ClinicalCriteria change.</code></pre>
+    <p><strong>Check yourself:</strong> (1) For each change, pick a scope, a depth and a Guard Policy, and name the M10 input that decided it. (2) T-102 is one line of code. Why isn't <code>bugfix</code> with Guard Policy <code>off</code> enough? (3) Why does the running intent keep <code>feature</code> rather than move to <code>enterprise</code>? (4) Why is a <code>strict</code> line in <code>memory/project.md</code> stronger than writing "please keep the guards on" in <code>CLAUDE.md</code>?</p>
+    <details><summary>Answers</summary>
+      <p>(1) T-101: <code>bugfix</code>, Minimal, off; small, reversible, no regulatory exposure. T-102: a small scope is fine, but Guard Policy strict, and a medical-director entry in <code>decisions.md</code> before any code; regulatory exposure decides it. T-103: <code>feature</code> at Standard (or <code>enterprise</code> if the team wants Comprehensive), strict; novelty and size. RI: <code>feature</code>, recomposed by the team, strict. (2) Size and risk are different knobs. A scope sets how many stages run, and Guard Policy sets whether a changed input reopens approval. A one-line threshold change is a clinical policy change. (3) What sets the threshold path apart is the guard, not the depth. <code>enterprise</code> would add Comprehensive depth to every stage; strict memory gives the guard on its own. (4) The engine's own instructions tell the agent to turn a check off whenever a person asks, and never to refuse. Text in <code>CLAUDE.md</code> is advice. Memory <code>strict</code> makes the engine's setter refuse, and the refusal is logged.</p>
+    </details>
+  </div>
+
+  <div class="path">
+    <div class="path-label">Path B — Build It with AI (both engines)</div>
+    <p>One unit of work: <strong>the running intent's plan reviewed by the composer, and its Guard Policy locked to strict in team memory, committed.</strong> Start from your M36 hub with the intent parked. Open the engine interactively at the hub root, because the composer's gate needs a person.</p>
+    <div class="engine-tabs">
+      <div class="engine-tab-btns" role="tablist">
+        <button class="active" data-engine="cc">Claude Code</button>
+        <button data-engine="cx">Codex CLI</button>
+      </div>
+      <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+# 1. read the current settings
+/aidlc --status
+# 2. ask the composer whether the plan fits
+/aidlc compose "is this plan the right size for a change on the 0.85 threshold path?"
+# 3. ask for the reasons before you answer, then decide as the team:
+&gt; Before we decide: show us why each stage is in or out, and the scores behind the sizing.
+&gt; &lt;Approve, or Edit the plan in your own words, or Reject&gt;</code></pre>
+        <p>Expected, from the reference run (excerpts):</p>
+<pre><code># 1.
+Scope:          feature
+Depth:          Standard (from scope feature)
+Guard Policy:   off (from scope feature)
+Plan Approval: on (from scope feature)
+Completion:     4/33 stages (12%)
+
+# 2.
+No, the plan isn't the right size. It has too many stages overall and puts too few of
+them where the risk is. [...] I suggest skipping 16 pending stages and adding none.
+- Plan: feature, 14 stages, 14 approval questions
+- Guard Policy: off. A recompose doesn't change this. Because this work touches the
+  clinical auto-approve path, you may want it raised to strict [...]
+
+# 3. (scores, then the team's edit: keep User Stories and Delivery Planning; approve)
+| Risk / Blast Radius | R | 0.80 | HIGH |
+| Composite ARS (advisory) | - | 42 / 100 | Standard |
+Recomposed: 14 skipped (feasibility, team-formation, rough-mockups, [...])</code></pre>
+      </div>
+      <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+# 1. read the current settings
+$aidlc --status
+# 2. ask the composer whether the plan fits
+$aidlc compose "is this plan the right size for a change on the 0.85 threshold path?"
+# 3. ask for the reasons before you answer, then decide as the team:
+&gt; Before we decide: show us why each stage is in or out, and the scores behind the sizing.
+&gt; &lt;Approve, or Edit the plan in your own words, or Reject&gt;</code></pre>
+        <p>Codex wasn't run for this edition, so there's no expected output to compare against. The composer's scores and skips will differ from run to run. What must match is the shape: a proposal with a reason for every skip, a gate that waits for you, and a <code>RECOMPOSED</code> event only if you approve.</p>
+      </div>
+    </div>
+    <p><strong>4. Lock the guard.</strong> The same for both engines. Open <code>aidlc\\spaces\\default\\memory\\project.md</code> (<code>notepad</code> is fine) and add two lines under <code>## Guard Policy</code>, below the comment:</p>
+<pre><code>- **Mode**: strict
+- Why: this project owns the 0.85 auto-approve path and the eligibility rule; a changed input there reopens approval, whoever asks</code></pre>
+    <p><strong>5. Check it, then try to undo it.</strong> In the engine, run <code>/aidlc --status</code> (<code>$aidlc --status</code> in Codex), then type the request a hurried teammate would:</p>
+<pre><code>&gt; Turn the guards off for this piece of work. We want to move faster on the re-score.</code></pre>
+<pre><code>Guard Policy:   strict (from project.md)
+Completion:     4/19 stages (21%)
+
+I couldn't turn the guards off: your team set Guard Policy to strict in
+\`aidlc/spaces/default/memory/project.md\` (the Guard Policy section), and that applies to
+everyone working in this repo. Changing that line is what changes it. [...] Nothing has
+changed, and the work is still paused at Market Research.</code></pre>
+    <p><strong>6. Commit.</strong></p>
+<pre><code>git status --short
+git add aidlc; git commit -m "memory: Guard Policy strict for the threshold path; plan recomposed"</code></pre>
+<pre><code> M aidlc/spaces/default/intents/261012-criteria-rescore/aidlc-state.md
+ M aidlc/spaces/default/intents/261012-criteria-rescore/audit/varalaptop-9cf4488a9ce5.md
+ M aidlc/spaces/default/memory/project.md</code></pre>
+    <p><strong>Done when</strong> <code>--status</code> shows <code>Guard Policy: strict (from project.md)</code>, the request to lower it was refused, the composer's proposal was answered at its gate (approved plans show as <code>RECOMPOSED</code> in the audit), and the hub commit holds the memory change. The guard lives in memory, not in either engine, so it holds whichever tab you followed. Leave the intent parked: M38 resumes it into Inception.</p>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>Scope picks which of the 33 stages run; depth picks how much each one writes. <code>feature</code> and <code>enterprise</code> run the same 33.</li>
+    <li>The composer proposes a plan with a reason for every skip and stops at a gate. On a running intent it can only change stages that haven't started, and an approval lands as <code>RECOMPOSED</code>.</li>
+    <li>Guard Policy decides whether a changed input reopens approval. Ten of eleven scopes ship with it <code>off</code>, and the agent lowers a check whenever one person asks.</li>
+    <li><code>strict</code> under <code>## Guard Policy</code> in <code>memory/project.md</code> holds for every intent, whatever anyone asks in chat. That's where the threshold path's rule belongs.</li>
+  </ul>
+  <span class="next">Next → M38 · Inception on the Engine</span>
+</section>
+`
+},
 /* {{MODULE_INJECTION_POINT}} */
 ];
 
