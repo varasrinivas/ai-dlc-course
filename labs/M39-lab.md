@@ -5,8 +5,8 @@
 > Domain: Prior Auth Portal (`AuthRequest`, `ClinicalCriteria`, `AuthStatus`,
 > `AUTO_APPROVE_THRESHOLD`; repos `prior-auth-api` and `prior-auth-web`)
 > Verified against aidlc v2.11.0 (Claude Code 2.1.301) on 2026-10-17. Every excerpt is from one
-> real run in the reference hub (`D:\aidlc-track8\prior-auth-workspace`, mid-run record commit
-> `fc263ae`), resuming the intent M38 parked. Every answer, approval and hand edit was typed by the
+> real run in the reference hub (`D:\aidlc-track8\prior-auth-workspace`, record commit
+> `15c0d0b`), resuming the intent M38 parked. Every answer, approval and hand edit was typed by the
 > course author acting as the portal team. The run was captured headless, so the author allowed
 > exactly three command patterns in `prior-auth-api` that an interactive session asks about one by
 > one. Codex wasn't run for this edition; it reads the same stage files.
