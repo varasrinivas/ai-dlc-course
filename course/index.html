@@ -501,7 +501,7 @@ const MODS = [
   minutes: 15,
   audience: "both",
   body: `
-<p class="hook">AI-DLC is AWS's methodology for building software with AI. Strip the vocabulary away and it is one sentence: <strong>you stop being the person who types the code, and become the person the code has to get past.</strong> This prelude explains that the way you'd explain it to a teammate, hands you one cycle to run, and shows you the whole machine — so the 33 modules ahead are naming things you've already touched. Already run a bolt? Skip to M00; everything here is re-taught properly, track by track.</p>
+<p class="hook">AI-DLC is AWS's methodology for building software with AI. Strip the vocabulary away and it is one sentence: <strong>you stop being the person who types the code, and become the person the code has to get past.</strong> This prelude explains that the way you'd explain it to a teammate, hands you one cycle to run, and shows you the whole machine — so the 41 modules ahead are naming things you've already touched. Already run a bolt? Skip to M00; everything here is re-taught properly, track by track.</p>
 
 <section class="block" style="padding-top:0">
     <h2>You already know this workflow</h2>
@@ -8993,7 +8993,7 @@ git add aidlc; git commit -m "intent: Inception approved, parked before Construc
 
 <h2>One unit through Construction</h2>
 <p>Resumed, the engine didn't spread out across five units. With checkpoints on, it runs "the first DAG Unit through every applicable per-unit stage, including Code Generation, before later Units". U1, the API walking skeleton, went through 3.1 Functional Design, 3.2 NFR Requirements and 3.5 Code Generation; M37's recompose had dropped 3.3 and 3.4. Each stage wrote under <code>construction/u1-api-skeleton/</code>: its questions file, its documents (<code>functional-spec.md</code>, <code>rules.md</code>, five <code>*-requirements.md</code> files, <code>tech-stack-decisions.md</code>), a <code>reviews/</code> folder and <code>traceability.json</code>.</p>
-<p>First, M38's two blockers. The product owner edited the approved requirements and stories by hand and recorded the scope sign-off. The engine raised no change notice, even under Guard Policy strict. The agent found the edits with <code>git diff</code> and made them Functional Design's first questions: "Q0. Does OQ7 still block Construction?"</p>
+<p>First, M38's two blockers. The product owner edited the approved requirements and stories by hand and recorded the scope sign-off. The resumed session raised no change notice, even under Guard Policy strict. (A later fresh session did flag them as drift; see M40.) The agent found the edits with <code>git diff</code> and made them Functional Design's first questions: "Q0. Does OQ7 still block Construction?"</p>
 <p>Code Generation keeps a fixed order: plan, Plan Approval, generation, summary files, review. The first plan was test-after, the organisation's default; <code>prior-auth-api/AGENTS.md</code> says tests first. The team sent it back and approved the rewrite: about 79 tests, "each written and shown failing before its code", and "<code>src/determination/</code> and <code>src/domain/clinical-criteria.ts</code> are not touched."</p>
 <p>The approval is bound to the files. Mid-build the agent edited the approved <code>unit-test-instructions.md</code> to note its commands, and every code write stopped: "the plan, test instructions, or Testing Contract changed since the person approved them". It restored the file and wrote the commands into <code>code-summary.md</code>. The stage file's rule: "Never rewrite an approved plan or its test instructions."</p>
 <p>The code landed in the hub's <code>prior-auth-api</code> clone, uncommitted on <code>main</code>. The engine made no bolt branch; the lab's last step does.</p>
@@ -9357,6 +9357,302 @@ git -C prior-auth-api add -A; git -C prior-auth-api commit -m "B1: U1 API walkin
     <li>"Continue automatically" waives ordinary checkpoints, never plans or failures. On the threshold path the team keeps every checkpoint, and its memory file holds that against a hurried request.</li>
   </ul>
   <span class="next">Next → M40 · Multi-repo Intents and Teams on the Engine</span>
+</section>
+`
+},
+{
+  id: "M40",
+  track: 8,
+  title: "Multi-repo Intents and Teams on the Engine",
+  minutes: 30,
+  audience: "both",
+  body: `
+<p class="hook">The urgent-auth change from the runbook reaches the portal team: urgent requests get a 72-hour determination clock. It touches <code>prior-auth-api</code> (an urgency flag, a due time, urgent requests first in the nurse review queue) and <code>prior-auth-web</code> (a badge and a countdown in <code>AuthQueue</code>). The 0.85 rule doesn't move. The engineering director wants the API team and the web team each to own their part on the engine, with Rally showing progress to the program office. The tech lead opens a second intent in the same hub. The engine records both repos and checks the scans the re-score work already paid for: the web map is current and reused, and the API map is stale, because U1 changed the code, so it's rebuilt. Then the director asks about team ownership. The engine answered that in M38: with both repos beside the workspace, one session builds every bolt. The teams can still own the work, at the checkpoints and in Rally, by hand.</p>
+
+<div class="callout"><b>Verified against aidlc v2.11.0</b> (Claude Code 2.1.301) on 2026-10-18. Every engine excerpt comes from a real run in the reference hub (record commit <code>693c259</code>), a new intent started beside the one M39 parked, plus one line from M38's run. Every answer and approval was typed by the course author acting as the portal team. Codex wasn't run for this edition; it reads the same stage files. New to Track 8? This module stands alone: M35–M39 show the same engine on one change, stage by stage.</div>
+
+<h2>One hub, many repos, many intents</h2>
+<p>The hub is its own git repo (M35). <code>repos.json</code> lists the code repos, <code>aidlc system workspace-sync</code> clones them beside it, and the hub's <code>.gitignore</code> keeps their code out. The hub commits only the record under <code>aidlc/</code>; code is committed in each repo, on its own branch (M39).</p>
+<p>A request that arrives while other work is in progress gets a routing question first: "Is this (1) part of that work - continue it; (2) a separate new piece of work - Yes, set it up alongside the current one as "classic" work without changing it; or (3) a change to how the remaining plan is shaped?" The tech lead's request already said it was new work, so the agent took option 2. It also took the composer's suggested scope without asking. A team that wants that choice should name the scope in its request (M37). <code>classic</code> skips Ideation and starts at Reverse Engineering.</p>
+<p>An intent's repos are fixed when it's created. The engine takes <code>--repos a,b</code>, or else "sibling auto-discovery scans the workspace". The tech lead named none, so both siblings were recorded, in <code>intents/intents.json</code>:</p>
+<pre><code>"slug": "urgent-determination-clo",
+"dirName": "261017-urgent-determination-clo",
+"scope": "classic",
+"repos": [
+  "prior-auth-api",
+  "prior-auth-web"
+],</code></pre>
+<p>v2.11.0 has no command to add a repo later; a repo the intent didn't record means another intent. The two intents share the space's memory: the new one's state reads <code>Guard Policy: strict (from project.md)</code>, M37's lock, and M39's no-autonomy rule now covers it too. To move between them: <code>/aidlc intent criteria-rescore</code>, then <code>/aidlc --resume</code>.</p>
+
+<h2>One scan per repo, shared by every intent</h2>
+<p>Reverse Engineering "runs per repo the intent touches". Its nine files per repo go to <code>aidlc/spaces/default/codekb/&lt;repo&gt;/</code>, at the space level, not inside an intent. So the second intent didn't start blank. Before scanning, the engine ran <code>aidlc engine workspace codekb-scope-diff --repo &lt;repo&gt;</code> for each repo, checking it against the store the re-score work built. For <code>prior-auth-api</code>, then <code>prior-auth-web</code>:</p>
+<pre><code>STALE: the analyzed paths have changed since the store was built (intent: criteria-rescore):
+  - ./
+CURRENT: the analyzed paths are unchanged since the store was built (intent: criteria-rescore, coverage: full):
+  - ./</code></pre>
+<p>The web code hadn't changed. The API had: U1's skeleton from M39, still uncommitted, changed the analysed paths. The verdict is the engine's; what to do about it is a question in the file, with the options "Full rescan" and "Focused scan" for the API, and "Reuse existing knowledge base" for the web. The team rebuilt the API map, since U1 had added storage, intake and an HTTP layer, and reused the web map unchanged.</p>
+<p>The rebuilt map found what the urgent work will run into: the API has no nurse review queue endpoint (<code>GET /v1/auth-requests</code> returns 404), nowhere to record urgency, an intake that rejects unknown fields, and times stored as text that doesn't sort across time-zone offsets. It handed Requirements three questions the code can't settle: when the clock starts, which clock defines "due", and what happens past due.</p>
+<p>This is M12's semantic map, kept as a property of the repo rather than of a feature. Two intents that read the same repo read the same map, and a stale map is caught before design starts.</p>
+
+<aside class="analogy">
+<p>Meera and Ravi's street now has three lots under way, and the same crews move between them. The site office keeps one schedule for the street: which crew is on which lot, which walkthrough is booked where. It doesn't merge the paperwork. Each lot keeps its own build book. The cottage's structural survey is still good, so the new job reads it instead of paying for another; the main house's went stale when the new wing went up, so that one is redone. The North crew's foreman asks to sign off his own lot. The site office books him every walkthrough he wants, but each signature is still Meera's or Ravi's. The firm builds; the owners sign.</p>
+<span class="maps-to">maps to → <b>three lots</b> = the repos one hub holds (two in this run; the runbook adds a third as a worked example) · <b>one schedule for the street</b> = the hub and its intents · <b>its own build book</b> = per-repo <code>codekb/</code>, steering files and decisions · <b>still good / went stale</b> = <code>CURRENT</code> reuse and <code>STALE</code> rescan · <b>sign off his own lot</b> = team ownership, which sibling repos don't allow · <b>the owners sign</b> = every gate stays human</span>
+</aside>
+
+<figure>
+<svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One hub, two repos, two intents. Left, the hub repo prior-auth-workspace: repos.json, a .gitignore that keeps the clones out, and aidlc/spaces/default holding memory/project.md (Guard Policy strict and the Mandated rules), codekb/prior-auth-api (nine files, rebuilt because stale), codekb/prior-auth-web (nine files, reused because current), intents/intents.json (two rows, repos per intent), and the two intent folders: criteria-rescore, feature scope, parked at U2, and urgent-determination-clo, classic scope, parked at Practices Discovery. Right, the sibling clones prior-auth-api and prior-auth-web, each with its own git history, AGENTS.md and docs/decisions.md. Reverse Engineering reads the clones and writes codekb in the hub; code changes go into each clone on its own branch.">
+  <defs>
+    <marker id="m40arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace">
+    <rect x="8" y="14" width="452" height="290" rx="10" fill="none" stroke="var(--t8)" stroke-width="2"/>
+    <text x="20" y="36" font-size="10" font-weight="600" letter-spacing="1" fill="var(--t8)">THE HUB · the record</text>
+    <text x="24" y="60" font-size="9.5" font-weight="600" fill="var(--ink)">prior-auth-workspace/</text>
+    <text x="40" y="82" font-size="9" fill="var(--ink)">repos.json</text>
+    <text x="230" y="82" font-size="8.4" fill="var(--ink-soft)">lists the code repos</text>
+    <text x="40" y="104" font-size="9" fill="var(--ink)">.gitignore</text>
+    <text x="230" y="104" font-size="8.4" fill="var(--ink-soft)">keeps the clones out</text>
+    <text x="40" y="126" font-size="9" font-weight="600" fill="var(--ink)">aidlc/spaces/default/</text>
+    <text x="56" y="148" font-size="9" fill="var(--ink)">memory/project.md</text>
+    <text x="230" y="148" font-size="8.4" fill="var(--ink-soft)">Guard Policy, Mandated</text>
+    <text x="56" y="170" font-size="9" fill="var(--ink)">codekb/prior-auth-api/</text>
+    <text x="230" y="170" font-size="8.4" fill="var(--warn)">9 files · STALE → rebuilt</text>
+    <text x="56" y="192" font-size="9" fill="var(--ink)">codekb/prior-auth-web/</text>
+    <text x="230" y="192" font-size="8.4" fill="var(--ok)">9 files · CURRENT → reused</text>
+    <text x="56" y="214" font-size="9" fill="var(--ink)">intents/intents.json</text>
+    <text x="230" y="214" font-size="8.4" fill="var(--ink-soft)">2 rows · repos each</text>
+    <text x="56" y="236" font-size="9" fill="var(--ink)">intents/…criteria-rescore/</text>
+    <text x="230" y="236" font-size="8.4" fill="var(--ink-soft)">feature · parked at U2</text>
+    <text x="56" y="258" font-size="9" fill="var(--ink)">intents/…urgent-determination-clo/</text>
+    <text x="270" y="280" font-size="8.4" fill="var(--ink-soft)">classic · parked at 2.2</text>
+    <line x1="48" y1="140" x2="48" y2="254" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="2 3"/>
+
+    <rect x="520" y="130" width="224" height="72" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="532" y="150" font-size="9.5" font-weight="600" fill="var(--ink)">prior-auth-api/</text>
+    <text x="532" y="167" font-size="8.4" fill="var(--ink-soft)">own .git · AGENTS.md</text>
+    <text x="532" y="180" font-size="8.4" fill="var(--ink-soft)">docs/decisions.md</text>
+    <text x="532" y="193" font-size="8.4" fill="var(--warn)">U1 code, uncommitted</text>
+
+    <rect x="520" y="222" width="224" height="60" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="532" y="242" font-size="9.5" font-weight="600" fill="var(--ink)">prior-auth-web/</text>
+    <text x="532" y="259" font-size="8.4" fill="var(--ink-soft)">own .git · AGENTS.md</text>
+    <text x="532" y="272" font-size="8.4" fill="var(--ink-soft)">docs/decisions.md</text>
+
+    <text x="520" y="36" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">SIBLINGS · the code</text>
+    <text x="520" y="54" font-size="8.4" fill="var(--ink-soft)">cloned by workspace-sync</text>
+    <text x="520" y="68" font-size="8.4" fill="var(--ink-soft)">one branch per bolt, per repo</text>
+
+    <path d="M520,166 L452,166" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m40arr)"/>
+    <path d="M520,250 L484,250 L484,196 L452,192" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m40arr)"/>
+    <text x="466" y="118" font-size="8.4" fill="var(--ink-soft)">Reverse</text>
+    <text x="466" y="130" font-size="8.4" fill="var(--ink-soft)">Engineering</text>
+
+    <rect x="8" y="318" width="744" height="34" rx="8" fill="none" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="20" y="339" font-size="8.8" fill="var(--ink)">the hub commits only aidlc/ · code is committed in each repo · both intents read both codekb/ folders</text>
+    <text x="8" y="372" font-size="8.6" fill="var(--ink-soft)">Real: reference hub at 693c259, aidlc v2.11.0, 2026-10-18.</text>
+  </g>
+</svg>
+<figcaption>fig 40.1 — the record lives in the hub; the code lives in each repo; the scans are shared</figcaption>
+</figure>
+
+<h2>Teams, and the single-repo limit</h2>
+<p>The engine has a team mode. At Delivery Planning it asks: "How do you want to staff Construction? I can run the work from this session using the execution settings you chose, or each of your teams can own a Unit and approve its work independently." Choosing teams records <code>aidlc engine state set-unit-ownership team</code>. It's valid only with unit-major, and the engine keeps a <code>Unit Progress</code> grid with an owner cell per unit.</p>
+<p>The limit is in the same stage file: "Team ownership requires the workspace root itself to be the source Git repository; intents with recorded sibling repos must remain solo." In a hub, the code is in the siblings, so the question isn't asked at all. M38's run, at Delivery Planning:</p>
+<pre><code>I didn't ask how to staff Construction. Both repos are separate repositories beside the
+workspace, and AI-DLC only allows per-team ownership when the workspace itself is the source
+repository. So this one session builds every Bolt, as the plan already says.</code></pre>
+<p>Two teams can still own their work in a hub. One conductor session runs the engine. Each team approves the plan and the checkpoint for the units in its repo; the engine records the person's words, whoever they are. Contract Design's <code>contract-summary.md</code> (M38) is the coordination point between the repos. Each repo keeps its own <code>AGENTS.md</code> and <code>docs/decisions.md</code>. For runs that really are separate, each team works in a workspace that is its own repo, with the contract between them, which is the runbook's pattern. Either way, the release order across repos is the team's call; the engine doesn't deploy.</p>
+
+<h2>Rally as a mirror, and what stays human</h2>
+<p>AWS ships no Rally or Jira integration. The runbook's mapping is a course convention, badged as one there: the intent is a Rally Feature, each unit a User Story tagged with its repo, each bolt an Iteration, and a gate approval moves ScheduleState. A person makes every one of those moves, after the engine's gate and never before (fig 40.2). The engine never reads Rally, so a card moved to Accepted approves nothing. The audit (M36) stays the record; Rally is the program office's view of it.</p>
+<p>Across Track 8 the engine took over the schedule, the files, the checks and the record. It never took a signature. What stayed human:</p>
+<ul>
+<li>every answer in a questions file, and every gate, in the team's words (M36, M38)</li>
+<li>the scope and its depth (M37)</li>
+<li>each unit's plan, before any code (M39)</li>
+<li>each checkpoint, on a receipt from the team's own command (M39)</li>
+<li>the autonomy grant, and the rule that withholds it (M39)</li>
+<li>which repos an intent touches, who owns each unit, and the release order across repos (this module)</li>
+</ul>
+<p>The engine is an option. When it isn't the right tool, the hand-run method from Tracks 2 to 6 works on the same repos, with the same people signing.</p>
+
+<figure>
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Rally mirror. Left, in the engine: the intent, the units tagged by repo, the bolts, and gate approvals recorded in the audit. Right, in Rally: a Feature, User Stories tagged api or web, Iterations, and ScheduleState. Every arrow goes from the engine to Rally, and a person carries each one across after the engine's gate. A crossed-out arrow from Rally back to the engine: Rally never approves anything. Badge: course convention, not part of AWS AI-DLC.">
+  <defs>
+    <marker id="m40arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace">
+    <text x="16" y="24" font-size="10" font-weight="600" letter-spacing="1" fill="var(--t8)">THE ENGINE · the record</text>
+    <text x="444" y="24" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">RALLY · the mirror</text>
+    <rect x="560" y="8" width="192" height="22" rx="5" fill="none" stroke="var(--warn)" stroke-width="1.2"/>
+    <text x="656" y="23" font-size="8.2" font-weight="600" text-anchor="middle" fill="var(--warn)">course convention, not AWS</text>
+
+    <rect x="16" y="40" width="300" height="44" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2"/>
+    <text x="28" y="60" font-size="9.5" font-weight="600" fill="var(--ink)">intent</text>
+    <text x="28" y="75" font-size="8.4" fill="var(--ink-soft)">urgent-determination-clo</text>
+    <rect x="444" y="40" width="300" height="44" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="456" y="60" font-size="9.5" font-weight="600" fill="var(--ink)">Feature</text>
+    <text x="456" y="75" font-size="8.4" fill="var(--ink-soft)">created by a person</text>
+
+    <rect x="16" y="100" width="300" height="44" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2"/>
+    <text x="28" y="120" font-size="9.5" font-weight="600" fill="var(--ink)">units of work</text>
+    <text x="28" y="135" font-size="8.4" fill="var(--ink-soft)">each in one repo</text>
+    <rect x="444" y="100" width="300" height="44" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="456" y="120" font-size="9.5" font-weight="600" fill="var(--ink)">User Stories</text>
+    <text x="456" y="135" font-size="8.4" fill="var(--ink-soft)">tagged api · web</text>
+
+    <rect x="16" y="160" width="300" height="44" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2"/>
+    <text x="28" y="180" font-size="9.5" font-weight="600" fill="var(--ink)">bolts</text>
+    <text x="28" y="195" font-size="8.4" fill="var(--ink-soft)">bolt-plan.md</text>
+    <rect x="444" y="160" width="300" height="44" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="456" y="180" font-size="9.5" font-weight="600" fill="var(--ink)">Iterations</text>
+    <text x="456" y="195" font-size="8.4" fill="var(--ink-soft)">one per bolt</text>
+
+    <rect x="16" y="220" width="300" height="44" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2"/>
+    <text x="28" y="240" font-size="9.5" font-weight="600" fill="var(--ink)">gate approved</text>
+    <text x="28" y="255" font-size="8.4" fill="var(--ink-soft)">GATE_APPROVED in the audit</text>
+    <rect x="444" y="220" width="300" height="44" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="456" y="240" font-size="9.5" font-weight="600" fill="var(--ink)">ScheduleState</text>
+    <text x="456" y="255" font-size="8.4" fill="var(--ink-soft)">moved after the gate</text>
+
+    <line x1="316" y1="62" x2="440" y2="62" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m40arr2)"/>
+    <path d="M380,53 L389,62 L380,71 L371,62 z" fill="var(--t8)"/>
+    <line x1="316" y1="122" x2="440" y2="122" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m40arr2)"/>
+    <path d="M380,113 L389,122 L380,131 L371,122 z" fill="var(--t8)"/>
+    <line x1="316" y1="182" x2="440" y2="182" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m40arr2)"/>
+    <path d="M380,173 L389,182 L380,191 L371,182 z" fill="var(--t8)"/>
+    <line x1="316" y1="242" x2="440" y2="242" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m40arr2)"/>
+    <path d="M380,233 L389,242 L380,251 L371,242 z" fill="var(--t8)"/>
+
+    <line x1="440" y1="290" x2="320" y2="290" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m40arr2)"/>
+    <line x1="372" y1="280" x2="388" y2="300" stroke="var(--warn)" stroke-width="2"/>
+    <line x1="388" y1="280" x2="372" y2="300" stroke="var(--warn)" stroke-width="2"/>
+    <text x="456" y="294" font-size="8.6" font-weight="600" fill="var(--warn)">Rally never approves anything</text>
+
+    <path d="M23,309 L30,316 L23,323 L16,316 z" fill="var(--t8)"/>
+    <text x="38" y="320" font-size="8.6" fill="var(--ink)">a person carries it across, after the engine's gate</text>
+  </g>
+</svg>
+<figcaption>fig 40.2 — Rally mirrors the engine; a person carries every change across</figcaption>
+</figure>
+
+<table class="bridge">
+  <thead><tr><th>Hand-run (module)</th><th>On the v2 engine</th><th>What stays human</th></tr></thead>
+  <tbody>
+    <tr><td>Parallel units of work (M18)</td><td>One hub intent; <code>repos</code> recorded at creation</td><td>Which repos an intent touches</td></tr>
+    <tr><td>Semantic map per repo (M12)</td><td><code>codekb/&lt;repo&gt;/</code>, shared by intents, freshness-checked</td><td>Reuse or rescan</td></tr>
+    <tr><td>Contract between units (M18)</td><td>Contract Design, <code>contract-summary.md</code></td><td>The contract</td></tr>
+    <tr><td>A team owns its unit (M29, M33)</td><td>Team mode, only when the hub is the source repo</td><td>Ownership, at the plans and checkpoints</td></tr>
+    <tr><td>Sprint board (M33)</td><td>Rally mirror (course convention)</td><td>Moving every card</td></tr>
+    <tr><td>Release order (M09)</td><td>Not in the engine</td><td>The deploy order across repos</td></tr>
+  </tbody>
+</table>
+
+<section class="lab">
+  <div class="lab-head">Lab M40 · 30 min reading · about 30 min with the engine</div>
+  <h2>Open a second intent across both repos</h2>
+
+  <div class="path">
+    <div class="path-label">Path A — Understand It (no tooling)</div>
+    <p>Open <code>runbook/multi-repo-feature.html</code> beside this page. In "Where does every file go?", pick the Requirements gate and trace where its files land. Then read three excerpts from the reference run. The intent registry after the second intent:</p>
+<pre><code>{ "slug": "criteria-rescore", "scope": "feature",
+  "repos": [ "prior-auth-api", "prior-auth-web" ], "status": "in-flight" },
+{ "slug": "urgent-determination-clo", "scope": "classic",
+  "repos": [ "prior-auth-api", "prior-auth-web" ], "status": "in-flight" }</code></pre>
+    <p>The freshness verdicts, and the question they produced for the API:</p>
+<pre><code>STALE: the analyzed paths have changed since the store was built (intent: criteria-rescore):
+CURRENT: the analyzed paths are unchanged since the store was built (intent: criteria-rescore, coverage: full):
+
+## Q1: Code knowledge base for prior-auth-api
+A. Full rescan — rebuild the whole store for the repo (replaces all 9 documents)
+B. Focused scan — scan the area this work touches (AuthRequest, the determination clock, the nurse review queue ordering) and extend the store, keeping earlier content outside it
+X. Other (please specify)
+
+[Answer]: A — Full rescan. U1 added storage, intake and an HTTP layer to the API, so the whole map has changed, not just the urgent-request area.</code></pre>
+    <p><strong>Lead It (leaders):</strong> the director wants the API team and the web team each to own their part of the urgent-auth change in this hub. Write a half-page decision: who approves which plans and checkpoints, who owns the contract, who moves which Rally card at which gate, and who decides the release order. Use the module's last section as the checklist.</p>
+    <p><strong>Check yourself:</strong> (1) The web team wants to add <code>prior-auth-web</code> to an intent created with <code>--repos prior-auth-api</code>. What do they do in v2.11.0? (2) Why was the web map reused and the API map rebuilt? What would have made the web map stale? (3) Can the API team and the web team each own and approve their unit in this hub through the engine's team mode? What can they own? (4) A Rally story moves to Accepted before the engine's gate. What changed in the engine?</p>
+    <details><summary>Answers</summary>
+      <p>(1) They can't add it: an intent's repos are fixed at creation, and v2.11.0 has no command for it. They start another intent that records both repos (name them with <code>--repos</code>, or let sibling auto-discovery record every sibling). (2) The web code was unchanged since the re-score scan (<code>CURRENT</code>); U1 had changed the API's analysed paths (<code>STALE</code>). Any change under the web's analysed paths would have made it stale. The verdict is the engine's; the reuse-or-rescan choice was the team's. (3) Not through team mode: "intents with recorded sibling repos must remain solo." They own it as people: each team approves the plans and checkpoints for its repo's units, and they share the contract. (4) Nothing. The engine never reads Rally. Only the gate in the engine, recorded in the audit, approves.</p>
+    </details>
+  </div>
+
+  <div class="path">
+    <div class="path-label">Path B — Build It with AI (both engines)</div>
+    <p>One unit of work: <strong>a second intent in the same hub, the urgent-auth 72-hour clock, recording both repos, taken to Reverse Engineering, where the team decides per repo whether to reuse or rescan the code map; gate approved, parked, committed.</strong> Start from your M39 hub. Open the engine interactively at the hub root. No code is written: the engine reads both repos, plans its scan and asks before it rebuilds anything. Your verdicts depend on your history: if you committed U1 and haven't changed the API since your last scan, it may come back <code>CURRENT</code>.</p>
+    <div class="engine-tabs">
+      <div class="engine-tab-btns" role="tablist">
+        <button class="active" data-engine="cc">Claude Code</button>
+        <button data-engine="cx">Codex CLI</button>
+      </div>
+      <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+# 1. state the intent, name both repos, and say it's new work
+/aidlc Urgent auth requests get a 72-hour determination clock. An AuthRequest can be marked urgent; the API records when its determination is due and puts urgent requests first in the nurse review queue; the web queue shows an urgency badge and a countdown in AuthQueue. The 0.85 auto-approve rule and eligibility-first do not change. This touches prior-auth-api and prior-auth-web. This is a new intent; leave the parked re-score intent as it is.
+# 2. at Reverse Engineering: read each repo's verdict, fill the questions file together
+&gt; Q1: &lt;your choice&gt;, Q2: &lt;your choice&gt;
+# 3. at the gate
+&gt; Approve. Then park.
+# 4. later, to go back to the re-score intent
+/aidlc intent criteria-rescore
+/aidlc --resume</code></pre>
+        <p>Expected, from the reference run (excerpts):</p>
+<pre><code># 1.
+Intent created: 261017-urgent-determination-clo (space: default)
+State initialized: classic scope, 18 stages, Standard depth
+Project type: Brownfield
+First post-init stage: reverse-engineering (INCEPTION)
+
+# 2.
+Q1: Code documentation for prior-auth-api. I documented this repo during the re-score work,
+but the API code has changed since then. How should I scan it?
+[...]
+Q2: Code documentation for prior-auth-web. The web documentation is up to date and covers
+the whole repo, including AuthQueue. Reuse it or rescan?
+
+# 3.
+I've approved Reverse Engineering and paused the urgent-clock work. Everything is saved,
+and it will pick up at Practices Discovery.</code></pre>
+      </div>
+      <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+# 1. state the intent, name both repos, and say it's new work
+$aidlc Urgent auth requests get a 72-hour determination clock. An AuthRequest can be marked urgent; the API records when its determination is due and puts urgent requests first in the nurse review queue; the web queue shows an urgency badge and a countdown in AuthQueue. The 0.85 auto-approve rule and eligibility-first do not change. This touches prior-auth-api and prior-auth-web. This is a new intent; leave the parked re-score intent as it is.
+# 2. at Reverse Engineering: read each repo's verdict, fill the questions file together
+&gt; Q1: &lt;your choice&gt;, Q2: &lt;your choice&gt;
+# 3. at the gate
+&gt; Approve. Then park.
+# 4. later, to go back to the re-score intent
+$aidlc intent criteria-rescore
+$aidlc --resume</code></pre>
+        <p>Codex wasn't run for this edition, so there's no expected output to compare against. What must match is the shape: an intent row recording both repos, a verdict per repo before any scan, a question for each, and a gate in your words.</p>
+      </div>
+    </div>
+    <p><strong>5. Commit.</strong> The same for both engines.</p>
+<pre><code>git add aidlc; git commit -m "intent: urgent clock created across both repos; codekb checked per repo; parked"
+Get-Content aidlc\\spaces\\default\\intents\\intents.json</code></pre>
+    <p>In the reference run, <code>git status --short</code> before the commit showed the nine rebuilt API files, the registry, and the new intent folder:</p>
+<pre><code> M aidlc/spaces/default/codekb/prior-auth-api/api-documentation.md
+[...]
+ M aidlc/spaces/default/intents/intents.json
+?? aidlc/spaces/default/intents/261017-urgent-determination-clo/</code></pre>
+    <p><strong>Done when</strong> <code>intents.json</code> holds two intents, each recording both repos; the new intent's questions file holds the team's answer for each repo; the audit shows its Reverse Engineering <code>GATE_APPROVED</code>; <code>codekb/</code> still holds nine files per repo; and the hub commit holds it all. That's the end of the course's engine track: the next step is your own team's first intent.</p>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>One hub holds the record; the code repos sit beside it; each intent records its repos when it's created.</li>
+    <li><code>codekb/&lt;repo&gt;/</code> belongs to the repo and is shared by every intent. The engine checks it for freshness; the team decides to reuse or rescan.</li>
+    <li>Team mode needs the hub to be the source repo. With sibling repos one session conducts, and the teams own the plans, the checkpoints and the contract.</li>
+    <li>Rally mirrors the engine by hand, after each gate. It never approves anything.</li>
+    <li>The engine schedules, records and checks. Every answer, gate, plan, checkpoint and grant stays human, and the hand-run method still works whenever the engine isn't the right tool.</li>
+  </ul>
+  <span class="next">End of the course → back to P00 for the map, or start your team's first intent</span>
 </section>
 `
 },

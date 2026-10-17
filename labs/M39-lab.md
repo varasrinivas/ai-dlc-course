@@ -148,8 +148,9 @@ wait for your approval, as U1's did.
 ```
 
 What else happened in the reference run, in order:
-- **No change notice.** The engine didn't flag the hand-edited approved files, even under Guard
-  Policy strict. The agent found them with `git diff` and asked about them as Q0 and Q1.
+- **No change notice on resume.** The resumed session didn't flag the hand-edited approved files,
+  even under Guard Policy strict. The agent found them with `git diff` and asked about them as Q0 and
+  Q1. A later fresh session did report them as drift (M40).
 - **Tests first.** The first plan was test-after, the organisation's default; `prior-auth-api/AGENTS.md`
   says tests first. The team sent it back, then approved the rewrite.
 - **The plan is bound to the files.** The agent edited the approved `unit-test-instructions.md`, every
