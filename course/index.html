@@ -8593,6 +8593,393 @@ git add aidlc; git commit -m "memory: Guard Policy strict for the threshold path
 </section>
 `
 },
+{
+  id: "M38",
+  track: 8,
+  title: "Inception on the Engine",
+  minutes: 35,
+  audience: "practitioner",
+  body: `
+<p class="hook">The portal team resumes the parked re-score intent expecting to fill in forms. Twenty minutes in, the engine sends one back. In Scope Definition the team made protection for the re-score gap a must-have, then chose a warning only, so a nurse can still decide on an outdated score. The engine set those two answers beside the success measure the team approved in M36, "zero requests decided on an outdated score", and added a seventh question: keep the measure, change it, or hold the decision back after all. It didn't pick one. The team kept the measure and agreed to count every decision made while the warning showed. Two hours and ten gates later, Inception is approved, and the team has sent work back six times along the way, each time in its own words.</p>
+
+<div class="callout"><b>Verified against aidlc v2.11.0</b> (Claude Code 2.1.301) on 2026-10-16. Every engine excerpt comes from one real run in the reference hub, resuming the intent M37 parked (record commit <code>c03b800</code>). Every answer and gate reply was typed by the course author acting as the portal team. Codex wasn't run for this edition; it reads the same stage files.</div>
+
+<h2>The stage chain, and what always runs</h2>
+<p>Resumed, the engine picked up where M37 parked it: "We're picking up at Market Research. You approved the shorter plan on 2026-10-15 and it kept this stage, so I'm running it." Three Ideation stages close out first. Scope Definition writes <code>scope-document.md</code> and <code>intent-backlog.md</code>. Approval Handoff writes an initiative brief and a decision log, runs a phase check, and its gate has a third option: "Reject Initiative: end this workflow here."</p>
+<p>Then Inception: seven stages for this intent, from Reverse Engineering to Delivery Planning (fig 38.1). M37's recompose skipped two. <code>execution: ALWAYS</code> in a stage file marks the stages no scope or recompose can drop: Scope Definition, Approval Handoff, Requirements, Units Generation and Delivery Planning, plus Intent Capture from M36. The rest are <code>CONDITIONAL</code>.</p>
+<p>Reverse Engineering is M12's semantic map. <code>codekb/</code> was empty, so the verdict was <code>NO_STORE</code> ("first scan, nothing to compare") and there was no question. It sent one developer agent to each repo in <code>repos.json</code>, both of them, and wrote nine files per repo to <code>aidlc/spaces/default/codekb/&lt;repo&gt;/</code>. From <code>prior-auth-api/business-overview.md</code>:</p>
+<pre><code>| Auto-approve at or above 0.85 (inclusive) | AUTO_APPROVE_THRESHOLD in src/domain/clinical-criteria.ts | Implemented (D-001) |
+| Scoring a request against criteria | — | Not in this repo: CriteriaMatch is supplied by the caller |
+| Persisting requests, scores, determinations | — | Not in this repo |
+| Distinguishing nurse-review waits from other waits | — | Not in this repo (PENDING only) |</code></pre>
+<p>Next time, the engine checks these files first: <code>CURRENT</code> lets a person reuse them, and <code>STALE</code> forces a rescan. The scan found no scorer, no storage, no HTTP API, no detail view, and an API without the <code>PENDING_NURSE_REVIEW</code> status the web says it shipped. Those gaps became the Requirements questions.</p>
+
+<figure>
+<svg viewBox="0 0 760 410" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The road from the parked intent to Construction. Ideation close-out: 1.2 Market Research, 1.4 Scope Definition (always runs), 1.7 Approval Handoff (always runs). Inception: 2.1 Reverse Engineering writes nine codekb files per repo for two repos and has no questions file; 2.2 Practices Discovery skipped; 2.3 Requirements (always runs) writes requirements.md, sent back twice; 2.4 User Stories, the only mob stage, writes stories.md, sent back once; 2.5 Refined Mockups skipped; 2.6 Domain Design writes components.md, sent back once; 2.7 Units Generation (always runs) writes the unit files, sent back once; 2.8 Contract Design writes contract-summary.md, sent back once; 2.9 Delivery Planning (always runs) writes bolt-plan.md and the verification command. Ten gates, all approved; then Construction, parked for M39.">
+  <defs>
+    <marker id="m38arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace">
+    <text x="16" y="30" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">IDEATION · CLOSE-OUT</text>
+    <line x1="16" y1="73" x2="441" y2="73" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <path d="M441,80 L441,128 L75,128 L75,156" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m38arr)"/>
+
+    <rect x="16" y="40" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="26" y="58" font-size="9.5" font-weight="600" fill="var(--ink)">1.2 Market</text>
+    <text x="26" y="71" font-size="9.5" font-weight="600" fill="var(--ink)">Research</text>
+    <text x="26" y="92" font-size="8.5" fill="var(--ink-soft)">build-vs-buy.md</text>
+    <text x="124" y="54" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <path d="M145,66 L152,73 L145,80 L138,73 z" fill="var(--t8)"/>
+
+    <rect x="164" y="40" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="174" y="58" font-size="9.5" font-weight="600" fill="var(--ink)">1.4 Scope</text>
+    <text x="174" y="71" font-size="9.5" font-weight="600" fill="var(--ink)">Definition</text>
+    <text x="174" y="92" font-size="8.5" fill="var(--ink-soft)">scope-document.md</text>
+    <text x="272" y="54" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <path d="M293,66 L300,73 L293,80 L286,73 z" fill="var(--t8)"/>
+
+    <rect x="312" y="40" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="322" y="58" font-size="9.5" font-weight="600" fill="var(--ink)">1.7 Approval</text>
+    <text x="322" y="71" font-size="9.5" font-weight="600" fill="var(--ink)">Handoff</text>
+    <text x="322" y="92" font-size="8.5" fill="var(--ink-soft)">initiative-brief</text>
+    <text x="420" y="54" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <path d="M441,66 L448,73 L441,80 L434,73 z" fill="var(--t8)"/>
+
+    <text x="480" y="40" font-size="9" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">KEY</text>
+    <rect x="480" y="48" width="22" height="12" rx="3" fill="none" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="510" y="58" font-size="8.6" fill="var(--ink)">execution: ALWAYS</text>
+    <rect x="480" y="66" width="22" height="12" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="510" y="76" font-size="8.6" fill="var(--ink)">CONDITIONAL, kept</text>
+    <rect x="480" y="84" width="22" height="12" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="510" y="94" font-size="8.6" fill="var(--ink)">skipped in M37</text>
+    <path d="M626,48 L633,55 L626,62 L619,55 z" fill="var(--t8)"/>
+    <text x="640" y="58" font-size="8.6" fill="var(--ink)">gate</text>
+    <text x="626" y="76" font-size="9" font-weight="600" text-anchor="middle" fill="var(--t8)">Q</text>
+    <text x="640" y="76" font-size="8.6" fill="var(--ink)">questions file</text>
+    <text x="619" y="94" font-size="8.6" fill="var(--warn)">↺ sent back</text>
+
+    <text x="16" y="150" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">INCEPTION</text>
+    <line x1="16" y1="193" x2="726" y2="193" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <path d="M726,193 L744,193 L744,250 L75,250 L75,276" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m38arr)"/>
+
+    <rect x="16" y="160" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="26" y="178" font-size="9.5" font-weight="600" fill="var(--ink)">2.1 Reverse</text>
+    <text x="26" y="191" font-size="9.5" font-weight="600" fill="var(--ink)">Engineering</text>
+    <text x="26" y="206" font-size="8.5" fill="var(--ink-soft)">codekb/&lt;repo&gt;/</text>
+    <text x="26" y="218" font-size="8.5" fill="var(--ink-soft)">9 files × 2 repos</text>
+    <path d="M145,186 L152,193 L145,200 L138,193 z" fill="var(--t8)"/>
+
+    <rect x="164" y="160" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.7"/>
+    <text x="174" y="178" font-size="9.5" fill="var(--ink-soft)">2.2 Practices</text>
+    <text x="174" y="191" font-size="9.5" fill="var(--ink-soft)">Discovery</text>
+    <text x="174" y="212" font-size="8.5" fill="var(--ink-soft)">skipped</text>
+
+    <rect x="312" y="160" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="322" y="178" font-size="9.5" font-weight="600" fill="var(--ink)">2.3 Require-</text>
+    <text x="322" y="191" font-size="9.5" font-weight="600" fill="var(--ink)">ments</text>
+    <text x="322" y="212" font-size="8.5" fill="var(--ink-soft)">requirements.md</text>
+    <text x="420" y="174" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <text x="322" y="240" font-size="8.6" fill="var(--warn)">↺ ×2</text>
+    <path d="M441,186 L448,193 L441,200 L434,193 z" fill="var(--t8)"/>
+
+    <rect x="460" y="160" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="470" y="178" font-size="9.5" font-weight="600" fill="var(--ink)">2.4 User</text>
+    <text x="470" y="191" font-size="9.5" font-weight="600" fill="var(--ink)">Stories</text>
+    <text x="470" y="212" font-size="8.5" fill="var(--ink-soft)">stories.md</text>
+    <rect x="530" y="200" width="38" height="16" rx="4" fill="var(--t8)"/>
+    <text x="549" y="212" font-size="8.5" font-weight="600" text-anchor="middle" fill="var(--panel)">MOB</text>
+    <text x="568" y="174" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <text x="470" y="240" font-size="8.6" fill="var(--warn)">↺ ×1</text>
+    <path d="M589,186 L596,193 L589,200 L582,193 z" fill="var(--t8)"/>
+
+    <rect x="608" y="160" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.7"/>
+    <text x="618" y="178" font-size="9.5" fill="var(--ink-soft)">2.5 Refined</text>
+    <text x="618" y="191" font-size="9.5" fill="var(--ink-soft)">Mockups</text>
+    <text x="618" y="212" font-size="8.5" fill="var(--ink-soft)">skipped</text>
+
+    <line x1="16" y1="313" x2="589" y2="313" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <line x1="589" y1="313" x2="604" y2="313" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m38arr)"/>
+
+    <rect x="16" y="280" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="26" y="298" font-size="9.5" font-weight="600" fill="var(--ink)">2.6 Domain</text>
+    <text x="26" y="311" font-size="9.5" font-weight="600" fill="var(--ink)">Design</text>
+    <text x="26" y="332" font-size="8.5" fill="var(--ink-soft)">components.md</text>
+    <text x="124" y="294" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <text x="26" y="360" font-size="8.6" fill="var(--warn)">↺ ×1</text>
+    <path d="M145,306 L152,313 L145,320 L138,313 z" fill="var(--t8)"/>
+
+    <rect x="164" y="280" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="174" y="298" font-size="9.5" font-weight="600" fill="var(--ink)">2.7 Units</text>
+    <text x="174" y="311" font-size="9.5" font-weight="600" fill="var(--ink)">Generation</text>
+    <text x="174" y="326" font-size="8.5" fill="var(--ink-soft)">unit-of-work.md</text>
+    <text x="174" y="338" font-size="8.5" fill="var(--ink-soft)">+ yaml DAG</text>
+    <text x="272" y="294" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <text x="174" y="360" font-size="8.6" fill="var(--warn)">↺ ×1</text>
+    <path d="M293,306 L300,313 L293,320 L286,313 z" fill="var(--t8)"/>
+
+    <rect x="312" y="280" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="322" y="298" font-size="9.5" font-weight="600" fill="var(--ink)">2.8 Contract</text>
+    <text x="322" y="311" font-size="9.5" font-weight="600" fill="var(--ink)">Design</text>
+    <text x="322" y="332" font-size="8.5" fill="var(--ink-soft)">contract-summary</text>
+    <text x="420" y="294" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <text x="322" y="360" font-size="8.6" fill="var(--warn)">↺ ×1</text>
+    <path d="M441,306 L448,313 L441,320 L434,313 z" fill="var(--t8)"/>
+
+    <rect x="460" y="280" width="118" height="66" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="470" y="298" font-size="9.5" font-weight="600" fill="var(--ink)">2.9 Delivery</text>
+    <text x="470" y="311" font-size="9.5" font-weight="600" fill="var(--ink)">Planning</text>
+    <text x="470" y="326" font-size="8.5" fill="var(--ink-soft)">bolt-plan.md</text>
+    <text x="470" y="338" font-size="8.5" fill="var(--ink-soft)">+ verify command</text>
+    <text x="568" y="294" font-size="9" font-weight="600" text-anchor="end" fill="var(--t8)">Q</text>
+    <path d="M589,306 L596,313 L589,320 L582,313 z" fill="var(--t8)"/>
+
+    <rect x="608" y="280" width="136" height="66" rx="8" fill="none" stroke="var(--t8)" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="618" y="298" font-size="9" font-weight="600" letter-spacing="1" fill="var(--t8)">CONSTRUCTION</text>
+    <text x="618" y="318" font-size="8.5" fill="var(--ink)">parked at</text>
+    <text x="618" y="332" font-size="8.5" fill="var(--ink)">functional-design · M39</text>
+
+    <text x="16" y="396" font-size="8.6" fill="var(--ink-soft)">Real: reference hub, aidlc v2.11.0, 2026-10-16. Ten gates, all approved; the team sent work back six times first.</text>
+  </g>
+</svg>
+<figcaption>fig 38.1 — ten gates between the parked intent and Construction</figcaption>
+</figure>
+
+<h2>Questions files: Mob Elaboration is still the room</h2>
+<p>Every stage but Reverse Engineering wrote a <code>&lt;stage&gt;-questions.md</code>: a preamble naming its sources, then numbered questions with options and <code>X. Other</code>, each above a blank <code>[Answer]:</code> line. The answer mode is chosen once. M36 chose to edit the file, and every stage reused it: "I'll keep using the file for your answers, as before." The agent waits until someone sends <code>done</code>.</p>
+<p>Then it reads the answers against each other and against what was approved earlier. That's how Scope Definition's Q7 in the hook arrived. In Requirements, "these two repos are the whole system" left two holes, so the engine added Q8 and Q9: "Working out how well a request meets a criteria version is clinical logic, not plumbing." After the follow-ups comes a summary of every answer (Looks correct / Request changes), and only then the artifact.</p>
+<p>The engine sets these rules, not the agent's manners. The stage protocol says to keep the person's exact words "and never choose for them", and the logging tool "refuses a self-selected answer". In User Stories the team answered five more questions after confirming a summary, and Guard Policy strict made the engine ask again: "Your answers to Q6-Q10 came after you confirmed the summary, so the summary needs confirming again."</p>
+<p>This is M06's ritual on a new form. The team fills the file together, and the engine's follow-ups take over the facilitator's clarifying loop. Q1 in Requirements, "PENDING only in this version", landed in <code>requirements.md</code> as assumption A2 and open question OQ2, owned by the tech lead.</p>
+
+<aside class="analogy">
+<p>The deck job is back on the full-permits path, and the design desk's morning questions no longer come by phone. They come as the site office's form: numbered, each with a few options and a blank line, and a box that says "send when done". Ravi starts filling it in at the kitchen counter. Meera takes the pen back and moves it to the table. Last time, the questions that mattered were the ones they argued about. The form is clearer than the phone calls ever were. It still can't tick a box for them, and the site office won't read it until they say they've finished.</p>
+<span class="maps-to">maps to → <b>the form</b> = a stage's questions file with blank <code>[Answer]:</code> lines · <b>"send when done"</b> = edit-file mode; the agent waits for <code>done</code> · <b>can't tick a box</b> = the engine refuses a self-selected answer · <b>at the table</b> = Mob Elaboration: the team answers together, not one person alone</span>
+</aside>
+
+<h2>Two kinds of mob</h2>
+<p>User Stories is the only one of the 33 stages that runs as a <code>mob</code>. <code>feature</code> ships with collaborators off, so it would have run with the product agent alone. The team said "bring the specialists in", the agent ran <code>aidlc engine config set collaborators on</code>, and the audit logged <code>CEREMONY_SET</code> off→on.</p>
+<p>The product agent drafted personas and stories. Then the design, developer and quality agents reviewed the draft in parallel, "mutually blind", each writing <code>contributions/&lt;agent&gt;.md</code>. The quality agent found that, read literally, the requirements made every re-score test impossible: the stand-in scorer exists only in tests, and the rules refuse any run without a real scorer. It added boundary cases at exactly 0.85 and at 0.99 for an ineligible member; both must leave the request <code>PENDING</code>. The designer warned that nurses learn to ignore a warning that is visibly wrong. The developer found that nothing stores requests at all.</p>
+<p>Then triage. Knowledge disputes go back to the agents for a second round. Judgment calls, where "both positions [are] legitimate", go to a person as new questions in the file. Five came to the team as Q6 to Q10. On Q10, whether a decided request may show the outdated warning, the team answered: "reopening a decided request is the medical director's question, not ours." The protocol's own line: "The human is a mob participant, not a post-hoc approver."</p>
+<p>After the gate the team said "lead agent only from here", and collaborators went back off. The agent mob widened the draft. It didn't replace M06's room: the people at the table still made every call.</p>
+
+<h2>Units, contracts and the bolt plan</h2>
+<p>Units Generation writes <code>unit-of-work.md</code> and a yaml block in <code>unit-of-work-dependency.md</code>. The stage file limits it to topology: it "MUST NOT recommend an implementation order". The run produced five units (fig 38.2). U1, an API walking skeleton, depends on nothing. U2, U3 and U4 each depend on U1, and U5, the web detail view, depends on U1 and U4. When a review found that U1's intake endpoint had no requirement, the agent didn't patch the approved documents. Adding it "reopens those stages and the ones after them", it said, and offered to record a blocker instead. The team chose the blocker.</p>
+<p>Contract Design runs because there's more than one unit. Its reviewer caught the agent's own draft refusing intake scores outside 0 to 1: "Refusing that changes what reaches the 0.85 path, and nobody decided it." The team took it out and made it an open question for the tech lead and the medical director.</p>
+<p>Delivery Planning writes <code>bolt-plan.md</code>: five bolts, one unit each, with a demo, a Definition of Done and a confidence hypothesis per bolt. It also proposes a verification command, approved on its own. That command fails if <code>decide</code> or its guardrail tests differ from commit <code>4226cc48f963</code>, or if <code>AUTO_APPROVE_THRESHOLD = 0.85</code> has gone.</p>
+<p>The bolt plan is for people. The stage file says so: "Reordering only <code>bolt-plan.md</code> does not change the Unit the engine builds first." Construction follows the DAG. Here the two agree, B1 to B5 in DAG order; if they ever disagree, the DAG wins. M39 starts at U1.</p>
+
+<figure>
+<svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Left: the unit DAG from unit-of-work-dependency.md. U1 api-skeleton, a service and the walking skeleton, depends on nothing. U2 rescore-run-hardening, U3 scorer-switch and U4 api-access, all services, each need U1. U5 web-detail-view, the only ui unit, needs U1 and U4. Right: bolt-plan.md, five bolts B1 to B5, one unit each, in the order U1, U2, U3, U4, U5. The engine builds in DAG order; the bolt plan is the team's view. Below: before B1, the scope sign-off and the requirements update are blockers.">
+  <defs>
+    <marker id="m38arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace">
+    <text x="16" y="24" font-size="10" font-weight="600" letter-spacing="1" fill="var(--t8)">THE DAG · what the engine follows</text>
+    <text x="16" y="38" font-size="8.6" fill="var(--ink-soft)">unit-of-work-dependency.md · A → B: B needs A</text>
+
+    <rect x="16" y="132" width="140" height="48" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="26" y="150" font-size="9.5" font-weight="600" fill="var(--ink)">U1 api-skeleton</text>
+    <text x="26" y="168" font-size="8.5" fill="var(--t8)">service · skeleton</text>
+
+    <rect x="210" y="50" width="150" height="40" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="220" y="67" font-size="9" font-weight="600" fill="var(--ink)">U2 rescore-run-</text>
+    <text x="220" y="81" font-size="9" font-weight="600" fill="var(--ink)">hardening · service</text>
+    <rect x="210" y="106" width="150" height="40" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="220" y="123" font-size="9" font-weight="600" fill="var(--ink)">U3 scorer-switch</text>
+    <text x="220" y="137" font-size="8.5" fill="var(--ink-soft)">service</text>
+    <rect x="210" y="162" width="150" height="40" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="220" y="179" font-size="9" font-weight="600" fill="var(--ink)">U4 api-access</text>
+    <text x="220" y="193" font-size="8.5" fill="var(--ink-soft)">service</text>
+    <rect x="210" y="226" width="150" height="40" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="220" y="243" font-size="9" font-weight="600" fill="var(--ink)">U5 web-detail-view</text>
+    <text x="220" y="257" font-size="8.5" fill="var(--ink-soft)">ui · prior-auth-web</text>
+
+    <path d="M156,146 L206,72" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m38arr2)"/>
+    <path d="M156,152 L206,128" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m38arr2)"/>
+    <path d="M156,162 L206,180" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m38arr2)"/>
+    <path d="M150,180 L206,240" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m38arr2)"/>
+    <path d="M285,202 L285,222" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m38arr2)"/>
+
+    <line x1="390" y1="20" x2="390" y2="272" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="3 4"/>
+
+    <text x="414" y="24" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">bolt-plan.md · what the team reads</text>
+    <text x="414" y="38" font-size="8.6" fill="var(--ink-soft)">one unit per bolt · built one at a time</text>
+    <rect x="414" y="50" width="330" height="36" rx="6" fill="var(--panel)" stroke="var(--t8)" stroke-width="2"/>
+    <text x="424" y="72" font-size="9.5" font-weight="600" fill="var(--ink)">B1  U1 · walking skeleton</text>
+    <text x="734" y="72" font-size="8.5" text-anchor="end" fill="var(--ink-soft)">api</text>
+    <rect x="414" y="94" width="330" height="36" rx="6" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="424" y="116" font-size="9.5" fill="var(--ink)">B2  U2 · run hardening</text>
+    <text x="734" y="116" font-size="8.5" text-anchor="end" fill="var(--ink-soft)">api</text>
+    <rect x="414" y="138" width="330" height="36" rx="6" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="424" y="160" font-size="9.5" fill="var(--ink)">B3  U3 · scorer switch</text>
+    <text x="734" y="160" font-size="8.5" text-anchor="end" fill="var(--ink-soft)">api</text>
+    <rect x="414" y="182" width="330" height="36" rx="6" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="424" y="204" font-size="9.5" fill="var(--ink)">B4  U4 · sign-in and roles</text>
+    <text x="734" y="204" font-size="8.5" text-anchor="end" fill="var(--ink-soft)">api · deployable after</text>
+    <rect x="414" y="226" width="330" height="36" rx="6" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="424" y="248" font-size="9.5" fill="var(--ink)">B5  U5 · web detail view</text>
+    <text x="734" y="248" font-size="8.5" text-anchor="end" fill="var(--ink-soft)">web</text>
+
+    <rect x="16" y="288" width="728" height="36" rx="6" fill="none" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <text x="26" y="304" font-size="9" font-weight="600" fill="var(--warn)">BEFORE B1</text>
+    <text x="26" y="318" font-size="8.6" fill="var(--ink)">scope sign-off (OQ6) and the product owner's requirements update: Inception phase check FAIL, finding F2</text>
+    <text x="16" y="348" font-size="8.6" fill="var(--ink-soft)">"Reordering only bolt-plan.md does not change the Unit the engine builds first." · reference run, 2026-10-16</text>
+  </g>
+</svg>
+<figcaption>fig 38.2 — the engine builds in DAG order; <code>bolt-plan.md</code> is for the team</figcaption>
+</figure>
+
+<table class="bridge">
+  <thead><tr><th>Hand-run (module)</th><th>On the v2 engine (stage)</th><th>What stays human</th></tr></thead>
+  <tbody>
+    <tr><td>Intent statement (M05)</td><td>1.1 <code>intent-statement.md</code>, done in M36</td><td>The framing answers</td></tr>
+    <tr><td>Semantic map (M12)</td><td>2.1 <code>codekb/&lt;repo&gt;/</code>, nine files, freshness verdict</td><td>Reuse or rescan</td></tr>
+    <tr><td>Mob Elaboration questions (M06)</td><td><code>&lt;stage&gt;-questions.md</code>, <code>[Answer]:</code> lines, edit-file mode</td><td>Every answer</td></tr>
+    <tr><td>Clarifying loop (M06)</td><td>Follow-up questions, then the summary confirmation</td><td>"Looks correct" or Request changes</td></tr>
+    <tr><td>Requirements and acceptance criteria (M05)</td><td>2.3 <code>requirements.md</code> (FR/NFR), 2.4 <code>stories.md</code></td><td>The gate, with the reviewer's findings</td></tr>
+    <tr><td><code>docs/units/</code> (M15, M23)</td><td>2.7 <code>unit-of-work.md</code> and its yaml DAG</td><td>Unit boundaries</td></tr>
+    <tr><td>Bolt backlog (M23, M33)</td><td>2.9 <code>bolt-plan.md</code></td><td>Bolt order, the verification command</td></tr>
+    <tr><td>"The AI never answers for you" (M06)</td><td>"The tool refuses a self-selected answer"</td><td>Nothing to hand over</td></tr>
+  </tbody>
+</table>
+
+<section class="lab">
+  <div class="lab-head">Lab M38 · 35 min reading · about 2 h with the engine</div>
+  <h2>Take the re-score through Inception</h2>
+
+  <div class="path">
+    <div class="path-label">Path A — Understand It (no tooling)</div>
+    <p>Four excerpts from the reference run. The team's answer to Requirements Q1, in <code>requirements-analysis-questions.md</code>:</p>
+<pre><code>## Q1. Which waiting statuses does the first version re-score, given the PENDING_NURSE_REVIEW mismatch?
+A. Re-score PENDING only in this version; PENDING_NURSE_REVIEW joins the re-score once the API actually has it, through its own recorded decision
+[...]
+[Answer]: A — PENDING only in this version; the tech lead corrects the web AGENTS.md claim about D-004</code></pre>
+    <p>Where it landed in <code>requirements.md</code>, with the line on status changes:</p>
+<pre><code>- A2 "Waiting" means status PENDING in this version. PENDING_NURSE_REVIEW joins the re-score only once the API has it, through its own decision. Reason: Q1. [Q1]
+| OQ2 | Is PENDING_NURSE_REVIEW in the API or not? Also correct the web AGENTS.md claim about D-004 | Tech lead | Widening A2 | [Q1] |
+
+## Out of Scope
+- A re-score changing a request's status, for example auto-approving at 0.85 or above. This waits for the medical director. [IC-Q4] [SD-Q5]</code></pre>
+    <p>The units, from <code>unit-of-work-dependency.md</code>, and the first bolt:</p>
+<pre><code>units:
+  - name: u1-api-skeleton
+    kind: service
+    depends_on: []
+  - name: u2-rescore-run-hardening
+    kind: service
+    depends_on: [u1-api-skeleton]
+  - name: u3-scorer-switch
+    kind: service
+    depends_on: [u1-api-skeleton]
+  - name: u4-api-access
+    kind: service
+    depends_on: [u1-api-skeleton]
+  - name: u5-web-detail-view
+    kind: ui
+    depends_on: [u1-api-skeleton, u4-api-access]
+
+| B1 | b1-api-skeleton | U1 u1-api-skeleton | prior-auth-api | Yes | OQ6, requirements update |</code></pre>
+    <p><strong>Check yourself:</strong> (1) Does A2 say what the team said, no more and no less? Where would a drift show up first, and who catches it? (2) Which unit does the engine build first, and why doesn't <code>bolt-plan.md</code> decide that? (3) Whether a re-score may change a status belongs to the medical director. Where does that appear in the artifacts, and where must it never appear? (4) Of the stages in fig 38.1, which could a scope have dropped, and which could it not?</p>
+    <details><summary>Answers</summary>
+      <p>(1) Yes. A2 states the rule, and OQ2 carries the tech lead's correction with an owner. A drift shows first in the summary confirmation, before the artifact is written. The team catches it there, or at the gate, where the product-lead reviewer's findings sit beside the artifact. (2) U1: it's the only unit with no dependencies. The engine reads the DAG. <code>bolt-plan.md</code> records why the team wants that order, and "reordering only <code>bolt-plan.md</code> does not change the Unit the engine builds first". (3) Under Out of Scope, waiting for the medical director, and as an open item with an owner. It must never appear as a requirement or an acceptance criterion the agent filled in. (4) Scope Definition, Approval Handoff, Requirements, Units Generation and Delivery Planning are <code>ALWAYS</code>. Market Research, Reverse Engineering, User Stories, Domain Design and Contract Design are <code>CONDITIONAL</code>; M37's recompose could have dropped any of them that hadn't started, and it dropped Practices Discovery and Refined Mockups.</p>
+    </details>
+  </div>
+
+  <div class="path">
+    <div class="path-label">Path B — Build It with AI (both engines)</div>
+    <p>One unit of work: <strong>Inception completed for the running intent, every questions file answered by the team, parked before Construction, committed.</strong> Start from your M37 hub with the intent parked at Market Research. Open the engine interactively at the hub root, because every stage needs a person. This is the course's longest engine run: ten gates, about two hours in the reference run. For two sittings, approve the Requirements gate, ask the engine to park, and come back with <code>/aidlc --resume</code>.</p>
+    <div class="engine-tabs">
+      <div class="engine-tab-btns" role="tablist">
+        <button class="active" data-engine="cc">Claude Code</button>
+        <button data-engine="cx">Codex CLI</button>
+      </div>
+      <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+# 1. resume the parked intent
+/aidlc --resume
+# 2. at every stage: open the questions file together, fill every [Answer]:, then
+&gt; done
+# 3. at every summary and gate: your own words
+&gt; Looks correct
+&gt; &lt;Approve, or Request Changes with what to fix&gt;
+# 4. at User Stories only
+&gt; Bring the specialists in for this stage.
+&gt; Lead agent only from here.   (after its gate)
+# 5. at Delivery Planning: approve the verification command only if it guards the 0.85 line
+&gt; Approve. Then park.</code></pre>
+        <p>Expected, from the reference run (excerpts):</p>
+<pre><code># 1.
+We're picking up at Market Research. You approved the shorter plan on 2026-10-15 and it
+kept this stage, so I'm running it. [...]
+I'll keep using the file to collect your answers, the way you chose earlier.
+
+# Reverse Engineering
+NO_STORE: no reverse-engineering-timestamp.md at aidlc/spaces/default/codekb/prior-auth-api/
+- first scan, nothing to compare.
+
+# Requirements, after done
+I read your answers. They fit together, but Q4 ("these two repos are the whole system")
+leaves two gaps I can't fill with a default. I added them as Q8 and Q9 [...]
+
+# Delivery Planning
+Use this command to verify each completed Unit?
+1. Approve
+2. Request Changes
+
+Delivery Planning is approved and the workflow is parked. That completes Inception:
+all seven stages are done.</code></pre>
+      </div>
+      <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+# 1. resume the parked intent
+$aidlc --resume
+# 2. at every stage: open the questions file together, fill every [Answer]:, then
+&gt; done
+# 3. at every summary and gate: your own words
+&gt; Looks correct
+&gt; &lt;Approve, or Request Changes with what to fix&gt;
+# 4. at User Stories only
+&gt; Bring the specialists in for this stage.
+&gt; Lead agent only from here.   (after its gate)
+# 5. at Delivery Planning: approve the verification command only if it guards the 0.85 line
+&gt; Approve. Then park.</code></pre>
+        <p>Codex wasn't run for this edition, so there's no expected output to compare against. The questions, follow-ups and review findings will differ from run to run. What must match is the shape: a questions file per stage that waits for <code>done</code>, a summary to confirm, and a gate that records your words.</p>
+      </div>
+    </div>
+    <p><strong>6. Commit.</strong> The same for both engines.</p>
+<pre><code>git status --short
+git add aidlc; git commit -m "intent: Inception approved, parked before Construction"</code></pre>
+<pre><code> M aidlc/spaces/default/intents/261012-criteria-rescore/aidlc-state.md
+ M aidlc/spaces/default/intents/261012-criteria-rescore/audit/varalaptop-9cf4488a9ce5.md
+ M aidlc/spaces/default/memory/project.md
+?? aidlc/spaces/default/codekb/
+?? aidlc/spaces/default/intents/261012-criteria-rescore/ideation/approval-handoff/
+?? aidlc/spaces/default/intents/261012-criteria-rescore/ideation/market-research/
+?? aidlc/spaces/default/intents/261012-criteria-rescore/ideation/scope-definition/
+?? aidlc/spaces/default/intents/261012-criteria-rescore/inception/
+?? aidlc/spaces/default/intents/261012-criteria-rescore/verification-command.txt
+?? aidlc/spaces/default/intents/261012-criteria-rescore/verification/</code></pre>
+    <p><code>memory/project.md</code> changed because the team kept one learning at Delivery Planning, saved as a rule under Testing Posture: "ALWAYS compare guardrail files against a pinned pre-change commit, never against a moving <code>main</code>". The audit records it as <code>RULE_LEARNED</code>.</p>
+    <p><strong>Done when</strong> every questions file holds the team's answers, <code>codekb/&lt;repo&gt;/</code> holds nine files per repo, <code>unit-of-work-dependency.md</code> has a <code>units:</code> block, <code>bolt-plan.md</code> exists, the audit shows a <code>GATE_APPROVED</code> for each of the ten stages, and the hub commit holds it all. Leave the intent parked: M39 resumes it into Construction.</p>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>Inception on the engine is a chain of stages, each with a questions file and a gate. No scope can drop Requirements, Units Generation or Delivery Planning.</li>
+    <li>Reverse Engineering writes nine <code>codekb/</code> files per repo, and checks them for freshness before the next scan.</li>
+    <li>The engine asks, reads the answers against each other, and refuses to choose for the team. The team answers in the file, together. That's Mob Elaboration, kept.</li>
+    <li>The agent mob in User Stories widens the draft; its judgment calls still come to a person.</li>
+    <li>The engine builds in DAG order. <code>bolt-plan.md</code> is the team's view of the same work.</li>
+  </ul>
+  <span class="next">Next → M39 · Construction on the Engine</span>
+</section>
+`
+},
 /* {{MODULE_INJECTION_POINT}} */
 ];
 
