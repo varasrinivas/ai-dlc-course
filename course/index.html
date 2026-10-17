@@ -8980,6 +8980,386 @@ git add aidlc; git commit -m "intent: Inception approved, parked before Construc
 </section>
 `
 },
+{
+  id: "M39",
+  track: 8,
+  title: "Construction on the Engine",
+  minutes: 35,
+  audience: "practitioner",
+  body: `
+<p class="hook">U1's walking skeleton is green. The engine ran the team's own verification command: 92 API tests pass, <code>decide</code> is byte-for-byte what it was at <code>4226cc48f963</code>, <code>AUTO_APPROVE_THRESHOLD = 0.85</code> is still there, and the web guardrail test runs. The team approves. The engine's next line is a question: "How should I continue building the remaining work?" Continue automatically, or Review each checkpoint. The developer who wanted <code>bugfix</code> in M37 points out that the command would catch any edit to the 0.85 line anyway. The tech lead points at U3, the scorer switch: the command proves the old rule didn't move. It can't say the new code should reach a real request. They choose to review each checkpoint, and write it into the project's memory. Minutes later a teammate short on time asks for autonomy anyway. The agent quotes the rule back and changes nothing.</p>
+
+<div class="callout"><b>Verified against aidlc v2.11.0</b> (Claude Code 2.1.301) on 2026-10-17. Every engine excerpt comes from one real run in the reference hub, resuming the intent M38 parked (mid-run record commit <code>fc263ae</code>). Every answer, approval and hand edit was typed by the course author acting as the portal team. The run was captured headless, so the author allowed exactly three command patterns in <code>prior-auth-api</code> that an interactive session would ask you about one by one. Codex wasn't run for this edition; it reads the same stage files.</div>
+
+<h2>One unit through Construction</h2>
+<p>Resumed, the engine didn't spread out across five units. With checkpoints on, it runs "the first DAG Unit through every applicable per-unit stage, including Code Generation, before later Units". U1, the API walking skeleton, went through 3.1 Functional Design, 3.2 NFR Requirements and 3.5 Code Generation; M37's recompose had dropped 3.3 and 3.4. Each stage wrote under <code>construction/u1-api-skeleton/</code>: its questions file, its documents (<code>functional-spec.md</code>, <code>rules.md</code>, five <code>*-requirements.md</code> files, <code>tech-stack-decisions.md</code>), a <code>reviews/</code> folder and <code>traceability.json</code>.</p>
+<p>First, M38's two blockers. The product owner edited the approved requirements and stories by hand and recorded the scope sign-off. The engine raised no change notice, even under Guard Policy strict. The agent found the edits with <code>git diff</code> and made them Functional Design's first questions: "Q0. Does OQ7 still block Construction?"</p>
+<p>Code Generation keeps a fixed order: plan, Plan Approval, generation, summary files, review. The first plan was test-after, the organisation's default; <code>prior-auth-api/AGENTS.md</code> says tests first. The team sent it back and approved the rewrite: about 79 tests, "each written and shown failing before its code", and "<code>src/determination/</code> and <code>src/domain/clinical-criteria.ts</code> are not touched."</p>
+<p>The approval is bound to the files. Mid-build the agent edited the approved <code>unit-test-instructions.md</code> to note its commands, and every code write stopped: "the plan, test instructions, or Testing Contract changed since the person approved them". It restored the file and wrote the commands into <code>code-summary.md</code>. The stage file's rule: "Never rewrite an approved plan or its test instructions."</p>
+<p>The code landed in the hub's <code>prior-auth-api</code> clone, uncommitted on <code>main</code>. The engine made no bolt branch; the lab's last step does.</p>
+
+<h2>The verified checkpoint</h2>
+<p>After the code review, the agent ran <code>aidlc engine bolt checkpoint --action verify --unit u1-api-skeleton --kind skeleton</code>. That runs the verification command the team approved in M38. It records the exit code, the output's tail and its hashes against a fingerprint of the unit's three stages, and writes the proof to <code>.aidlc-construction-checkpoints/u1-api-skeleton/skeleton.json</code>. That file is git-ignored; the audit keeps <code>CHECKPOINT_VERIFICATION_RECORDED</code>. This run: exit 0, 92 of 92 API tests including <code>determination.service.spec.ts</code>, <code>decide</code> unchanged against <code>4226cc48f963</code>, the threshold line present, and 5 of 5 web tests.</p>
+<p>The protocol: "Only a verified checkpoint can be approved. A skeleton always needs a real human approval." An ordinary unit needs a person under <code>gated</code> or <code>unset</code>; "under an explicit autonomous grant the conductor may approve the verified ordinary Unit automatically."</p>
+<p>Before asking, the engine surfaced twelve learnings from the three stages. The team kept two, saved as project rules (<code>RULE_LEARNED</code>). One says a reviewer's findings go to the person before any fix. Then Approve or Request Changes. The team's "Approve" was recorded word for word with <code>--action approve --user-input 'Approve'</code>, and the audit logged <code>GATE_APPROVED</code> for all three stages at once.</p>
+<p>The receipt proves less than a green tick suggests. It shows the old rule didn't move. Whether the new code is right came from two code reviews and the team's own Request Changes; the first review's major finding was a malformed URL slipping past the test-only guard. That's M07's checkpoint with the evidence attached, and M17's pin carried into the command.</p>
+
+<aside class="analogy">
+<p>The deck's first crew day is the ledger board: one beam bolted to the cottage's old load-bearing wall, a post, and enough joists to stand on. At the walkthrough Meera checks the bolts against the drawings and the inspector's checklist, and signs. Next morning the site office offers to roll the remaining crews past their walkthroughs whenever the checklist passes. Ravi likes that for the railings. Meera points at the wall: every package left hangs off it. The checklist proves nothing moved. It can't say the new beams belong there. She keeps the walkthroughs and writes it in the build book.</p>
+<span class="maps-to">maps to → <b>the ledger board</b> = U1, the walking skeleton · <b>the inspector's checklist</b> = the verification command and its receipt · <b>roll the crews past walkthroughs</b> = "Continue automatically" (<code>bolt set-autonomy --mode autonomous</code>) · <b>keeps the walkthroughs</b> = "Review each checkpoint" (<code>gated</code>) · <b>writes it in the build book</b> = the team's Mandated rule in <code>memory/project.md</code></span>
+</aside>
+
+<figure>
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A verified checkpoint for U1. Top row: the plan is written (Step 2); Plan Approval by a person; code generated tests first (Step 4); code-summary.md and source-manifest.json (Step 5); the code review, READY, with the team ruling on findings. Bottom row: verify runs the team's command: exit 0, API typecheck clean and 92 of 92 tests, decide unchanged against 4226cc48f963, AUTO_APPROVE_THRESHOLD = 0.85 present, web 5 of 5 with the identity guardrail test present. Then checkpoint approval by a person, then the autonomy offer, also a person: Continue automatically, where ordinary checkpoints are approved automatically but plans, summaries, the command and failures still stop for a person; or Review each checkpoint, the team's choice, where every checkpoint waits.">
+  <defs>
+    <marker id="m39arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/>
+    </marker>
+  </defs>
+  <g font-family="JetBrains Mono, monospace">
+    <text x="16" y="22" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">CODE GENERATION · U1</text>
+
+    <rect x="16" y="36" width="118" height="58" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="26" y="56" font-size="9.5" font-weight="600" fill="var(--ink)">plan written</text>
+    <text x="26" y="72" font-size="8.5" fill="var(--ink-soft)">Step 2</text>
+    <text x="26" y="85" font-size="8.5" fill="var(--ink-soft)">tests first</text>
+    <line x1="134" y1="65" x2="152" y2="65" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+
+    <path d="M174,49 L190,65 L174,81 L158,65 z" fill="var(--t8)"/>
+    <text x="174" y="104" font-size="8.6" font-weight="600" text-anchor="middle" fill="var(--t8)">Plan</text>
+    <text x="174" y="116" font-size="8.6" font-weight="600" text-anchor="middle" fill="var(--t8)">Approval</text>
+    <line x1="190" y1="65" x2="208" y2="65" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+
+    <rect x="212" y="36" width="118" height="58" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="222" y="56" font-size="9.5" font-weight="600" fill="var(--ink)">code generated</text>
+    <text x="222" y="72" font-size="8.5" fill="var(--ink-soft)">Step 4 · Red,</text>
+    <text x="222" y="85" font-size="8.5" fill="var(--ink-soft)">Green, Refactor</text>
+    <line x1="330" y1="65" x2="356" y2="65" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+
+    <rect x="360" y="36" width="140" height="58" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="370" y="56" font-size="9.5" font-weight="600" fill="var(--ink)">summary files</text>
+    <text x="370" y="72" font-size="8.5" fill="var(--ink-soft)">Step 5 · code-summary</text>
+    <text x="370" y="85" font-size="8.5" fill="var(--ink-soft)">source-manifest.json</text>
+    <line x1="500" y1="65" x2="526" y2="65" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+
+    <rect x="530" y="36" width="214" height="58" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="540" y="56" font-size="9.5" font-weight="600" fill="var(--ink)">code review · READY</text>
+    <text x="540" y="72" font-size="8.5" fill="var(--ink-soft)">findings go to the team first</text>
+    <text x="540" y="85" font-size="8.5" fill="var(--warn)">↺ Request Changes ×1</text>
+
+    <path d="M637,94 L637,134 L166,134 L166,152" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+
+    <rect x="16" y="156" width="300" height="128" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="26" y="175" font-size="9.5" font-weight="600" fill="var(--ink)">verify · runs the team's command</text>
+    <text x="26" y="193" font-size="8.5" fill="var(--ok)">✓ exit 0</text>
+    <text x="26" y="208" font-size="8.5" fill="var(--ink)">✓ api typecheck · 92/92 tests</text>
+    <text x="26" y="223" font-size="8.5" fill="var(--ink)">✓ decide unchanged vs 4226cc48f963</text>
+    <text x="26" y="238" font-size="8.5" fill="var(--ink)">✓ AUTO_APPROVE_THRESHOLD = 0.85</text>
+    <text x="26" y="253" font-size="8.5" fill="var(--ink)">✓ web typecheck · 5/5 · identity test</text>
+    <text x="26" y="272" font-size="8.2" fill="var(--ink-soft)">receipt: skeleton.json, bound to a fingerprint</text>
+    <line x1="316" y1="220" x2="350" y2="220" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+
+    <path d="M372,204 L388,220 L372,236 L356,220 z" fill="var(--t8)"/>
+    <text x="372" y="254" font-size="8.6" font-weight="600" text-anchor="middle" fill="var(--t8)">checkpoint</text>
+    <text x="372" y="266" font-size="8.6" font-weight="600" text-anchor="middle" fill="var(--t8)">Approve</text>
+    <line x1="388" y1="220" x2="434" y2="220" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+
+    <path d="M456,204 L472,220 L456,236 L440,220 z" fill="var(--t8)"/>
+    <text x="456" y="254" font-size="8.6" font-weight="600" text-anchor="middle" fill="var(--t8)">autonomy</text>
+    <text x="456" y="266" font-size="8.6" font-weight="600" text-anchor="middle" fill="var(--t8)">offer</text>
+    <path d="M472,220 L500,182 L522,182" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+    <path d="M472,220 L500,252 L522,252" fill="none" stroke="var(--t8)" stroke-width="1.5" marker-end="url(#m39arr)"/>
+
+    <rect x="526" y="156" width="218" height="54" rx="8" fill="none" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="536" y="174" font-size="9" font-weight="600" fill="var(--ink-soft)">Continue automatically</text>
+    <text x="536" y="189" font-size="8.2" fill="var(--ink-soft)">ordinary checkpoints auto; still</text>
+    <text x="536" y="201" font-size="8.2" fill="var(--ink-soft)">asks: plans, command, failures</text>
+
+    <rect x="526" y="226" width="218" height="54" rx="8" fill="var(--panel)" stroke="var(--t8)" stroke-width="2.5"/>
+    <text x="536" y="244" font-size="9" font-weight="600" fill="var(--ink)">Review each checkpoint</text>
+    <text x="536" y="259" font-size="8.2" fill="var(--ink)">every unit waits for the team</text>
+    <text x="536" y="271" font-size="8.2" fill="var(--t8)">the team's choice · gated</text>
+
+    <path d="M630,300 L637,307 L630,314 L623,307 z" fill="var(--t8)"/>
+    <text x="644" y="311" font-size="8.6" fill="var(--ink)">a person</text>
+    <text x="16" y="311" font-size="8.6" fill="var(--ink-soft)">Real: reference hub, aidlc v2.11.0, 2026-10-17. Only a verified checkpoint can be approved.</text>
+  </g>
+</svg>
+<figcaption>fig 39.2 — the engine runs the check; a person approves the plan and the checkpoint</figcaption>
+</figure>
+
+<h2>Order and parallelism: unit-major, stage-major, swarm</h2>
+<p>New workflows record <code>Construction Iteration: unit-major</code> and <code>Construction Execution: serial</code>: one unit through all its stages, then the next (fig 39.1). Stage-major runs one stage across every unit, then the next stage. Swarm needs both: stage-major with explicit <code>Execution: swarm</code> "can fan out eligible Code Generation work after the skeleton checkpoint is approved". "Unit-major remains serial and never invokes swarm." Even stage-major builds the skeleton first.</p>
+<p>The DAG allows U2, U3 and U4 in parallel. The team stays unit-major and serial, because each of them sits next to the 0.85 path. The setters exist, and none of them prints help; each refuses <code>--help</code> by naming its values:</p>
+<pre><code>aidlc engine state set-construction-iteration --help
+aidlc engine state set-construction-execution --help</code></pre>
+<pre><code>{"error":"Invalid construction iteration \\"--help\\". Valid: unit-major, stage-major."}
+{"error":"Construction Execution must be one of: serial, swarm."}</code></pre>
+<p>Build and Test (3.6) and the CI pipeline (3.7) run once, after the last unit. This run stops before them, so the findings the team carried forward wait there: evidence on the pinned Node 22, and three minor hardening points from the second review.</p>
+
+<figure>
+<svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two grids, rows U1 to U5, columns 3.1 Functional Design, 3.2 NFR Requirements and 3.5 Code Generation, each cell numbered in the order the engine visits it. Left, unit-major and serial, the team's choice: U1 cells 1 to 3 then a skeleton checkpoint, U2 cells 4 to 6 then a checkpoint, and so on to U5, cells 13 to 15. Right, stage-major: U1 cells 1 to 3 and the skeleton checkpoint first, then 3.1 down U2 to U5 (4 to 7), then 3.2 (8 to 11), then 3.5 (12 to 15), where swarm may fan out. Below both: 3.6 Build and Test and 3.7 CI pipeline run once, after the last unit.">
+  <g font-family="JetBrains Mono, monospace">
+    <rect x="8" y="10" width="362" height="282" rx="10" fill="none" stroke="var(--t8)" stroke-width="2"/>
+    <text x="20" y="32" font-size="10" font-weight="600" letter-spacing="1" fill="var(--t8)">UNIT-MAJOR · SERIAL</text>
+    <text x="20" y="46" font-size="8.6" fill="var(--ink-soft)">default · the team's choice</text>
+    <text x="101" y="70" font-size="8.6" text-anchor="middle" fill="var(--ink-soft)">3.1</text>
+    <text x="171" y="70" font-size="8.6" text-anchor="middle" fill="var(--ink-soft)">3.2</text>
+    <text x="241" y="70" font-size="8.6" text-anchor="middle" fill="var(--ink-soft)">3.5</text>
+
+    <text x="20" y="98" font-size="9.5" font-weight="600" fill="var(--ink)">U1</text>
+    <rect x="70" y="80" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--t8)" stroke-width="1.5"/><text x="101" y="98" font-size="9.5" text-anchor="middle" fill="var(--ink)">1</text>
+    <rect x="140" y="80" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--t8)" stroke-width="1.5"/><text x="171" y="98" font-size="9.5" text-anchor="middle" fill="var(--ink)">2</text>
+    <rect x="210" y="80" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--t8)" stroke-width="1.5"/><text x="241" y="98" font-size="9.5" text-anchor="middle" fill="var(--ink)">3</text>
+    <path d="M292,85 L301,94 L292,103 L283,94 z" fill="var(--t8)"/><text x="308" y="98" font-size="8.4" font-weight="600" fill="var(--t8)">skeleton</text>
+
+    <text x="20" y="138" font-size="9.5" font-weight="600" fill="var(--ink)">U2</text>
+    <rect x="70" y="120" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="101" y="138" font-size="9.5" text-anchor="middle" fill="var(--ink)">4</text>
+    <rect x="140" y="120" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="171" y="138" font-size="9.5" text-anchor="middle" fill="var(--ink)">5</text>
+    <rect x="210" y="120" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="241" y="138" font-size="9.5" text-anchor="middle" fill="var(--ink)">6</text>
+    <path d="M292,125 L301,134 L292,143 L283,134 z" fill="var(--t8)"/>
+
+    <text x="20" y="178" font-size="9.5" font-weight="600" fill="var(--ink)">U3</text>
+    <rect x="70" y="160" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="101" y="178" font-size="9.5" text-anchor="middle" fill="var(--ink)">7</text>
+    <rect x="140" y="160" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="171" y="178" font-size="9.5" text-anchor="middle" fill="var(--ink)">8</text>
+    <rect x="210" y="160" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="241" y="178" font-size="9.5" text-anchor="middle" fill="var(--ink)">9</text>
+    <path d="M292,165 L301,174 L292,183 L283,174 z" fill="var(--t8)"/>
+
+    <text x="20" y="218" font-size="9.5" font-weight="600" fill="var(--ink)">U4</text>
+    <rect x="70" y="200" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="101" y="218" font-size="9.5" text-anchor="middle" fill="var(--ink)">10</text>
+    <rect x="140" y="200" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="171" y="218" font-size="9.5" text-anchor="middle" fill="var(--ink)">11</text>
+    <rect x="210" y="200" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="241" y="218" font-size="9.5" text-anchor="middle" fill="var(--ink)">12</text>
+    <path d="M292,205 L301,214 L292,223 L283,214 z" fill="var(--t8)"/>
+
+    <text x="20" y="258" font-size="9.5" font-weight="600" fill="var(--ink)">U5</text>
+    <rect x="70" y="240" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="101" y="258" font-size="9.5" text-anchor="middle" fill="var(--ink)">13</text>
+    <rect x="140" y="240" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="171" y="258" font-size="9.5" text-anchor="middle" fill="var(--ink)">14</text>
+    <rect x="210" y="240" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="241" y="258" font-size="9.5" text-anchor="middle" fill="var(--ink)">15</text>
+    <path d="M292,245 L301,254 L292,263 L283,254 z" fill="var(--t8)"/>
+    <text x="20" y="284" font-size="8.4" fill="var(--ink-soft)">◆ checkpoint after each unit · no swarm</text>
+
+    <rect x="390" y="10" width="362" height="282" rx="10" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="402" y="32" font-size="10" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">STAGE-MAJOR</text>
+    <text x="402" y="46" font-size="8.6" fill="var(--ink-soft)">skeleton first, then one stage across units</text>
+    <text x="483" y="70" font-size="8.6" text-anchor="middle" fill="var(--ink-soft)">3.1</text>
+    <text x="553" y="70" font-size="8.6" text-anchor="middle" fill="var(--ink-soft)">3.2</text>
+    <text x="623" y="70" font-size="8.6" text-anchor="middle" fill="var(--ink-soft)">3.5</text>
+
+    <text x="402" y="98" font-size="9.5" font-weight="600" fill="var(--ink)">U1</text>
+    <rect x="452" y="80" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--t8)" stroke-width="1.5"/><text x="483" y="98" font-size="9.5" text-anchor="middle" fill="var(--ink)">1</text>
+    <rect x="522" y="80" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--t8)" stroke-width="1.5"/><text x="553" y="98" font-size="9.5" text-anchor="middle" fill="var(--ink)">2</text>
+    <rect x="592" y="80" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--t8)" stroke-width="1.5"/><text x="623" y="98" font-size="9.5" text-anchor="middle" fill="var(--ink)">3</text>
+    <path d="M674,85 L683,94 L674,103 L665,94 z" fill="var(--t8)"/><text x="690" y="98" font-size="8.4" font-weight="600" fill="var(--t8)">skeleton</text>
+
+    <text x="402" y="138" font-size="9.5" font-weight="600" fill="var(--ink)">U2</text>
+    <rect x="452" y="120" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="483" y="138" font-size="9.5" text-anchor="middle" fill="var(--ink)">4</text>
+    <rect x="522" y="120" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="553" y="138" font-size="9.5" text-anchor="middle" fill="var(--ink)">8</text>
+    <rect x="592" y="120" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="623" y="138" font-size="9.5" text-anchor="middle" fill="var(--ink)">12</text>
+
+    <text x="402" y="178" font-size="9.5" font-weight="600" fill="var(--ink)">U3</text>
+    <rect x="452" y="160" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="483" y="178" font-size="9.5" text-anchor="middle" fill="var(--ink)">5</text>
+    <rect x="522" y="160" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="553" y="178" font-size="9.5" text-anchor="middle" fill="var(--ink)">9</text>
+    <rect x="592" y="160" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="623" y="178" font-size="9.5" text-anchor="middle" fill="var(--ink)">13</text>
+
+    <text x="402" y="218" font-size="9.5" font-weight="600" fill="var(--ink)">U4</text>
+    <rect x="452" y="200" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="483" y="218" font-size="9.5" text-anchor="middle" fill="var(--ink)">6</text>
+    <rect x="522" y="200" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="553" y="218" font-size="9.5" text-anchor="middle" fill="var(--ink)">10</text>
+    <rect x="592" y="200" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="623" y="218" font-size="9.5" text-anchor="middle" fill="var(--ink)">14</text>
+
+    <text x="402" y="258" font-size="9.5" font-weight="600" fill="var(--ink)">U5</text>
+    <rect x="452" y="240" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="483" y="258" font-size="9.5" text-anchor="middle" fill="var(--ink)">7</text>
+    <rect x="522" y="240" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="553" y="258" font-size="9.5" text-anchor="middle" fill="var(--ink)">11</text>
+    <rect x="592" y="240" width="62" height="28" rx="5" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.2"/><text x="623" y="258" font-size="9.5" text-anchor="middle" fill="var(--ink)">15</text>
+
+    <rect x="587" y="115" width="72" height="158" rx="7" fill="none" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <text x="666" y="190" font-size="8.4" font-weight="600" fill="var(--warn)">swarm may</text>
+    <text x="666" y="202" font-size="8.4" font-weight="600" fill="var(--warn)">fan out</text>
+    <text x="666" y="214" font-size="8.4" font-weight="600" fill="var(--warn)">here</text>
+    <text x="402" y="284" font-size="8.4" fill="var(--ink-soft)">swarm needs stage-major + Execution: swarm</text>
+
+    <rect x="8" y="306" width="744" height="36" rx="8" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+    <text x="20" y="328" font-size="9.5" font-weight="600" fill="var(--ink)">then once: 3.6 Build and Test · 3.7 CI pipeline</text>
+    <text x="740" y="328" font-size="8.4" text-anchor="end" fill="var(--ink-soft)">not reached in this run</text>
+    <text x="8" y="366" font-size="8.6" fill="var(--ink-soft)">Numbers = the order the engine visits each cell. 3.3 and 3.4 were dropped in M37. Reference run: U1 only, then parked.</text>
+  </g>
+</svg>
+<figcaption>fig 39.1 — the same five units, two orders; swarm only exists on the right</figcaption>
+</figure>
+
+<h2>The autonomy offer, and why it stays off here</h2>
+<p>Straight after the skeleton approval, the engine asked:</p>
+<pre><code>How should I continue building the remaining work?
+
+1. Continue automatically. I carry on through the ordinary completion checkpoints for
+   U2 to U5 without stopping. I still stop for your answer on:
+   - each Code Generation plan
+   - each pre-generation summary
+   - the choice of verification command
+   - any failure
+2. Review each checkpoint. I wait for your approval at every unit's completion
+   checkpoint, as with U1.</code></pre>
+<p>The team chose 2. The agent ran <code>aidlc engine bolt set-autonomy --mode gated</code>, and the audit logged <code>AUTONOMY_MODE_SET</code>. Even a grant can't waive everything: "per-Unit Plan Approval, enabled pre-generation summary confirmation, verification command selection, skeleton approval, and failures still require the human." On failure the engine always halts and asks.</p>
+<p>The offer isn't final. The protocol keeps "explicit on-demand requests" valid throughout Construction, and "Escalation requires a fresh human turn; revocation to <code>gated</code> does not." So the team added one line to <code>memory/project.md</code>, under Mandated: "NEVER grant autonomous Construction for this project's threshold-path intents". Then a teammate short on time asked to "switch to autonomous and run U2 to U5". The reply:</p>
+<pre><code>I can't switch to autonomous. Your team recorded a rule that holds over a request in
+chat. [...] Changing or removing that line in the file changes the rule. So the workflow
+stays on "Review each checkpoint", and I've changed nothing.</code></pre>
+<p>The engine itself refused nothing; the audit shows only the agent's <code>DECISION_RECORDED</code>. The lock is the agent reading the team's memory. The hard stops the engine enforces are the plan and the skeleton. Why keep every checkpoint here? The receipt proves the 0.85 line didn't move. It can't judge whether U3's switch or U4's roles are right. That judgment is the checkpoint.</p>
+
+<table class="bridge">
+  <thead><tr><th>Hand-run (module)</th><th>On the v2 engine</th><th>What stays human</th></tr></thead>
+  <tbody>
+    <tr><td>Bolt plan approved before code (M07, M16)</td><td>Code Generation Plan Approval, per unit</td><td>The plan</td></tr>
+    <tr><td>Mob Construction checkpoint (M07)</td><td><code>bolt checkpoint</code> verify → ask → approve</td><td>The approval</td></tr>
+    <tr><td>"Run the tests, paste the output" (M16, M24)</td><td>Verification command + receipt bound to the unit</td><td>Choosing the command (M38)</td></tr>
+    <tr><td>Walking skeleton (M24)</td><td>First DAG unit, <code>--kind skeleton</code>, always a person</td><td>The skeleton sign-off</td></tr>
+    <tr><td>One bolt at a time (M23)</td><td>Unit-major, serial (default)</td><td>Changing it</td></tr>
+    <tr><td>Parallel crews (M29)</td><td>Stage-major + swarm, after the skeleton</td><td>Changing it</td></tr>
+    <tr><td>The guardrail test never edited (M17)</td><td><code>git diff --exit-code 4226cc48f963</code> in the command</td><td>The pinned commit</td></tr>
+    <tr><td>—</td><td>"Continue automatically"</td><td>The grant, and its revocation</td></tr>
+  </tbody>
+</table>
+
+<section class="lab">
+  <div class="lab-head">Lab M39 · 35 min reading · most of a day with the engine</div>
+  <h2>Build the walking skeleton through a verified checkpoint</h2>
+
+  <div class="path">
+    <div class="path-label">Path A — Understand It (no tooling)</div>
+    <p>Three excerpts from the reference run. The approved code plan for U1, as the engine presented it:</p>
+<pre><code>Approve the code plan for u1-api-skeleton?
+
+- Builds: the API walking skeleton, tests first [...]
+- Touches: new folders under prior-auth-api/src/ (storage, catalog, register, ledger, intake,
+  scorer, rescore, detail, config, http, architecture, test-support) [...]
+  src/determination/ and src/domain/clinical-criteria.ts are not touched.
+- Tests: about 79 Jest tests in 15 spec files, each written and shown failing before its code [...]
+  All 4 existing tests stay unchanged.
+
+1. Approve Plan
+2. Request Changes
+3. I'll edit the files</code></pre>
+    <p>The skeleton receipt, from <code>bolt checkpoint --action verify</code> (trimmed):</p>
+<pre><code>"kind":"skeleton","unit":"u1-api-skeleton",
+"stages":["functional-design","nfr-requirements","code-generation"],
+"verified":true,"approved":false,"human_required":true, [...]
+"exit_code":0, [...]
+PASS src/determination/determination.service.spec.ts
+PASS src/skeleton.integration.spec.ts (11.014 s)
+Tests:       92 passed, 92 total
+ ✓ src/components/AuthQueue.test.tsx (5 tests) 88ms</code></pre>
+    <p>The offer and the team's answer, with the audit events they wrote:</p>
+<pre><code>How should I continue building the remaining work?
+1. Continue automatically. [...]
+2. Review each checkpoint. [...]
+&gt; Review each checkpoint. Don't start U2's Functional Design yet; wait for us before going further.
+
+{"timestamp": "2026-10-17T12:33:40Z", "event": "GATE_APPROVED", "fields": {"Unit": "u1-api-skeleton",
+ "Stages": "functional-design, nfr-requirements, code-generation", "Gate Scope": "unit-end",
+ "Checkpoint": "walking-skeleton", [...]}}
+{"timestamp": "2026-10-17T12:35:30Z", "event": "AUTONOMY_MODE_SET", "fields": {"Mode": "gated"}}
+{"timestamp": "2026-10-17T12:35:45Z", "event": "WORKFLOW_PARKED", "fields": {"Stage": "functional-design"}}</code></pre>
+    <p><strong>Check yourself:</strong> (1) The receipt is green. What does it prove about <code>decide</code>, and what can't it prove about U1's new code? (2) Why couldn't U1's checkpoint be approved automatically, even under an autonomous grant? (3) The team wants U2 and U3 built in parallel. What has to change first? (4) Under "Continue automatically", which stops in the rest of this intent would disappear, and which would remain?</p>
+    <details><summary>Answers</summary>
+      <p>(1) That <code>decide</code> and its guardrail tests are unchanged against <code>4226cc48f963</code>, the 0.85 line is present, and every test passes, including the new ones. It can't prove the new code does the right thing; that came from two code reviews and the team's Request Changes. (2) It's the skeleton: "A skeleton always needs a real human approval." A grant covers only ordinary units after it. (3) Iteration to stage-major and Execution to swarm, both recorded by the team, and only after the skeleton checkpoint is approved, which it now is. Unit-major "never invokes swarm". (4) The ordinary completion checkpoints for U2 to U5 would go. Each unit's Plan Approval, each pre-generation summary, the verification command choice and any failure would still stop for a person.</p>
+    </details>
+  </div>
+
+  <div class="path">
+    <div class="path-label">Path B — Build It with AI (both engines)</div>
+    <p>One unit of work: <strong>U1, the walking skeleton, built with Plan Approval on, its checkpoint verified and approved by the team, the autonomy offer answered "Review each checkpoint", parked before U2, committed.</strong> Start from your M38 hub, parked at <code>functional-design</code>. Open the engine interactively at the hub root, because the plan and the checkpoint need a person. When the build asks to run <code>npm --prefix prior-auth-api</code>, <code>npx @redocly/cli</code> or <code>git -C prior-auth-api</code>, allow those and nothing wider. The reference run took most of a working day, with three review rounds in Functional Design and two in Code Generation.</p>
+    <div class="engine-tabs">
+      <div class="engine-tab-btns" role="tablist">
+        <button class="active" data-engine="cc">Claude Code</button>
+        <button data-engine="cx">Codex CLI</button>
+      </div>
+      <div class="engine-pane active" data-engine="cc">
+<pre><code># Claude Code
+# 1. clear M38's blockers as the team: the product owner adds the missing requirements
+#    and stories, and the scope sign-off is recorded. Then resume
+/aidlc --resume
+# 2. at 3.1 and 3.2: fill every [Answer]: together, then
+&gt; done
+&gt; Looks correct
+&gt; &lt;Approve, or Request Changes with what to fix&gt;
+# 3. at 3.5: read the plan file before approving. Approve only if it leaves
+#    src/determination/, AUTO_APPROVE_THRESHOLD and the guardrail tests alone
+&gt; Approve Plan
+# 4. at the code review and the checkpoint: rule on each finding, read the receipt
+&gt; Approve
+# 5. the autonomy offer
+&gt; Review each checkpoint. Then park.</code></pre>
+        <p>Expected, from the reference run (excerpts):</p>
+<pre><code># 1. the hand edits, raised by the agent
+Q0. Does OQ7 still block Construction? The requirements and stories still say Construction
+doesn't start until the roles (OQ7) are recorded, and they aren't yet. [...]
+
+# 3. if anyone edits an approved plan file mid-build
+Code generation cannot modify workspace paths for unit u1-api-skeleton because the plan,
+unit-test instructions, and current Testing Contract do not have a current matching approval.
+Reason: the plan, test instructions, or Testing Contract changed since the person approved them
+
+# 4. the checkpoint
+Walking-skeleton checkpoint for u1-api-skeleton. This covers Functional Design, NFR
+Requirements and Code Generation. [...]
+Approve this completed u1-api-skeleton?
+1. Approve
+2. Request Changes
+
+# 5.
+The workflow is paused, and nothing more will be built until you resume it with
+\`/aidlc --resume\`. I recorded "Review each checkpoint", so every unit's completion will
+wait for your approval, as U1's did.</code></pre>
+      </div>
+      <div class="engine-pane" data-engine="cx">
+<pre><code># Codex CLI
+# 1. clear M38's blockers as the team: the product owner adds the missing requirements
+#    and stories, and the scope sign-off is recorded. Then resume
+$aidlc --resume
+# 2. at 3.1 and 3.2: fill every [Answer]: together, then
+&gt; done
+&gt; Looks correct
+&gt; &lt;Approve, or Request Changes with what to fix&gt;
+# 3. at 3.5: read the plan file before approving. Approve only if it leaves
+#    src/determination/, AUTO_APPROVE_THRESHOLD and the guardrail tests alone
+&gt; Approve Plan
+# 4. at the code review and the checkpoint: rule on each finding, read the receipt
+&gt; Approve
+# 5. the autonomy offer
+&gt; Review each checkpoint. Then park.</code></pre>
+        <p>Codex wasn't run for this edition, so there's no expected output to compare against. Questions, findings and test counts will differ from run to run. What must match is the shape: a plan you approve before any code, a receipt from your own command, a skeleton checkpoint only a person can approve, and an offer you answer.</p>
+      </div>
+    </div>
+    <p><strong>6. Commit.</strong> The same for both engines. The engine leaves U1's code uncommitted in the clone, so put it on the bolt branch yourself:</p>
+<pre><code>git add aidlc; git commit -m "intent: U1 skeleton approved, gated, parked before U2"
+git -C prior-auth-api switch -c b1-api-skeleton
+git -C prior-auth-api add -A; git -C prior-auth-api commit -m "B1: U1 API walking skeleton"</code></pre>
+    <p>In the reference run, before that step, <code>git -C prior-auth-api log --oneline</code> showed only the seed commit, <code>4226cc4 seed: prior-auth-api from the course kit</code>, and <code>git -C prior-auth-api status --short</code> showed the new work:</p>
+<pre><code> M docs/decisions.md
+ M jest.config.js
+ M package-lock.json
+ M package.json
+?? .nvmrc
+?? docs/openapi.yaml
+?? docs/units/UW-01-api-skeleton.md
+?? src/architecture/
+[...]</code></pre>
+    <p><strong>Done when</strong> the audit shows the team's Plan Approval, <code>CHECKPOINT_VERIFICATION_RECORDED</code> and a <code>GATE_APPROVED</code> for U1, <code>aidlc-state.md</code> reads <code>Construction Autonomy Mode: gated</code>, and both commits exist. The other four units are an optional extension; M40 picks up the hub for multi-repo work.</p>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>Recap</h2>
+  <ul>
+    <li>Construction runs per unit. U1, the walking skeleton, goes through Functional Design, NFR Requirements and Code Generation before any other unit starts.</li>
+    <li>Plan Approval comes before any code, whatever the autonomy setting, and it's bound to the files: edit an approved plan and the build stops.</li>
+    <li>The engine runs the team's verification command and keeps the receipt. Only a verified checkpoint can be approved, and the skeleton always needs a person.</li>
+    <li>Unit-major and serial is the default. Swarm needs stage-major and an approved skeleton.</li>
+    <li>"Continue automatically" waives ordinary checkpoints, never plans or failures. On the threshold path the team keeps every checkpoint, and its memory file holds that against a hurried request.</li>
+  </ul>
+  <span class="next">Next → M40 · Multi-repo Intents and Teams on the Engine</span>
+</section>
+`
+},
 /* {{MODULE_INJECTION_POINT}} */
 ];
 
